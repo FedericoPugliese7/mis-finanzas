@@ -34,7 +34,7 @@ todo se importa de `src/shared/motion.ts`. Cada componente animado se registra c
 
 ---
 
-## Fase 1 — Núcleo: DB, dinero, fechas, agregaciones
+## Fase 1 — Núcleo: DB, dinero, fechas, agregaciones ✅
 
 - `src/shared/db/database.ts` — clase Dexie, tablas e índices (`date`, `categoryId`, `[type+date]`),
   seed de categorías por defecto en la primera apertura
@@ -53,13 +53,49 @@ todo se importa de `src/shared/motion.ts`. Cada componente animado se registra c
 | 2   | **Formateo de montos**                                     | `123456` → `"1.234,56"`; importes negativos, valores grandes y ambos símbolos (`$`, `US$`)                 |
 | 3   | **Conversión USD → ARS con `exchangeRate` del movimiento** | USD 10 con `exchangeRate: 1500` → ARS `1500000` centavos (usa la tasa del movimiento, no la de referencia) |
 | 4   | **Conversión con fallback a la cotización de referencia**  | USD 10 sin `exchangeRate` → usa `Settings.referenceRate`                                                   |
-| 5   | **Conversión ARS → USD**                                   | ARS 1500000 centavos con tasa 1500 → USD `10000` centavos                                                  |
+| 5   | **Conversión ARS → USD**                                   | ARS 1500000 centavos con tasa 1500 → USD `1000` centavos (ver decisión 3)                                  |
 | 6   | **Totales por mes**                                        | Suma de ingresos, gastos y balance de un mes `YYYY-MM`, ignorando movimientos de otros meses               |
 | 7   | **Totales por categoría**                                  | Agrupación por `categoryId` con su nombre, color y total; orden descendente y categorías sin uso           |
 | 8   | **Balance con monedas mezcladas**                          | Ingresos y gastos en ARS y USD juntos, normalizados a una sola moneda de visualización (ARS, USD o ambas)  |
 
 Además: `dates` (mes `YYYY-MM`, cambio de mes, años bisiestos) y `money` (redondeo entero, sin
 acumulación en floats).
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run format`, `npm run test`
+(6 archivos, 51 tests) y `npm run build` en verde.
+
+**Decisiones de la fase**
+
+1. **Parseo es-AR**: coma sola = siempre separador decimal (`0,05` → 5, `12,345` → 1235);
+   punto solo = agrupador de miles si matchea `^\d{1,3}(\.\d{3})+$` (`1.234` → `123400`),
+   si no decimal (`12,5` → 1250); con ambos separadores, el último es el decimal
+   (`1.234,56` y `1,234.56` se aceptan). Espacios (incl. NBSP) y símbolos se ignoran.
+   Decimales extra se redondean half-up al centavo; si no parsea → `null`.
+2. **Formateo**: matemática entera; la parte entera se agrupa con
+   `Intl.NumberFormat('es-AR')` y la fracción de 2 dígitos se anexa (evita artefactos de
+   float en montos grandes). Signo antes del símbolo: `-$ 1.234,56`.
+3. **Corrección del ejemplo de la tabla (fila 5)**: ARS `1500000` centavos ÷ 1500 =
+   `1000` centavos USD (10 USD), no `10000`. El valor original tenía un error aritmético;
+   el código y el test usan `1000`.
+4. **Conversión**: la tasa siempre es ARS por 1 USD. Si la tasa no es finita y positiva,
+   `convert` devuelve el monto sin convertir (nunca fabrica una conversión ni bloquea).
+5. **Agregaciones**: `totalsByCategory` incluye categorías sin uso con `total: 0`, ordena
+   por total descendente y empata por nombre (locale `es`); filtra por tipo
+   (`'expense'` por defecto, para la dona de gastos). `totalsForDisplay` devuelve solo las
+   monedas pedidas (`BOTH` → `{ ARS, USD }`).
+6. **Seed de la DB**: categorías y settings se cargan en `db.on('populate')` (solo en la
+   primera creación del IndexedDB). Los ids de las categorías default son strings
+   estables (`expense-alquiler`, `income-sueldo`, …) para que el seed sea idempotente y
+   los imports se puedan deduplicar por id.
+7. **Índices**: `archived` (boolean) **no** se indexa — IndexedDB no acepta booleans como
+   claves. Se filtra en memoria en `categoriesRepo.getActive()` (la tabla es chica).
+8. **Settings**: fila única con id `'general'` en la tabla `settings`. Defaults:
+   `theme: 'system'`, `displayCurrency: 'ARS'`, `referenceRate: 1000`,
+   `rateSource: 'manual'`.
+9. **Tests**: solo funciones puras en esta fase (los 8 casos obligatorios + `dates` +
+   `money`). Los repositorios no se testean todavía porque requieren `fake-indexeddb`
+   (dependencia nueva, sin justificación en `README.md`); se evalúa en la fase de tests
+   de integración si hace falta.
 
 **Commit**: `feat(core): add dexie schema, repositories and pure money/aggregation logic`
 
