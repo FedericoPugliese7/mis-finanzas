@@ -198,17 +198,29 @@ declarar números de animación sueltos en los componentes: se importan de ese m
 
 **Tests (Vitest)**
 
-- Parseo y formateo de montos.
-- Conversión de monedas.
-- Agregaciones por mes y por categoría.
+- Parseo de montos en formato es-AR: `"1.234,56"` → `123456` centavos (y variantes: `"1.234"`,
+  `"0,05"`, `"12"`, espacios).
+- Formateo de montos: centavos → `"1.234,56"`, importes negativos, importes grandes, símbolos `$` y
+  `US$`.
+- Conversión USD → ARS usando el `exchangeRate` del propio movimiento.
+- Conversión con fallback a la cotización de referencia de Settings cuando el movimiento no trae
+  `exchangeRate`.
+- Conversión ARS → USD.
+- Agregación de totales por mes.
+- Agregación de totales por categoría.
+- Balance con monedas mezcladas (ARS + USD) normalizado a la moneda de visualización elegida.
 - Validación de importación de backup.
 - Smoke test del formulario de movimientos.
 
 **Accesibilidad**: labels, foco visible, navegación por teclado, contraste AA, resumen textual o
 tabla alternativa para los gráficos.
 
-**Rendimiento**: carga diferida de rutas y gráficos; fluido con 500 movimientos. Objetivo Lighthouse
-mobile > 90 en Performance y PWA.
+**Rendimiento**
+
+- Carga diferida de rutas y gráficos.
+- **Verificación obligatoria con 500 movimientos** (generados a partir de los datos de ejemplo):
+  scroll de la lista sin jank ni _long tasks_, cambio de mes y de filtros fluido, y
+  Lighthouse mobile > 90 en Performance y PWA.
 
 **Privacidad**: cero telemetría y cero requests externos (salvo la cotización opcional).
 
@@ -217,9 +229,12 @@ mobile > 90 en Performance y PWA.
 ## 9. Entregables
 
 - `AGENTS.md` en la raíz con stack, estructura, comandos y convenciones.
+- `docs/SPEC.md` (este documento) y `docs/PLAN.md` con el detalle de fases.
+- CI (lint, typecheck, test, build) en verde en cada push y PR.
 - Checklist final:
   - Instalable en Android/iOS como PWA y funciona offline.
   - El tema persiste sin parpadeo.
   - Exportar e importar JSON no pierde datos.
   - Todos los scripts pasan y el CI está en verde.
-  - La app está desplegada en GitHub Pages.
+  - La app está desplegada en GitHub Pages en el repo existente `mis-finanzas`
+    (`VITE_BASE=/mis-finanzas/`).

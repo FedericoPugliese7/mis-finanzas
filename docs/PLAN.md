@@ -13,8 +13,8 @@ y se arregla lo que falle antes de seguir.
 
 **Las reglas de `SPEC.md` → sección "Animaciones" se aplican a cada componente nuevo, desde ya.**
 No se declara ningún número de animación (spring, duración, easing, offset) dentro de un componente:
-todo se importa de `src/shared/motion.ts`. Cada componente animada se registra con el componente
-`m` de `motion/react-m` dentro del `LazyMotion` de `src/app/providers.tsx`, respeta
+todo se importa de `src/shared/motion.ts`. Cada componente animado se registra con el componente
+`m` de `motion/react` dentro del `LazyMotion` de `src/app/providers.tsx`, respeta
 `reducedMotion="user"` y anima solo `transform` y `opacity`.
 
 ---
@@ -44,7 +44,22 @@ todo se importa de `src/shared/motion.ts`. Cada componente animada se registra c
 - `src/shared/lib/dates.ts` — mes `YYYY-MM`, rangos, `date-fns` locale `es`
 - `src/shared/lib/aggregations.ts` — totales del mes, por categoría, top, últimos 6 meses, balance
 - `src/shared/lib/types.ts` + esquemas zod (`transaction`, `category`, `settings`, `backup`)
-- Tests: `money`, `currency`, `dates`, `aggregations`
+
+**Casos de test de la fase (todos obligatorios)**
+
+| #   | Caso                                                       | Ejemplo / criterio                                                                                         |
+| --- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1   | **Parseo de montos es-AR**                                 | `"1.234,56"` → `123456` centavos. Cubrir también `"1.234"`, `"0,05"`, `"12"`, espacios y miles con punto   |
+| 2   | **Formateo de montos**                                     | `123456` → `"1.234,56"`; importes negativos, valores grandes y ambos símbolos (`$`, `US$`)                 |
+| 3   | **Conversión USD → ARS con `exchangeRate` del movimiento** | USD 10 con `exchangeRate: 1500` → ARS `1500000` centavos (usa la tasa del movimiento, no la de referencia) |
+| 4   | **Conversión con fallback a la cotización de referencia**  | USD 10 sin `exchangeRate` → usa `Settings.referenceRate`                                                   |
+| 5   | **Conversión ARS → USD**                                   | ARS 1500000 centavos con tasa 1500 → USD `10000` centavos                                                  |
+| 6   | **Totales por mes**                                        | Suma de ingresos, gastos y balance de un mes `YYYY-MM`, ignorando movimientos de otros meses               |
+| 7   | **Totales por categoría**                                  | Agrupación por `categoryId` con su nombre, color y total; orden descendente y categorías sin uso           |
+| 8   | **Balance con monedas mezcladas**                          | Ingresos y gastos en ARS y USD juntos, normalizados a una sola moneda de visualización (ARS, USD o ambas)  |
+
+Además: `dates` (mes `YYYY-MM`, cambio de mes, años bisiestos) y `money` (redondeo entero, sin
+acumulación en floats).
 
 **Commit**: `feat(core): add dexie schema, repositories and pure money/aggregation logic`
 
@@ -60,9 +75,21 @@ todo se importa de `src/shared/motion.ts`. Cada componente animada se registra c
 - `src/shared/hooks/` — `useTheme` (`data-theme`, `color-scheme`, `theme-color`),
   `useIsDesktop`, `usePersistentStorage`
 - Rutas placeholder de las 4 secciones
-- Todas las componentes base se animan con los tokens compartidos
+- Todos los componentes base se animan con los tokens compartidos
 
 **Commit**: `feat(app): add hash router, responsive shell, theme system and ui kit`
+
+---
+
+## Fase 2b — CI
+
+El repo remoto ya existe (`FedericoPugliese7/mis-finanzas`): **no volver a crearlo**.
+
+- `.github/workflows/ci.yml` — `lint`, `typecheck`, `test` y `build` en cada push y en cada PR
+- Node 24 en el runner, cache de `npm` y `npm ci`
+- El pipeline queda en verde **antes** de seguir con la Fase 3, para no arrastrar errores
+
+**Commit**: `ci: add github actions workflow for lint, typecheck, test and build`
 
 ---
 
@@ -119,21 +146,30 @@ todo se importa de `src/shared/motion.ts`. Cada componente animada se registra c
 - Estados vacíos amables en todas las vistas
 - Accesibilidad: foco visible, teclado, contraste AA, targets ≥ 44 px
 - `navigator.storage.persist()`
+- **Verificación de rendimiento con 500 movimientos**: cargar los datos de ejemplo hasta tener ~500
+  movimientos y medir
+  - Fluidez de la lista de movimientos (scroll sin jank, sin _long tasks_)
+  - Cambio de mes y de filtros en el dashboard
+  - Tiempos de render con Lighthouse mobile (Performance y PWA > 90)
+  - Si algo se traba, se optimiza (memoización, `useLiveQuery` bienupdate filtrado, virtualización
+    de la lista si hace falta) antes de cerrar la fase
 
 **Commit**: `feat(pwa): add manifest, service worker and offline support`
 
 ---
 
-## Fase 8 — Repo, docs y CI/CD
+## Fase 8 — Docs y deploy
 
 - `README.md` (qué es, cómo correrlo, scripts, arquitectura, **Decisiones**, roadmap)
 - `LICENSE` MIT
-- `.github/workflows/ci.yml` — lint, typecheck, test y build en push y PR
 - `.github/workflows/deploy.yml` — build y publicación en GitHub Pages en push a `main`
   (`VITE_BASE=/mis-finanzas/`)
-- Crear el repo remoto y pushear
+- **El repo remoto ya existe: no recrearlo.** Verificar con `git remote -v` que el nombre del remote
+  coincide con el `VITE_BASE` del deploy (repo `mis-finanzas` ⇒ `VITE_BASE=/mis-finanzas/`), y
+  habilitar _Settings → Pages → Source: GitHub Actions_
+- Verificar la app desplegada: instalable como PWA y funcionando offline
 
-**Commits**: `docs: add readme and license` + `ci: add github actions for lint/test/build and pages deploy`
+**Commits**: `docs: add readme and license` + `ci: add github pages deploy workflow`
 
 ---
 
