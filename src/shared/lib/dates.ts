@@ -61,6 +61,11 @@ export function formatMonth(month: MonthKey): string {
   return capitalize(label);
 }
 
+/** Short month label for chart axes, e.g. `oct` (locale `es`). */
+export function formatMonthShort(month: MonthKey): string {
+  return format(parseISO(monthStart(month)), 'MMM', { locale: es });
+}
+
 /** Day label for grouped lists: `Hoy`, `Ayer` or `Lunes 4 de octubre` (locale `es`). */
 export function formatDayLabel(date: DateISO, today: DateISO = todayISO()): string {
   const parsed = parseISO(date);

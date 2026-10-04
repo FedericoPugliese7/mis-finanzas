@@ -11,16 +11,16 @@ y se arregla lo que falle antes de seguir.
 
 ## Estado al cierre de la sesión (4 de octubre de 2026)
 
-| Fase                                          | Estado                      | Commit           |
-| --------------------------------------------- | --------------------------- | ---------------- |
-| 0 — Bootstrap                                 | ✅                          | inicial          |
-| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅                          | `8a10f90`        |
-| 2 — Shell, router, tema y UI kit              | ✅                          | `0e0d9f3`        |
-| 2b — CI (pipeline en verde, run #1)           | ✅                          | `c60041c` + push |
-| 3 — Categorías con regla de archivado         | ✅                          | `51753af`        |
-| 4 — Movimientos (filtros, form, deshacer)     | ✅                          | `60df032`        |
-| 5b — Cotización DolarApi + leyenda            | ✅                          | `906b026`        |
-| 5 — **Dashboard**                             | ⏳ **próxima, sin empezar** | —                |
+| Fase                                          | Estado | Commit           |
+| --------------------------------------------- | ------ | ---------------- |
+| 0 — Bootstrap                                 | ✅     | inicial          |
+| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅     | `8a10f90`        |
+| 2 — Shell, router, tema y UI kit              | ✅     | `0e0d9f3`        |
+| 2b — CI (pipeline en verde, run #1)           | ✅     | `c60041c` + push |
+| 3 — Categorías con regla de archivado         | ✅     | `51753af`        |
+| 4 — Movimientos (filtros, form, deshacer)     | ✅     | `60df032`        |
+| 5b — Cotización DolarApi + leyenda            | ✅     | `906b026`        |
+| 5 — Dashboard                                 | ✅     | ver abajo        |
 
 Detalle del punto de parada:
 
@@ -33,14 +33,9 @@ Detalle del punto de parada:
   actualizó el remoto con `git push origin main --force`. Nuevos hashes: Fase 1 `8a10f90`,
   Fase 2 `0e0d9f3`, Fase 2b `c60041c`, Fase 3 `51753af`, Fase 4 `60df032`, Fase 5b `906b026`.
   Desde ahora todos los commits son en español (regla permanente en `AGENTS.md`).
-- **Fase 5 al retomar** (solo se hizo lectura, ningún archivo tocado): tarjetas de
-  ingresos/gastos/balance con selector ARS/USD/ambas vía `usePreferencesStore` y
-  `totalsForDisplay`; dona de gastos y barras de 6 meses con Recharts cargados por
-  `React.lazy` + Suspense; top categorías (`topCategories`) y últimos movimientos;
-  tabla alternativa accesible por gráfico; count suave con los tokens ya existentes
-  (`durations.count` / `transitions.count`); animar solo el primer montaje de los gráficos;
-  **wiring de `RateLegend`**: `usdMinor` en las tarjetas USD del dashboard y leyenda
-  unitaria en la lista de movimientos cuando hay montos USD (lo pendiente de la Fase 5b).
+- **Fase 5: cerrada** — ver la sección «Fase 5 — Dashboard ✅» más abajo; con ella se
+  completó también el wiring de `RateLegend` que quedó pendiente en la Fase 5b
+  (tarjetas USD del dashboard y montos USD de la lista de movimientos).
 - **Pendiente a futuro**: justificación de la dependencia `vaul` en `README.md` (Fase 8,
   regla de AGENTS).
 
@@ -298,7 +293,7 @@ en verde.
 
 ---
 
-## Fase 5 — Dashboard
+## Fase 5 — Dashboard ✅
 
 - Selector de mes, tarjetas de resumen con selector ARS / USD / ambas
 - Dona de gastos por categoría y barras de ingresos vs gastos de los últimos 6 meses (lazy)
@@ -306,7 +301,42 @@ en verde.
 - Tabla/resumen accesible para cada gráfico
 - Count suave en los números; gráficos animan solo en el primer montaje
 
-**Commit**: `feat(dashboard): add monthly summary, donut, 6-month bars and top lists`
+**Verificación**: `npm run lint` (sin warnings), `npm run typecheck`, `npm run format`,
+`npm run test` (14 archivos, 95 tests) y `npm run build` en verde. Recharts queda
+code-spliteado por `React.lazy` (precache 29 → 37 entries).
+
+**Decisiones de la fase**
+
+1. **Moneda de los gráficos**: `USD` → USD; `ARS` y `BOTH` → ARS (`chartCurrency`).
+   Las tarjetas sí respetan `BOTH` mostrando las dos cifras (ARS arriba, USD debajo).
+2. **Cierre del wiring de `RateLegend` (pendiente de la 5b)**: `usdMinor` bajo cada cifra
+   USD de las tarjetas del dashboard y bajo cada monto USD de la fila de movimientos
+   (SPEC 4.5). No se agregó en la mini-lista «Últimos movimientos» del dashboard para no
+   saturar filas compactas: el SPEC solo la pide en «tarjetas del dashboard y lista de
+   movimientos».
+3. **Top categorías y últimos movimientos**: límite 5, ambos **del mes seleccionado**
+   (los «últimos» se limitan al mes para no mezclar contextos con el selector); orden
+   fecha desc y luego `createdAt` desc.
+4. **Count suave**: componente `shared/ui/animated-number.tsx` con `MotionValue` +
+   `animate()` usando `transitions.count`; con `prefers-reduced-motion` salta al valor
+   final sin interpolar.
+5. **Gráficos solo animan el primer montaje**: hook `useChartEntrance` mantiene
+   `isAnimationActive` activo durante `durationsMs.chart` (700 ms) desde el montaje;
+   después, cambios de mes/filtros re-renderizan sin animación (SPEC 7.7).
+6. **Colores de Recharts**: los atributos SVG no aceptan `var()`; `chartTheme()` resuelve
+   las variables CSS con `getComputedStyle` y los gráficos se suscriben al store de tema
+   para re-renderizar al cambiar claro/oscuro.
+7. **Tablas accesibles**: `<details>` con tabla bajo cada gráfico (categoría/monto/% e
+   ingresos/gastos por mes), SPEC 7.9. Leyenda de colores Ingresos/Gastos en la card.
+8. **`useSettings`** (`shared/hooks`): `useLiveQuery` sobre `settingsRepo` que expone un
+   `referenceRate` reactivo para las agregaciones (lo refresca el rate store cuando
+   `rateSource = 'dolarapi'`).
+9. **Sin `fake-indexeddb`** (se mantiene la decisión de la Fase 1): `App.test` mockea la
+   página del dashboard con `vi.mock` porque jsdom no tiene IndexedDB; este test cubre el
+   shell, no la página.
+10. **`formatMonthShort`** nuevo en `shared/lib/dates` para el eje X (`oct`, locale `es`).
+
+**Commit**: `feat(dashboard): agregar resumen mensual, dona, barras de 6 meses y listas principales`
 
 ---
 

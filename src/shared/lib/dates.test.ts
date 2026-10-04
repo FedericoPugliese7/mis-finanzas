@@ -5,6 +5,7 @@ import {
   formatDayLabel,
   formatLongDate,
   formatMonth,
+  formatMonthShort,
   isLeapYear,
   isValidMonth,
   monthEnd,
@@ -71,6 +72,11 @@ describe('labels (locale es)', () => {
   it('formats the month label', () => {
     expect(formatMonth('2026-10')).toBe('Octubre 2026');
     expect(formatMonth('2026-01')).toBe('Enero 2026');
+  });
+
+  it('formats the short month label for chart axes', () => {
+    expect(formatMonthShort('2026-10')).toBe('oct');
+    expect(formatMonthShort('2026-01')).toBe('ene');
   });
 
   it('formats day labels relative to today', () => {

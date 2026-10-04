@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react';
 import { iconFor } from '@/features/categories/category.constants';
 import { formatMoney } from '@/shared/lib/money';
+import { RateLegend } from '@/shared/ui/rate-legend';
 import { cn } from '@/shared/ui/utils';
 import type { Category, Transaction } from '@/shared/lib/types';
 
@@ -49,13 +50,18 @@ export function TransactionRow({
             <span className="block truncate text-xs text-content-muted">{subtitle}</span>
           ) : null}
         </span>
-        <span
-          className={cn(
-            'shrink-0 text-sm font-semibold tabular-nums',
-            isExpense ? 'text-expense-content' : 'text-income-content'
-          )}
-        >
-          {isExpense ? amount : `+${amount}`}
+        <span className="shrink-0 text-right">
+          <span
+            className={cn(
+              'block text-sm font-semibold tabular-nums',
+              isExpense ? 'text-expense-content' : 'text-income-content'
+            )}
+          >
+            {isExpense ? amount : `+${amount}`}
+          </span>
+          {transaction.currency === 'USD' ? (
+            <RateLegend usdMinor={transaction.amountMinor} className="mt-0.5" />
+          ) : null}
         </span>
       </button>
       <button
