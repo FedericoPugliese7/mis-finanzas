@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   ArrowLeftRight,
@@ -62,7 +62,7 @@ function navLinkClasses(isActive: boolean, isDesktop: boolean): string {
     isActive
       ? isDesktop
         ? 'bg-accent-soft text-accent'
-        : 'text-accent'
+        : 'font-semibold text-accent'
       : isDesktop
         ? 'text-content-secondary hover:bg-surface-hover hover:text-content'
         : 'text-content-secondary'
@@ -81,8 +81,19 @@ export function AppShell() {
   const sectionTitle = SECTION_TITLES[location.pathname] ?? 'Mis Finanzas';
   const longDate = formatLongDate(todayISO());
 
+  // Título del documento por ruta (WCAG 2.4.2): en una SPA no se recarga index.html.
+  useEffect(() => {
+    document.title = `${sectionTitle} · Mis Finanzas`;
+  }, [sectionTitle]);
+
   return (
     <div className="flex min-h-dvh">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:border focus:border-border focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-content"
+      >
+        Saltar al contenido
+      </a>
       {isDesktop ? (
         <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-surface">
           <div className="px-4 py-5">
@@ -111,15 +122,19 @@ export function AppShell() {
             <div
               className={cn('min-w-0', isDesktop ? 'ml-auto text-right' : 'text-right')}
             >
-              <p className="truncate text-sm font-semibold text-content">
+              <h1 className="truncate text-sm font-semibold text-content">
                 {sectionTitle}
-              </p>
+              </h1>
               <p className="truncate text-xs text-content-secondary">{longDate}</p>
             </div>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 pb-28 md:pb-10">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 pb-28 md:pb-10"
+        >
           <Suspense
             fallback={
               <div className="flex justify-center py-16">

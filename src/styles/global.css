@@ -17,7 +17,7 @@
 
   --content: #0f172a;
   --content-secondary: #475569;
-  --content-muted: #94a3b8;
+  --content-muted: #5b6478;
   --content-inverse: #ffffff;
 
   --accent: #4f46e5;
@@ -144,6 +144,13 @@
   --shadow-subtle: var(--shadow-subtle);
   --shadow-card: var(--shadow-card);
   --shadow-elevated: var(--shadow-elevated);
+
+  /* Transiciones por defecto alimentadas por los tokens de motion.ts */
+  --default-transition-duration: var(--motion-duration-micro, 180ms);
+  --default-transition-timing-function: var(
+    --motion-ease-standard,
+    cubic-bezier(0.4, 0, 0.2, 1)
+  );
 }
 
 @layer base {
@@ -171,6 +178,9 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
+    /* El header sticky y el tab bar fijo nunca tapan el elemento enfocado (WCAG 2.4.11) */
+    scroll-margin-top: 88px;
+    scroll-margin-bottom: 96px;
   }
 
   /* Targets táctiles cómodos en mobile */

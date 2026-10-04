@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useController, Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Drawer } from 'vaul';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
@@ -86,18 +86,24 @@ export function TransactionForm({
 
   const type = watch('type');
   const currency = watch('currency');
-  const categoryId = watch('categoryId');
+  const categoryField = useController({ control, name: 'categoryId' });
+  const categoryId = categoryField.field.value;
   const options = categoryOptionsFor(categories, type, categoryId);
 
   function handleTypeChange(value: TransactionType): void {
     setValue('type', value, { shouldValidate: true });
-    const current = categories.find((category) => category.id === watch('categoryId'));
+    const current = categories.find((category) => category.id === categoryId);
     if (!current || current.type !== value) {
       const first = categories.find(
         (category) => category.type === value && !category.archived
       );
-      setValue('categoryId', first?.id ?? '', { shouldValidate: true });
+      categoryField.field.onChange(first?.id ?? '');
     }
+  }
+
+  /** Error message id for a field, used by `aria-describedby`. */
+  function errorId(name: keyof TransactionFormValues): string | undefined {
+    return errors[name] ? `${fieldId}-${name}-error` : undefined;
   }
 
   const title = transaction ? 'Editar movimiento' : 'Nuevo movimiento';
@@ -133,16 +139,23 @@ export function TransactionForm({
           render={({ field }) => (
             <MoneyInput
               id={`${fieldId}-amount`}
+              ref={field.ref}
+              onBlur={field.onBlur}
               currency={currency}
               value={field.value ?? null}
               onValueChange={field.onChange}
               invalid={Boolean(errors.amountMinor)}
+              aria-describedby={errorId('amountMinor')}
               placeholder="0,00"
             />
           )}
         />
         {errors.amountMinor ? (
-          <p role="alert" className="text-xs text-expense">
+          <p
+            id={`${fieldId}-amountMinor-error`}
+            role="alert"
+            className="text-xs text-expense"
+          >
             {errors.amountMinor.message}
           </p>
         ) : null}
@@ -161,19 +174,25 @@ export function TransactionForm({
       <div className="space-y-1.5">
         <span className="text-sm font-medium text-content">Categoría</span>
         <Select
+          ref={categoryField.field.ref}
           value={categoryId}
-          onValueChange={(value) =>
-            setValue('categoryId', value, { shouldValidate: true })
-          }
+          onValueChange={categoryField.field.onChange}
+          onBlur={categoryField.field.onBlur}
           options={options.map((category) => ({
             value: category.id,
             label: category.archived ? `${category.name} (archivada)` : category.name
           }))}
           placeholder="Elegí una categoría"
           aria-label="Categoría"
+          aria-describedby={errorId('categoryId')}
+          invalid={Boolean(errors.categoryId)}
         />
         {errors.categoryId ? (
-          <p role="alert" className="text-xs text-expense">
+          <p
+            id={`${fieldId}-categoryId-error`}
+            role="alert"
+            className="text-xs text-expense"
+          >
             {errors.categoryId.message}
           </p>
         ) : null}
@@ -187,10 +206,11 @@ export function TransactionForm({
           id={`${fieldId}-date`}
           type="date"
           invalid={Boolean(errors.date)}
+          aria-describedby={errorId('date')}
           {...register('date')}
         />
         {errors.date ? (
-          <p role="alert" className="text-xs text-expense">
+          <p id={`${fieldId}-date-error`} role="alert" className="text-xs text-expense">
             {errors.date.message}
           </p>
         ) : null}
@@ -206,13 +226,18 @@ export function TransactionForm({
             inputMode="decimal"
             placeholder="Opcional"
             invalid={Boolean(errors.exchangeRate)}
+            aria-describedby={errorId('exchangeRate')}
             {...register('exchangeRate', {
               setValueAs: (value) =>
                 typeof value === 'string' ? parseMoney(value) : value
             })}
           />
           {errors.exchangeRate ? (
-            <p role="alert" className="text-xs text-expense">
+            <p
+              id={`${fieldId}-exchangeRate-error`}
+              role="alert"
+              className="text-xs text-expense"
+            >
               {errors.exchangeRate.message}
             </p>
           ) : null}
@@ -231,10 +256,11 @@ export function TransactionForm({
           maxLength={140}
           placeholder="Ej: Cuenta del mes"
           invalid={Boolean(errors.note)}
+          aria-describedby={errorId('note')}
           {...register('note')}
         />
         {errors.note ? (
-          <p role="alert" className="text-xs text-expense">
+          <p id={`${fieldId}-note-error`} role="alert" className="text-xs text-expense">
             {errors.note.message}
           </p>
         ) : null}

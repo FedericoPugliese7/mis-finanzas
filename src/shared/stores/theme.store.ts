@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Theme } from '@/shared/lib/types';
+import { ThemeSchema, type Theme } from '@/shared/lib/types';
 
 /**
  * Theme preference.
@@ -10,14 +10,13 @@ import type { Theme } from '@/shared/lib/types';
  */
 export const THEME_STORAGE_KEY = 'mis-finanzas-theme';
 
-const VALID_THEMES: readonly Theme[] = ['light', 'dark', 'system'];
-
 function readStoredTheme(): Theme {
   try {
     const raw = localStorage.getItem(THEME_STORAGE_KEY);
     if (raw === null) return 'system';
     const parsed: unknown = JSON.parse(raw);
-    return VALID_THEMES.includes(parsed as Theme) ? (parsed as Theme) : 'system';
+    const result = ThemeSchema.safeParse(parsed);
+    return result.success ? result.data : 'system';
   } catch {
     return 'system';
   }

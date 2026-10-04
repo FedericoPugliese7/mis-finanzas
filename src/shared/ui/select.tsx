@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { cn } from './utils';
@@ -10,28 +11,45 @@ export interface SelectOption {
 interface SelectProps {
   value: string;
   onValueChange: (value: string) => void;
+  onBlur?: () => void;
   options: readonly SelectOption[];
   placeholder?: string;
   'aria-label'?: string;
+  'aria-describedby'?: string;
+  /** Renders the trigger with the expense color (form validation). */
+  invalid?: boolean;
   disabled?: boolean;
   className?: string;
 }
 
-export function Select({
-  value,
-  onValueChange,
-  options,
-  placeholder = 'Elegí una opción',
-  disabled = false,
-  'aria-label': ariaLabel,
-  className
-}: SelectProps) {
+export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
+  {
+    value,
+    onValueChange,
+    onBlur,
+    options,
+    placeholder = 'Elegí una opción',
+    disabled = false,
+    'aria-label': ariaLabel,
+    'aria-describedby': ariaDescribedBy,
+    invalid = false,
+    className
+  },
+  ref
+) {
   return (
     <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectPrimitive.Trigger
+        ref={ref}
+        onBlur={onBlur}
         aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={invalid || undefined}
         className={cn(
-          'flex h-11 w-full items-center justify-between gap-2 rounded-control border border-border bg-surface px-3.5 text-sm text-content transition-colors hover:border-border focus:border-accent disabled:opacity-50',
+          'flex h-11 w-full items-center justify-between gap-2 rounded-control border bg-surface px-3.5 text-sm text-content transition-colors disabled:opacity-50',
+          invalid
+            ? 'border-expense'
+            : 'border-border hover:border-border focus:border-accent',
           className
         )}
       >
@@ -51,7 +69,7 @@ export function Select({
               <SelectPrimitive.Item
                 key={option.value}
                 value={option.value}
-                className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-sm text-content outline-none transition-colors data-[highlighted]:bg-surface-hover data-[state=checked]:font-semibold"
+                className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-sm text-content transition-colors data-[highlighted]:bg-background-subtle data-[highlighted]:outline-2 data-[highlighted]:-outline-offset-2 data-[highlighted]:outline-accent data-[state=checked]:font-semibold"
               >
                 <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                 <SelectPrimitive.ItemIndicator>
@@ -64,4 +82,4 @@ export function Select({
       </SelectPrimitive.Portal>
     </SelectPrimitive.Root>
   );
-}
+});

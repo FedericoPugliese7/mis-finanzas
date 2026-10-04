@@ -4,12 +4,18 @@ import {
   SETTINGS_ID,
   type SettingsRecord
 } from '@/shared/db/database';
-import type { Settings } from '@/shared/lib/types';
+import { SettingsSchema, type Settings } from '@/shared/lib/types';
 
+/**
+ * Repo boundary: whatever Dexie holds is validated with the zod schema before
+ * reaching the app. A corrupt/legacy row falls back to the defaults instead of
+ * leaking invalid values into money conversions.
+ */
 function toSettings(record: SettingsRecord | undefined): Settings {
   if (record === undefined) return defaultSettings;
   const { id: _id, ...settings } = record;
-  return { ...defaultSettings, ...settings };
+  const parsed = SettingsSchema.safeParse({ ...defaultSettings, ...settings });
+  return parsed.success ? parsed.data : defaultSettings;
 }
 
 export const settingsRepo = {

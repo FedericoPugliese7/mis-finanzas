@@ -25,7 +25,9 @@ async function syncReferenceRate(rate: OfficialRate): Promise<void> {
   try {
     const settings = await settingsRepo.get();
     const next = referenceRateFor(settings, rate);
-    if (next !== null) await settingsRepo.update({ referenceRate: next });
+    if (next !== null && next !== settings.referenceRate) {
+      await settingsRepo.update({ referenceRate: next });
+    }
   } catch {
     /* la cotización para display no depende de poder escribir en la DB */
   }

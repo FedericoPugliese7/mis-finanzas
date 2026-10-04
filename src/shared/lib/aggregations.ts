@@ -103,13 +103,31 @@ export function lastSixMonths(
   target: Currency,
   referenceRate: Rate
 ): MonthlyBars[] {
-  const bars: MonthlyBars[] = [];
-  for (let offset = -5; offset <= 0; offset += 1) {
-    const month = addMonths(anchorMonth, offset);
-    const totals = totalsByMonth(transactions, month, target, referenceRate);
-    bars.push({ month, income: totals.income, expense: totals.expense });
+  const months: MonthKey[] = [];
+  for (let offset = -5; offset <= 0; offset += 1)
+    months.push(addMonths(anchorMonth, offset));
+
+  const byMonth = new Map<MonthKey, { income: number; expense: number }>(
+    months.map((month) => [month, { income: 0, expense: 0 }])
+  );
+
+  for (const tx of transactions) {
+    const totals = byMonth.get(monthOf(tx.date));
+    if (totals === undefined) continue;
+    const amount = convert(
+      tx.amountMinor,
+      tx.currency,
+      target,
+      resolveRate(tx, referenceRate)
+    );
+    if (tx.type === 'income') totals.income += amount;
+    else totals.expense += amount;
   }
-  return bars;
+
+  return months.map((month) => {
+    const totals = byMonth.get(month);
+    return { month, income: totals?.income ?? 0, expense: totals?.expense ?? 0 };
+  });
 }
 
 /** Totals of a month for the selected display currency (`BOTH` returns ARS and USD). */

@@ -34,58 +34,67 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }} barGap={4}>
-        <CartesianGrid vertical={false} stroke={colors.border} strokeDasharray="4 4" />
-        <XAxis
-          dataKey="month"
-          interval={0}
-          tickLine={false}
-          axisLine={{ stroke: colors.border }}
-          tick={{ fill: colors.contentMuted, fontSize: 12 }}
-        />
-        <YAxis
-          width={76}
-          tickLine={false}
-          axisLine={false}
-          tick={{ fill: colors.contentMuted, fontSize: 12 }}
-          tickFormatter={(value: number) =>
-            formatMoney(value, currency, { decimals: false })
-          }
-        />
-        <Tooltip
-          cursor={{ fill: colors.border, fillOpacity: 0.35 }}
-          contentStyle={{
-            backgroundColor: colors.surface,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 8,
-            color: colors.content,
-            fontSize: 12
-          }}
-          formatter={(value, name) => [
-            formatMoney(Number(value), currency),
-            name === 'income' ? 'Ingresos' : 'Gastos'
-          ]}
-        />
-        <Bar
-          dataKey="income"
-          fill={colors.income}
-          radius={[4, 4, 0, 0]}
-          maxBarSize={28}
-          isAnimationActive={animateOnMount}
-          animationDuration={durationsMs.chart}
-          animationEasing="ease-out"
-        />
-        <Bar
-          dataKey="expense"
-          fill={colors.expense}
-          radius={[4, 4, 0, 0]}
-          maxBarSize={28}
-          isAnimationActive={animateOnMount}
-          animationDuration={durationsMs.chart}
-          animationEasing="ease-out"
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <div
+      role="img"
+      aria-label="Ingresos vs gastos de los últimos 6 meses en barras. Los montos exactos están en la tabla siguiente."
+    >
+      <ResponsiveContainer width="100%" height={240}>
+        <BarChart
+          data={data}
+          margin={{ top: 8, right: 8, left: 8, bottom: 0 }}
+          barGap={4}
+        >
+          <CartesianGrid vertical={false} stroke={colors.border} strokeDasharray="4 4" />
+          <XAxis
+            dataKey="month"
+            interval={0}
+            tickLine={false}
+            axisLine={{ stroke: colors.border }}
+            tick={{ fill: colors.contentMuted, fontSize: 12 }}
+          />
+          <YAxis
+            width={76}
+            tickLine={false}
+            axisLine={false}
+            tick={{ fill: colors.contentMuted, fontSize: 12 }}
+            tickFormatter={(value: number) =>
+              formatMoney(value, currency, { decimals: false })
+            }
+          />
+          <Tooltip
+            cursor={{ fill: colors.border, fillOpacity: 0.35 }}
+            contentStyle={{
+              backgroundColor: colors.surface,
+              border: `1px solid ${colors.border}`,
+              borderRadius: 8,
+              color: colors.content,
+              fontSize: 12
+            }}
+            formatter={(value, name) => [
+              formatMoney(Number(value), currency),
+              name === 'income' ? 'Ingresos' : 'Gastos'
+            ]}
+          />
+          <Bar
+            dataKey="income"
+            fill={colors.income}
+            radius={[4, 4, 0, 0]}
+            maxBarSize={28}
+            isAnimationActive={animateOnMount}
+            animationDuration={durationsMs.chart}
+            animationEasing="ease-out"
+          />
+          <Bar
+            dataKey="expense"
+            fill={colors.expense}
+            radius={[4, 4, 0, 0]}
+            maxBarSize={28}
+            isAnimationActive={animateOnMount}
+            animationDuration={durationsMs.chart}
+            animationEasing="ease-out"
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

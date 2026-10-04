@@ -54,7 +54,7 @@ export function Segmented<T extends string>({
               <m.span
                 layoutId={`segmented-indicator-${id}`}
                 transition={springs.ui}
-                className="absolute inset-0 rounded-lg bg-surface shadow-subtle"
+                className="absolute inset-0 rounded-lg border border-border bg-surface shadow-subtle"
               />
             ) : null}
             <span className="relative z-10 flex items-center gap-1.5">

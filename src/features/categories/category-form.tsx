@@ -1,5 +1,5 @@
-import { useEffect, useId, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useId, useMemo, useRef } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
@@ -57,7 +57,7 @@ export function CategoryForm({
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     setValue,
     formState: { errors, isSubmitting }
   } = useForm<CategoryFormValues>({
@@ -65,13 +65,17 @@ export function CategoryForm({
     defaultValues: defaults
   });
 
+  // Re-initialize only on the closed → open transition (same guard as the
+  // movement form): a live-query refresh while open must not wipe the input.
+  const wasOpenRef = useRef(false);
   useEffect(() => {
-    if (open) reset(defaults);
+    if (open && !wasOpenRef.current) reset(defaults);
+    wasOpenRef.current = open;
   }, [open, defaults, reset]);
 
-  const type = watch('type');
-  const color = watch('color');
-  const icon = watch('icon');
+  const type = useWatch({ control, name: 'type' });
+  const color = useWatch({ control, name: 'color' });
+  const icon = useWatch({ control, name: 'icon' });
   const PreviewIcon = iconFor(icon);
 
   return (
@@ -109,11 +113,12 @@ export function CategoryForm({
               placeholder="Ej: Supermercado"
               autoComplete="off"
               invalid={Boolean(errors.name)}
+              aria-describedby={errors.name ? `${fieldId}-name-error` : undefined}
               {...register('name')}
             />
           </div>
           {errors.name ? (
-            <p role="alert" className="text-xs text-expense">
+            <p id={`${fieldId}-name-error`} role="alert" className="text-xs text-expense">
               {errors.name.message}
             </p>
           ) : null}
@@ -168,7 +173,12 @@ export function CategoryForm({
                   style={{ backgroundColor: option.value }}
                 >
                   {selected ? (
-                    <Check size={14} className="text-white" aria-hidden />
+                    <span
+                      aria-hidden
+                      className="grid h-5 w-5 place-items-center rounded-full bg-black/75 text-white"
+                    >
+                      <Check size={12} strokeWidth={3} />
+                    </span>
                   ) : null}
                 </button>
               );
@@ -196,7 +206,7 @@ export function CategoryForm({
                   className={cn(
                     'grid h-9 w-9 place-items-center rounded-control border transition-colors',
                     selected
-                      ? 'border-accent bg-accent-soft text-accent'
+                      ? 'border-accent bg-accent-soft text-accent outline-2 outline-offset-1 outline-content'
                       : 'border-border bg-surface text-content-secondary hover:text-content'
                   )}
                 >

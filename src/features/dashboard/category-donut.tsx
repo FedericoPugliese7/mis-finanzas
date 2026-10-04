@@ -26,36 +26,41 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="name"
-          innerRadius={58}
-          outerRadius={88}
-          paddingAngle={1}
-          isAnimationActive={animateOnMount}
-          animationDuration={durationsMs.chart}
-          animationEasing="ease-out"
-          stroke={colors.surface}
-        >
-          {data.map((entry) => (
-            <Cell key={entry.id} fill={entry.color} />
-          ))}
-        </Pie>
-        <Tooltip
-          cursor={false}
-          contentStyle={{
-            backgroundColor: colors.surface,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 8,
-            color: colors.content,
-            fontSize: 12
-          }}
-          formatter={(value, name) => [formatMoney(Number(value), currency), name]}
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <div
+      role="img"
+      aria-label="Gastos por categoría en dona. Los montos exactos están en la tabla siguiente."
+    >
+      <ResponsiveContainer width="100%" height={220}>
+        <PieChart>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={58}
+            outerRadius={88}
+            paddingAngle={1}
+            isAnimationActive={animateOnMount}
+            animationDuration={durationsMs.chart}
+            animationEasing="ease-out"
+            stroke={colors.surface}
+          >
+            {data.map((entry) => (
+              <Cell key={entry.id} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip
+            cursor={false}
+            contentStyle={{
+              backgroundColor: colors.surface,
+              border: `1px solid ${colors.border}`,
+              borderRadius: 8,
+              color: colors.content,
+              fontSize: 12
+            }}
+            formatter={(value, name) => [formatMoney(Number(value), currency), name]}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

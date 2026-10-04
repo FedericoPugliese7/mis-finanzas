@@ -9,26 +9,43 @@ export type Currency = z.infer<typeof CurrencySchema>;
 export const DisplayCurrencySchema = z.enum(['ARS', 'USD', 'BOTH']);
 export type DisplayCurrency = z.infer<typeof DisplayCurrencySchema>;
 
+/* ---------------------------------------------------------------------------
+ * Primitivos compartidos: una sola fuente de verdad entre los esquemas de
+ * dominio/backup y los formularios (evita drift de invariantes).
+ * ------------------------------------------------------------------------- */
+export const categoryIdSchema = z.string().min(1, 'Elegí una categoría');
+export const categoryNameSchema = z
+  .string()
+  .trim()
+  .min(1, 'Ingresá un nombre')
+  .max(40, 'Usá hasta 40 caracteres');
+export const hexColorSchema = z.string().regex(/^#[0-9a-f]{6}$/i, 'Elegí un color');
+export const categoryIconSchema = z.string().min(1, 'Elegí un ícono');
+export const noteSchema = z.string().max(140, 'Usá hasta 140 caracteres');
+export const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida (AAAA-MM-DD)');
+
 export const TransactionSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().uuid('Id inválido'),
   type: TransactionTypeSchema,
-  amountMinor: z.number().int(),
+  amountMinor: z.number().int('El monto debe ser un entero en centavos'),
   currency: CurrencySchema,
-  categoryId: z.string(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
-  note: z.string().optional(),
-  exchangeRate: z.number().positive().optional(),
+  categoryId: categoryIdSchema,
+  date: isoDateSchema,
+  note: noteSchema.optional(),
+  exchangeRate: z.number().positive('La cotización debe ser mayor a cero').optional(),
   createdAt: z.number().int(),
   updatedAt: z.number().int()
 });
 export type Transaction = z.infer<typeof TransactionSchema>;
 
 export const CategorySchema = z.object({
-  id: z.string(),
-  name: z.string().min(1),
+  id: z.string().min(1, 'Id inválido'),
+  name: categoryNameSchema,
   type: TransactionTypeSchema,
-  color: z.string(),
-  icon: z.string(),
+  color: hexColorSchema,
+  icon: categoryIconSchema,
   isDefault: z.boolean(),
   archived: z.boolean()
 });
@@ -49,8 +66,8 @@ export const SettingsSchema = z.object({
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const BackupSchema = z.object({
-  schemaVersion: z.literal(1),
-  exportedAt: z.string(),
+  schemaVersion: z.literal(1, { invalid_type_error: 'Versión de backup no soportada' }),
+  exportedAt: z.string().min(1, 'Fecha de exportación inválida'),
   transactions: z.array(TransactionSchema),
   categories: z.array(CategorySchema),
   settings: SettingsSchema

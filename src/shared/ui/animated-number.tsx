@@ -29,8 +29,12 @@ export function AnimatedNumber({ value, format, className }: AnimatedNumberProps
   }, [value, motionValue]);
 
   return (
-    <m.span className={cn('tabular-nums', className)} aria-label={format(value)}>
-      {text}
-    </m.span>
+    <>
+      {/* El valor final, legible y estable, es lo que escucha el lector de pantalla. */}
+      <span className="sr-only">{format(value)}</span>
+      <m.span aria-hidden className={cn('tabular-nums', className)}>
+        {text}
+      </m.span>
+    </>
   );
 }

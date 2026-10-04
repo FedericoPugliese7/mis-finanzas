@@ -18,11 +18,10 @@ export interface TransactionFilters {
   query: string;
 }
 
+const DIACRITIC_PATTERN = /\p{Diacritic}/gu;
+
 function normalize(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase();
+  return text.normalize('NFD').replace(DIACRITIC_PATTERN, '').toLowerCase();
 }
 
 /** Pure month/type/currency/category/text filter (text ignores case and accents). */

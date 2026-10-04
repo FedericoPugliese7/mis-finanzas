@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { CurrencySchema, TransactionTypeSchema } from '@/shared/lib/types';
+import {
+  categoryIdSchema,
+  CurrencySchema,
+  isoDateSchema,
+  noteSchema,
+  TransactionTypeSchema
+} from '@/shared/lib/types';
 
 export const transactionFormSchema = z.object({
   type: TransactionTypeSchema,
@@ -12,9 +18,9 @@ export const transactionFormSchema = z.object({
     // predicate (`value is number`) and zod would drop `null` from the output.
     .refine((value): boolean => value !== null, 'Ingresá un monto'),
   currency: CurrencySchema,
-  categoryId: z.string().min(1, 'Elegí una categoría'),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida'),
-  note: z.string().max(140, 'Usá hasta 140 caracteres').optional(),
+  categoryId: categoryIdSchema,
+  date: isoDateSchema,
+  note: noteSchema.optional(),
   exchangeRate: z
     .number({ invalid_type_error: 'Cotización inválida' })
     .positive('La cotización debe ser mayor a cero')

@@ -7,9 +7,9 @@ export const DOLARAPI_OFICIAL_URL = 'https://dolarapi.com/v1/dolares/oficial';
 export const RATE_TTL_MS = 60 * 60 * 1000;
 
 export const OfficialRateSchema = z.object({
-  compra: z.number(),
-  venta: z.number(),
-  fechaActualizacion: z.string()
+  compra: z.number().positive('Cotización de compra inválida'),
+  venta: z.number().positive('Cotización de venta inválida'),
+  fechaActualizacion: z.string().min(1, 'Fecha de actualización inválida')
 });
 
 /** Official (Banco Nación) rate via DolarApi. `venta`/`compra` are ARS per 1 USD. */
@@ -22,7 +22,7 @@ export class RateFetchError extends Error {
   }
 }
 
-/** Fetches and validates the official rate. Rejects on HTTP or schema errors. */
+/** Fetches and validates the official rate. Rejects on HTTP, network or schema errors. */
 export async function fetchOfficialRate(): Promise<OfficialRate> {
   const response = await fetch(DOLARAPI_OFICIAL_URL, {
     signal: AbortSignal.timeout(10_000)
@@ -31,7 +31,12 @@ export async function fetchOfficialRate(): Promise<OfficialRate> {
     throw new RateFetchError(`DolarApi responded with status ${response.status}`);
   }
   const payload: unknown = await response.json();
-  return OfficialRateSchema.parse(payload);
+  // Frontera de datos externos: nunca confiamos en el JSON (safeParse, no parse).
+  const parsed = OfficialRateSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new RateFetchError('Respuesta inválida de DolarApi');
+  }
+  return parsed.data;
 }
 
 /**

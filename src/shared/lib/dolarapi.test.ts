@@ -40,7 +40,17 @@ describe('fetchOfficialRate', () => {
       status: 200,
       json: async () => ({ venta: '1540' })
     }));
-    await expect(fetchOfficialRate()).rejects.toThrow();
+    await expect(fetchOfficialRate()).rejects.toThrow(RateFetchError);
+    await expect(fetchOfficialRate()).rejects.toThrow('Respuesta inválida');
+  });
+
+  it('rejects non-positive rates (a zero rate would corrupt conversions)', async () => {
+    stubFetch(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ ...VALID_PAYLOAD, venta: 0 })
+    }));
+    await expect(fetchOfficialRate()).rejects.toThrow(RateFetchError);
   });
 
   it('rejects with RateFetchError on HTTP errors', async () => {

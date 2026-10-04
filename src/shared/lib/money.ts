@@ -10,6 +10,9 @@ const GROUP_FORMATTER = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 
 const SYMBOL_PATTERN = /(US\$|USD|ARS|\$)/gi;
 const THOUSANDS_DOT_PATTERN = /^\d{1,3}(\.\d{3})+$/;
 const NUMBER_PATTERN = /^(\d*)(?:\.(\d*))?$/;
+const WHITESPACE_PATTERN = /[\s\u00a0\u202f]/g;
+const DOT_PATTERN = /\./g;
+const COMMA_PATTERN = /,/g;
 
 /**
  * Parses an es-AR formatted money string into an integer amount in minor units
@@ -25,7 +28,7 @@ const NUMBER_PATTERN = /^(\d*)(?:\.(\d*))?$/;
  * - Extra decimals are rounded half-up to the closest centavo.
  */
 export function parseMoney(input: string): number | null {
-  let s = input.replace(/[\s\u00a0\u202f]/g, '').replace(SYMBOL_PATTERN, '');
+  let s = input.replace(WHITESPACE_PATTERN, '').replace(SYMBOL_PATTERN, '');
   if (s === '') return null;
 
   let negative = false;
@@ -41,14 +44,14 @@ export function parseMoney(input: string): number | null {
   const hasDot = s.includes('.');
   if (hasComma && hasDot) {
     if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
-      s = s.replace(/\./g, '').replace(',', '.');
+      s = s.replace(DOT_PATTERN, '').replace(COMMA_PATTERN, '.');
     } else {
-      s = s.replace(/,/g, '');
+      s = s.replace(COMMA_PATTERN, '');
     }
   } else if (hasComma) {
-    s = s.replace(',', '.');
+    s = s.replace(COMMA_PATTERN, '.');
   } else if (hasDot && THOUSANDS_DOT_PATTERN.test(s)) {
-    s = s.replace(/\./g, '');
+    s = s.replace(DOT_PATTERN, '');
   }
 
   const match = NUMBER_PATTERN.exec(s);

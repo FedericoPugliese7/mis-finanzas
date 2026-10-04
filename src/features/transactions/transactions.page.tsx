@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { m } from 'motion/react';
 import { ArrowLeftRight, Plus, Search } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
@@ -39,6 +39,8 @@ const CURRENCY_FILTER_OPTIONS: readonly SegmentedOption<CurrencyFilter>[] = [
   { value: 'USD', label: 'USD' }
 ];
 
+const EMPTY_CATEGORY_NAMES = new Map<string, string>();
+
 export default function TransactionsPage() {
   const transactions = useTransactions();
   const categories = useCategories();
@@ -53,10 +55,8 @@ export default function TransactionsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
 
-  const categoryNames = useMemo(
-    () => new Map((categories ?? []).map((category) => [category.id, category.name])),
-    [categories]
-  );
+  const deferredQuery = useDeferredValue(query);
+
   const categoryById = useMemo(
     () => new Map((categories ?? []).map((category) => [category.id, category])),
     [categories]
@@ -64,11 +64,21 @@ export default function TransactionsPage() {
 
   const groups = useMemo(() => {
     if (!transactions) return [];
-    const filters: TransactionFilters = { month, type, currency, categoryId, query };
+    const filters: TransactionFilters = {
+      month,
+      type,
+      currency,
+      categoryId,
+      query: deferredQuery
+    };
+    const categoryNames =
+      deferredQuery.trim() === ''
+        ? EMPTY_CATEGORY_NAMES
+        : new Map((categories ?? []).map((category) => [category.id, category.name]));
     return groupTransactionsByDay(
       filterTransactions(transactions, filters, categoryNames)
     );
-  }, [transactions, month, type, currency, categoryId, query, categoryNames]);
+  }, [transactions, categories, month, type, currency, categoryId, deferredQuery]);
 
   if (!transactions || !categories) {
     return (
@@ -210,27 +220,30 @@ export default function TransactionsPage() {
           />
         )
       ) : (
-        groups.map((group) => (
-          <section key={group.date} aria-label={formatDayLabel(group.date)}>
-            <h3 className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-content-muted">
-              {formatDayLabel(group.date)}
-            </h3>
-            <ul className="rounded-card border border-border bg-surface px-2">
-              {group.items.map((transaction) => (
-                <TransactionRow
-                  key={transaction.id}
-                  transaction={transaction}
-                  category={categoryById.get(transaction.categoryId)}
-                  onEdit={() => {
-                    setEditing(transaction);
-                    setFormOpen(true);
-                  }}
-                  onDelete={() => void actions.remove(transaction)}
-                />
-              ))}
-            </ul>
-          </section>
-        ))
+        groups.map((group) => {
+          const dayLabel = formatDayLabel(group.date);
+          return (
+            <section key={group.date} aria-label={dayLabel}>
+              <h3 className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-content-muted">
+                {dayLabel}
+              </h3>
+              <ul className="rounded-card border border-border bg-surface px-2">
+                {group.items.map((transaction) => (
+                  <TransactionRow
+                    key={transaction.id}
+                    transaction={transaction}
+                    category={categoryById.get(transaction.categoryId)}
+                    onEdit={() => {
+                      setEditing(transaction);
+                      setFormOpen(true);
+                    }}
+                    onDelete={() => void actions.remove(transaction)}
+                  />
+                ))}
+              </ul>
+            </section>
+          );
+        })
       )}
 
       <m.button

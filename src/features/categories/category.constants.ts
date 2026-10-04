@@ -84,8 +84,11 @@ export const CATEGORY_ICONS: readonly IconOption[] = [
   { value: 'circle-help', label: 'Otros', Icon: CircleHelp }
 ];
 
+const ICON_BY_NAME = new Map<string, LucideIcon>(
+  CATEGORY_ICONS.map((option) => [option.value, option.Icon])
+);
+
 /** Resolves a stored icon name, falling back to a neutral icon. */
 export function iconFor(name: string): LucideIcon {
-  const match = CATEGORY_ICONS.find((option) => option.value === name);
-  return match?.Icon ?? CircleHelp;
+  return ICON_BY_NAME.get(name) ?? CircleHelp;
 }
