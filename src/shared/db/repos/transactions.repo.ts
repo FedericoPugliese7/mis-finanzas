@@ -50,5 +50,10 @@ export const transactionsRepo = {
 
   removeMany(ids: readonly string[]): Promise<void> {
     return db.transactions.bulkDelete([...ids]);
+  },
+
+  /** Re-inserts a deleted transaction as-is (undo): keeps id and timestamps. */
+  async restore(transaction: Transaction): Promise<void> {
+    await db.transactions.add(transaction);
   }
 };

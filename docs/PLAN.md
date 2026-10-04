@@ -212,13 +212,50 @@ en verde.
 
 ---
 
-## Fase 4 — Movimientos
+## Fase 4 — Movimientos ✅
 
 - `src/features/transactions/` — page, form (`inputmode="decimal"`), lista agrupada por día,
   filtros (mes, tipo, categoría, moneda) y búsqueda
 - Botón flotante en mobile; bottom sheet (Vaul) en mobile y modal en desktop
 - Borrado con **deshacer** vía toast
 - Smoke test del formulario
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run format`, `npm run test`
+(13 archivos, 87 tests) y `npm run build` en verde.
+
+**Decisiones de la fase**
+
+1. **Vaul (dependencia nueva)**: `vaul@1.1.2` — SPEC 7.4 la exige: React 19 ✓, depende
+   solo de `@radix-ui/react-dialog` (ya instalado), sin segundo runtime de animación.
+   **Justificación a incluir en `README.md` (Fase 8)** según AGENTS. El fallback de SPEC
+   (`drag` + `AnimatePresence`) no hizo falta. Vaul no expone vars de duración (su spring
+   es interno); el arrastre para cerrar viene de fábrica.
+2. **Un solo breakpoint**: el contenedor del form se elige con `useIsDesktop` (≥ 1024 px,
+   igual que el shell): modal (`Dialog`) en desktop, `Drawer` de Vaul en mobile; el FAB
+   usa `lg:hidden` (equivalente CSS). En jsdom corre el path desktop → Vaul no se ejercita
+   en tests.
+3. **Filtros en memoria**: `useTransactions` lee `getAll()` y todo el filtrado/agrupación
+   son funciones puras (`filterTransactions`, `groupTransactionsByDay`) con tests; es la
+   base del objetivo de ~500 movimientos de la Fase 7.
+4. **Búsqueda**: normalización NFD sin diacríticos, case-insensitive, sobre `note` +
+   nombre de categoría (mapa inyectado como argumento, sigue siendo pura).
+5. **Deshacer de borrado**: `transactionsRepo.restore(tx)` reinserta el registro **tal
+   cual** (mismo `id`, `createdAt` y `updatedAt`); el toast «Deshacer» lo invoca. Sin
+   confirmación previa porque es reversible. Éxito de CRUD también avisa por toast.
+6. **Select de categorías**: activas del tipo del movimiento + (al editar) la categoría ya
+   referenciada aunque esté archivada; al cambiar el tipo, si la actual no corresponde se
+   resetea a la primera activa del nuevo tipo.
+7. **`exchangeRate` opcional**: campo visible solo con currency USD, parseado con
+   `parseMoney` vía `setValueAs`; vacío → `undefined` → fallback a `Settings.referenceRate`.
+8. **Reset seguro del form**: solo en la transición cerrado → abierto (ref `wasOpenRef`);
+   una actualización de `useLiveQuery` con el form abierto no pisa lo que se está escribiendo.
+9. **Tipado de `amountMinor`**: `.refine((value): boolean => …)` con retorno anotado;
+   TS 5.5+ infiere type-predicate de `value !== null` y zod lo tomaba como guard que
+   sacaba `null` del output (rompía `amountMinor: null` en defaults).
+10. **Tests**: smoke del formulario (3 casos: submit con monto es-AR parseado,
+    validación con monto vacío, campo de cotización solo USD) + helpers puros
+    (filtros por mes/tipo/moneda/categoría, búsqueda acento-insensible, agrupación
+    por día y opciones de categoría).
 
 **Commit**: `feat(transactions): add list with filters, form and undoable delete`
 
