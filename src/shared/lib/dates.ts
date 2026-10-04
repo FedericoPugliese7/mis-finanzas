@@ -70,6 +70,11 @@ export function formatDayLabel(date: DateISO, today: DateISO = todayISO()): stri
   return capitalize(format(parsed, "EEEE d 'de' MMMM", { locale: es }));
 }
 
+/** Long date for the app header, e.g. `Domingo 4 de octubre de 2026` (locale `es`). */
+export function formatLongDate(date: DateISO): string {
+  return capitalize(format(parseISO(date), "EEEE d 'de' MMMM 'de' yyyy", { locale: es }));
+}
+
 function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }

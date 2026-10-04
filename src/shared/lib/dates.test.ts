@@ -3,6 +3,7 @@ import {
   addMonths,
   daysInMonth,
   formatDayLabel,
+  formatLongDate,
   formatMonth,
   isLeapYear,
   isValidMonth,
@@ -76,5 +77,10 @@ describe('labels (locale es)', () => {
     expect(formatDayLabel('2026-10-04', '2026-10-04')).toBe('Hoy');
     expect(formatDayLabel('2026-10-03', '2026-10-04')).toBe('Ayer');
     expect(formatDayLabel('2026-10-05', '2026-10-04')).toBe('Lunes 5 de octubre');
+  });
+
+  it('formats the long date for the header', () => {
+    expect(formatLongDate('2026-10-04')).toBe('Domingo 4 de octubre de 2026');
+    expect(formatLongDate('2026-01-01')).toBe('Jueves 1 de enero de 2026');
   });
 });
