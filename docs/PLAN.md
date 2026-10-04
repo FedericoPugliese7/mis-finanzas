@@ -146,13 +146,26 @@ acumulación en floats).
 
 ---
 
-## Fase 2b — CI
+## Fase 2b — CI ✅
 
 El repo remoto ya existe (`FedericoPugliese7/mis-finanzas`): **no volver a crearlo**.
 
 - `.github/workflows/ci.yml` — `lint`, `typecheck`, `test` y `build` en cada push y en cada PR
 - Node 24 en el runner, cache de `npm` y `npm ci`
 - El pipeline queda en verde **antes** de seguir con la Fase 3, para no arrastrar errores
+
+**Verificación**: `npm run format` y `npm run lint` en verde con el workflow agregado;
+localmente los mismos 4 comandos del pipeline (`lint`, `typecheck`, `test`, `build`)
+en verde.
+
+**Decisiones de la fase**
+
+1. Un solo runner (`ubuntu-latest`), pasos secuenciales en el orden del gate;
+   `build` ya ejecuta `typecheck` internamente (se repite ~10 s a cambio de mantener
+   los 4 comandos explícitos del plan).
+2. `node-version: 24` (misma major que en local) y `cache: npm` sobre `package-lock.json`.
+3. **Pendiente de push**: `main` está adelantado respecto de `origin/main`; el pipeline
+   real recién se verifica al pushear los commits existentes (requiere confirmación).
 
 **Commit**: `ci: add github actions workflow for lint, typecheck, test and build`
 
