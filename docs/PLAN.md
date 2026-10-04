@@ -14,22 +14,25 @@ y se arregla lo que falle antes de seguir.
 | Fase                                          | Estado                      | Commit           |
 | --------------------------------------------- | --------------------------- | ---------------- |
 | 0 — Bootstrap                                 | ✅                          | inicial          |
-| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅                          | `fa6808c`        |
-| 2 — Shell, router, tema y UI kit              | ✅                          | `0082be6`        |
-| 2b — CI (pipeline en verde, run #1)           | ✅                          | `ccb6d09` + push |
-| 3 — Categorías con regla de archivado         | ✅                          | `c6554bb`        |
-| 4 — Movimientos (filtros, form, deshacer)     | ✅                          | `4aaf52b`        |
-| 5b — Cotización DolarApi + leyenda            | ✅                          | `40f7bdb`        |
+| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅                          | `8a10f90`        |
+| 2 — Shell, router, tema y UI kit              | ✅                          | `0e0d9f3`        |
+| 2b — CI (pipeline en verde, run #1)           | ✅                          | `c60041c` + push |
+| 3 — Categorías con regla de archivado         | ✅                          | `51753af`        |
+| 4 — Movimientos (filtros, form, deshacer)     | ✅                          | `60df032`        |
+| 5b — Cotización DolarApi + leyenda            | ✅                          | `906b026`        |
 | 5 — **Dashboard**                             | ⏳ **próxima, sin empezar** | —                |
 
 Detalle del punto de parada:
 
 - **Fase 3: cerrada, sin pendientes.** CRUD completo (grilla de activas + sección
   «Archivadas», form RHF+zod con selectores de color/ícono, regla de archivado con
-  confirmación y «Deshacer»), 4 tests de la regla, gates en verde, commiteada en `c6554bb`.
-- **Fase 4: también cerrada** (`4aaf52b`) — la siguiente en cola es la Fase 5.
-- **Único trabajo local sin pushear**: 3 commits adelante de `origin/main`
-  (`895a5b7` docs, `c6554bb` Fase 3, `4aaf52b` Fase 4) → falta `git push` y verificar CI.
+  confirmación y «Deshacer»), 4 tests de la regla, gates en verde, commiteada en `51753af`.
+- **Fase 4: también cerrada** (`60df032`) — la siguiente en cola es la Fase 5.
+- **Historial de Git**: el 2026-10-04 se reescribió con `git filter-branch --msg-filter`
+  (12 commits traducidos al español; árbol idéntico, solo cambiaron los hashes) y se
+  actualizó el remoto con `git push origin main --force`. Nuevos hashes: Fase 1 `8a10f90`,
+  Fase 2 `0e0d9f3`, Fase 2b `c60041c`, Fase 3 `51753af`, Fase 4 `60df032`, Fase 5b `906b026`.
+  Desde ahora todos los commits son en español (regla permanente en `AGENTS.md`).
 - **Fase 5 al retomar** (solo se hizo lectura, ningún archivo tocado): tarjetas de
   ingresos/gastos/balance con selector ARS/USD/ambas vía `usePreferencesStore` y
   `totalsForDisplay`; dona de gastos y barras de 6 meses con Recharts cargados por
@@ -242,7 +245,7 @@ en verde.
    archivar-si-tiene-movimientos, borrar-si-no-tiene, deshacer del archivado manual y
    restaurar. La página no tiene smoke test todavía (pendiente de integración con IDB).
 
-**Commit**: `feat(categories): add category management with archive-if-used rule`
+**Commit**: `feat(categories): agregar gestion de categorias con regla de archivar si tiene movimientos`
 
 ---
 
@@ -291,7 +294,7 @@ en verde.
     (filtros por mes/tipo/moneda/categoría, búsqueda acento-insensible, agrupación
     por día y opciones de categoría).
 
-**Commit**: `feat(transactions): add list with filters, form and undoable delete`
+**Commit**: `feat(transactions): agregar lista con filtros, formulario y borrado con deshacer`
 
 ---
 
@@ -372,7 +375,7 @@ Spec: `SPEC.md` → 4.5.
    **dentro** del entorno; antes podía resolver después del teardown de jsdom y producir
    unhandled rejections intermitentes (`window is not defined`).
 
-**Commit**: `feat(rate): add dolarapi official rate service with hourly refresh and ars legend`
+**Commit**: `feat(rate): agregar servicio de cotizacion oficial dolarapi con refresco horario y leyenda en ars`
 
 ---
 

@@ -13,7 +13,7 @@ dólares estadounidenses (USD), organizados por categorías, con un dashboard cl
 
 - Un solo usuario, **sin backend, sin login, sin telemetría**.
 - Los datos viven **solo en el dispositivo** (IndexedDB).
-- UI en **español rioplatense (`es-AR`)**; código, nombres y commits en **inglés**.
+- UI en **español rioplatense (`es-AR`)**; código y nombres en **inglés**; mensajes de commit en **español** (Conventional Commits).
 
 ---
 

@@ -18,7 +18,8 @@ Este repositorio es una PWA local-first para el control de ingresos y gastos per
 
 ## Convenciones de código e idioma
 
-- **Idioma del código:** Nombres de variables, funciones, tipos, archivos y commits en **inglés**.
+- **Idioma del código:** Nombres de variables, funciones, tipos y archivos en **inglés**.
+- **Idioma de los commits (regla permanente):** TODOS los mensajes de commit se redactan **obligatoriamente en español**, en formato Conventional Commits (ej: `feat: agregar ...`, `fix: corregir ...`, `chore: ...`, `docs: ...`). El tipo (`feat`, `fix`, `chore`, `docs`, `ci`…) y el scope van en inglés; la descripción se escribe en español. El historial existente fue traducido al español el 2026-10-04.
 - **Idioma de la UI:** Español rioplatense (`es-AR`) para textos visibles al usuario.
 - **Manejo de dinero:** SIEMPRE en enteros (centavos / unidades menores). Parsear con coma decimal ("1.234,56" → `123456`) y formatear con `Intl.NumberFormat('es-AR')`. Prohibido operar con floats en cálculos acumulados.
 - **Fechas:** Formato de almacenamiento `YYYY-MM-DD` (string plano sin dependencias de zona horaria).
@@ -56,7 +57,7 @@ npm run format:fix   # Formatear archivos con Prettier
 ## Reglas de trabajo
 
 1. Al cerrar cada fase de trabajo, ejecutar: `npm run lint`, `npm run typecheck`, `npm run test` y `npm run build`.
-2. Seguir Conventional Commits (ej: `feat(core): ...`, `fix(ui): ...`, `chore: ...`).
+2. **Mensajes de commit en español** en formato Conventional Commits (ej: `feat(core): agregar ...`, `fix(ui): corregir ...`, `chore: ...`). Ver "Convenciones de código e idioma" arriba.
 3. No agregar dependencias sin justificación documentada en `README.md`.
 4. Todas las rutas pesadas (especialmente Recharts) deben cargarse con `React.lazy`.
 5. **Animaciones:** todo valor de animación (spring, duración, easing, offset) se importa de `src/shared/motion.ts`. Prohibido declarar números sueltos en los componentes. Usar `m` (no `motion`) dentro del `LazyMotion` de `src/app/providers.tsx`, animar solo `transform` y `opacity`, y respetar `prefers-reduced-motion` (`MotionConfig reducedMotion="user"` + CSS). Especificación completa en `docs/SPEC.md` → "Animaciones".
