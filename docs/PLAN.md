@@ -9,6 +9,40 @@ y se arregla lo que falle antes de seguir.
 
 ---
 
+## Estado al cierre de la sesión (4 de octubre de 2026)
+
+| Fase                                          | Estado                      | Commit           |
+| --------------------------------------------- | --------------------------- | ---------------- |
+| 0 — Bootstrap                                 | ✅                          | inicial          |
+| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅                          | `fa6808c`        |
+| 2 — Shell, router, tema y UI kit              | ✅                          | `0082be6`        |
+| 2b — CI (pipeline en verde, run #1)           | ✅                          | `ccb6d09` + push |
+| 3 — Categorías con regla de archivado         | ✅                          | `c6554bb`        |
+| 4 — Movimientos (filtros, form, deshacer)     | ✅                          | `4aaf52b`        |
+| 5b — Cotización DolarApi + leyenda            | ✅                          | `40f7bdb`        |
+| 5 — **Dashboard**                             | ⏳ **próxima, sin empezar** | —                |
+
+Detalle del punto de parada:
+
+- **Fase 3: cerrada, sin pendientes.** CRUD completo (grilla de activas + sección
+  «Archivadas», form RHF+zod con selectores de color/ícono, regla de archivado con
+  confirmación y «Deshacer»), 4 tests de la regla, gates en verde, commiteada en `c6554bb`.
+- **Fase 4: también cerrada** (`4aaf52b`) — la siguiente en cola es la Fase 5.
+- **Único trabajo local sin pushear**: 3 commits adelante de `origin/main`
+  (`895a5b7` docs, `c6554bb` Fase 3, `4aaf52b` Fase 4) → falta `git push` y verificar CI.
+- **Fase 5 al retomar** (solo se hizo lectura, ningún archivo tocado): tarjetas de
+  ingresos/gastos/balance con selector ARS/USD/ambas vía `usePreferencesStore` y
+  `totalsForDisplay`; dona de gastos y barras de 6 meses con Recharts cargados por
+  `React.lazy` + Suspense; top categorías (`topCategories`) y últimos movimientos;
+  tabla alternativa accesible por gráfico; count suave con los tokens ya existentes
+  (`durations.count` / `transitions.count`); animar solo el primer montaje de los gráficos;
+  **wiring de `RateLegend`**: `usdMinor` en las tarjetas USD del dashboard y leyenda
+  unitaria en la lista de movimientos cuando hay montos USD (lo pendiente de la Fase 5b).
+- **Pendiente a futuro**: justificación de la dependencia `vaul` en `README.md` (Fase 8,
+  regla de AGENTS).
+
+---
+
 ## Regla transversal: animaciones
 
 **Las reglas de `SPEC.md` → sección "Animaciones" se aplican a cada componente nuevo, desde ya.**
