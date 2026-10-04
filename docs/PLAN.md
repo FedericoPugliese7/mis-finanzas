@@ -101,17 +101,46 @@ acumulación en floats).
 
 ---
 
-## Fase 2 — Shell, router, tema y UI kit
+## Fase 2 — Shell, router, tema y UI kit ✅
 
 - `src/app/router.tsx` — `HashRouter` + rutas con `React.lazy`
-- `src/app/layout/AppShell.tsx` — sidebar ≥ 1024 px, tab bar < 768 px, safe-areas
+- `src/app/layout/AppShell.tsx` — sidebar ≥ 1024 px, tab bar < 1024 px, safe-areas
 - `src/shared/ui/` — `button`, `card`, `input`, `money-input`, `select`, `dialog`, `sheet`,
   `toast`, `switch`, `segmented`, `empty-state`, `month-selector`, `spinner`
 - `src/shared/stores/` — Zustand (UI transitoria, tema, moneda)
 - `src/shared/hooks/` — `useTheme` (`data-theme`, `color-scheme`, `theme-color`),
   `useIsDesktop`, `usePersistentStorage`
+- **Fecha actual visible en el header** (sidebar desktop / header mobile) con el helper
+  `formatLongDate` (`"Domingo 4 de octubre de 2026"`, locale `es`) agregado a `dates.ts`
 - Rutas placeholder de las 4 secciones
 - Todos los componentes base se animan con los tokens compartidos
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run format`, `npm run test`
+(7 archivos, 54 tests) y `npm run build` en verde (4 chunks lazy por ruta).
+
+**Decisiones de la fase**
+
+1. **Breakpoint**: la tab bar se muestra hasta `< 1024 px` (no `< 768 px`): cubre el hueco
+   768-1023 px del spec, donde todavía no hay sidebar. `useIsDesktop` = `min-width: 1024px`.
+2. **Tema**: clave `mis-finanzas-theme` con formato JSON plano, idéntica al script inline de
+   `index.html` (no el formato `persist` de Zustand) para no romper el anti-parpadeo.
+   `applyTheme` es no-op si el tema ya está aplicado → nunca dispara View Transitions en la
+   carga inicial, tampoco bajo `StrictMode`.
+3. **Moneda de visualización**: Zustand `persist` en `mis-finanzas-prefs` (localStorage).
+   La fila de Dexie settings sigue siendo la fuente que viaja en el backup; se alinean en
+   la Fase 6.
+4. **Switch**: accesible (`role="switch"`) y construido a mano — `@radix-ui/react-switch`
+   no está instalado y AGENTS.md prohíbe dependencias sin justificación. El thumb se mueve
+   con transición CSS alimentada por las variables de Motion.
+5. **Sheet**: Radix Dialog + spring compartido por ahora; el drag-to-close con **Vaul**
+   queda para la Fase 4 (decisión prevista en SPEC 7.4).
+6. **Tipos**: los eventos DOM de React (drag/animation) chocan con los homónimos de Motion;
+   `Button` y `Card` los `Omit` en sus props nativas.
+7. **Tests**: `src/test/setup.ts` agrega un polyfill de `matchMedia` para jsdom
+   (queries `min-width` se resuelven contra `window.innerWidth`, que arranca en 1024 px →
+   el shell de desktop renderiza en tests).
+8. **Toasts**: store Zustand + `ToastViewport` montado en el shell; `useToast()` queda
+   lista para el deshacer de la Fase 4.
 
 **Commit**: `feat(app): add hash router, responsive shell, theme system and ui kit`
 
@@ -164,6 +193,40 @@ El repo remoto ya existe (`FedericoPugliese7/mis-finanzas`): **no volver a crear
 
 ---
 
+## Fase 5b — Cotización del dólar (DolarApi oficial) + leyenda
+
+Spec: `SPEC.md` → 4.5.
+
+- `src/shared/lib/dolarapi.ts` — tipos + esquema zod de
+  `{ compra, venta, fechaActualizacion }`, `fetchOfficialRate()`
+  (`https://dolarapi.com/v1/dolares/oficial`) y lógica pura `isRateStale(lastFetched, now, ttlMs)`
+- `src/shared/stores/rate.store.ts` — Zustand con `status: 'idle' | 'loading' | 'error' | 'success'`,
+  última cotización conocida y `refreshIfStale()` (TTL 60 min); caché en `localStorage`
+- `src/shared/hooks/useExchangeRate.ts` — dispara `refreshIfStale()` al montar, cada hora y
+  al recuperar conexión (`online`); nunca bloquea la UI
+- `src/shared/ui/rate-legend.tsx` — leyenda corta `≈ $ X.XXX en pesos` bajo montos USD:
+  loading sin caché → texto tenue; error sin caché → no se renderiza; con caché → usa la
+  última tasa
+- Integración: leyenda en las **tarjetas USD del dashboard** y en los **montos USD de la
+  lista de movimientos**; si `settings.rateSource === 'dolarapi'`, cada fetch exitoso hace
+  `settingsRepo.update({ referenceRate: venta })`
+- `defaultSettings.rateSource` pasa de `'manual'` a `'dolarapi'` (tasa fresca por defecto;
+  Ajustes permite volver a manual)
+
+**Casos de test de la fase (todos obligatorios)**
+
+| #   | Caso                             | Ejemplo / criterio                                                                |
+| --- | -------------------------------- | --------------------------------------------------------------------------------- |
+| 1   | **Parseo de respuesta DolarApi** | JSON válido → `{ compra, venta, fechaActualizacion }`; JSON inválido → error      |
+| 2   | **Fetch con error / HTTP no-OK** | Rechaza con estado `'error'`, sin tirar excepción fuera del store                 |
+| 3   | **Staleness (TTL 1 h)**          | fresca (< 60 min), vencida (> 60 min), límite exacto (60 min = vencida)           |
+| 4   | **Mapeo a `referenceRate`**      | `rateSource: 'dolarapi'` + fetch OK → `referenceRate = venta`; `'manual'` intacto |
+| 5   | **Leyenda**                      | Renderiza `≈ $ … en pesos` con tasa; sin tasa y en error no renderiza             |
+
+**Commit**: `feat(rate): add dolarapi official rate service with hourly refresh and ars legend`
+
+---
+
 ## Fase 6 — Ajustes + Backup
 
 - `src/features/settings/` — tema, moneda de visualización, cotización de referencia
@@ -213,8 +276,8 @@ El repo remoto ya existe (`FedericoPugliese7/mis-finanzas`): **no volver a crear
 
 - Presupuestos por categoría con barra de progreso
 - Movimientos recurrentes
-- Cotización automática desde dolarapi.com (`/v1/dolares/blue`, usar `venta`), tolerante a fallos y
-  nunca bloqueante
+- Otras casas de cambio (blue, MEP…) además del oficial — la del oficial ya está en la
+  Fase 5b, tolerante a fallos y nunca bloqueante
 
 ---
 

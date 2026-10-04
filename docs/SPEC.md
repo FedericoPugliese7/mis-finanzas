@@ -53,7 +53,7 @@ dólares estadounidenses (USD), organizados por categorías, con un dashboard cl
 **Category**: `id`, `name`, `type`, `color`, `icon`, `isDefault`, `archived`.
 
 **Settings**: `theme` (`'light' | 'dark' | 'system'`), `displayCurrency` (`'ARS' | 'USD' | 'BOTH'`),
-`referenceRate`, `rateSource`.
+`referenceRate`, `rateSource` (`'manual' | 'dolarapi'`).
 
 Índices Dexie: `date`, `categoryId`, `[type+date]`.
 
@@ -69,6 +69,10 @@ dólares estadounidenses (USD), organizados por categorías, con un dashboard cl
 ---
 
 ## 4. Funcionalidades (MVP)
+
+Cabecera global: el header de la app (sidebar desktop / header mobile) muestra siempre la
+**fecha actual** en formato largo (`Domingo 4 de octubre de 2026`, locale `es`) junto al
+título de la sección.
 
 ### 4.1 Dashboard mensual
 
@@ -98,14 +102,30 @@ dólares estadounidenses (USD), organizados por categorías, con un dashboard cl
   exportar CSV.
 - Borrar todos los datos, con confirmación.
 
-### 4.5 Estados vacíos
+### 4.5 Cotización del dólar (DolarApi oficial)
+
+- Servicio TypeScript que consume la API pública de DolarApi
+  (`https://dolarapi.com/v1/dolares/oficial`) y tipa la respuesta como
+  `{ compra: number, venta: number, fechaActualizacion: string }` (validación zod).
+- Se actualiza **como mínimo cada hora** (TTL de 60 min), con estados de carga y error
+  explícitos. Nunca bloquea la UI.
+- Bajo los montos en USD (tarjetas del dashboard y lista de movimientos) se muestra una
+  **leyenda corta** `≈ $ X.XXX en pesos` con la venta vigente.
+- Cuando `Settings.rateSource = 'dolarapi'`, cada cotización exitosa actualiza
+  `Settings.referenceRate` con `venta`, de modo que las conversiones ARS ↔ USD usan la
+  tasa fresca. Con `rateSource = 'manual'` la tasa la define el usuario en Ajustes.
+- Fallos: si hay caché se usa la última tasa conocida; sin caché la leyenda no se
+  renderiza y las conversiones siguen con el último `referenceRate`.
+
+### 4.6 Estados vacíos
 
 Estados vacíos amables en todas las vistas + botón para cargar **datos de ejemplo**.
 
-### 4.6 Opcional (solo si el MVP está verde)
+### 4.7 Opcional (solo si el MVP está verde)
 
-Presupuestos por categoría con barra de progreso, movimientos recurrentes, cotización automática
-desde una API pública (dolarapi.com). Siempre opcional, tolerante a fallos y nunca bloqueante.
+Presupuestos por categoría con barra de progreso, movimientos recurrentes, otras casas de
+cambio (blue, MEP…) además del oficial. Siempre opcional, tolerante a fallos y nunca
+bloqueante.
 
 ---
 
@@ -211,6 +231,9 @@ declarar números de animación sueltos en los componentes: se importan de ese m
 - Balance con monedas mezcladas (ARS + USD) normalizado a la moneda de visualización elegida.
 - Validación de importación de backup.
 - Smoke test del formulario de movimientos.
+- Parseo/validación de la respuesta de DolarApi (con `fetch` mockeado) y mapeo de `venta` a
+  `Settings.referenceRate`.
+- Decisión de staleness de la cotización (TTL de 1 hora: fresca, vencida y límite exacto).
 
 **Accesibilidad**: labels, foco visible, navegación por teclado, contraste AA, resumen textual o
 tabla alternativa para los gráficos.
