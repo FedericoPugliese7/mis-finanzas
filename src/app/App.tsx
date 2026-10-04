@@ -1,6 +1,14 @@
+import { m } from 'motion/react';
+import { fadeVariants } from '@/shared/motion';
+
 export default function App() {
   return (
-    <main className="flex min-h-dvh items-center justify-center p-4">
+    <m.main
+      variants={fadeVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex min-h-dvh items-center justify-center p-4"
+    >
       <div className="text-center">
         <h1 className="text-2xl font-semibold tracking-tight text-content">
           Mis Finanzas
@@ -9,6 +17,6 @@ export default function App() {
           Control de ingresos y gastos en ARS y USD
         </p>
       </div>
-    </main>
+    </m.main>
   );
 }

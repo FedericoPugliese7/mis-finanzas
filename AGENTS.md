@@ -12,6 +12,7 @@ Este repositorio es una PWA local-first para el control de ingresos y gastos per
 - **Estado de UI:** Zustand (solo para UI transitoria y preferencias como tema/moneda).
 - **Formularios & Validación:** `react-hook-form` + `@hookform/resolvers` + `zod`
 - **Gráficos & Fechas:** `recharts` (carga diferida `React.lazy`), `date-fns` (locale `es`)
+- **Animación:** `motion` (`motion/react`) con `LazyMotion` + componente `m` (`import { m } from 'motion/react'`). Tokens, springs, duraciones, easings y variantes compartidas en `src/shared/motion.ts`.
 - **PWA:** `vite-plugin-pwa` (service worker, manifest, precache offline)
 - **Calidad:** Vitest (jsdom, React Testing Library), ESLint 9 (flat config), Prettier
 
@@ -58,3 +59,5 @@ npm run format:fix   # Formatear archivos con Prettier
 2. Seguir Conventional Commits (ej: `feat(core): ...`, `fix(ui): ...`, `chore: ...`).
 3. No agregar dependencias sin justificación documentada en `README.md`.
 4. Todas las rutas pesadas (especialmente Recharts) deben cargarse con `React.lazy`.
+5. **Animaciones:** todo valor de animación (spring, duración, easing, offset) se importa de `src/shared/motion.ts`. Prohibido declarar números sueltos en los componentes. Usar `m` (no `motion`) dentro del `LazyMotion` de `src/app/providers.tsx`, animar solo `transform` y `opacity`, y respetar `prefers-reduced-motion` (`MotionConfig reducedMotion="user"` + CSS). Especificación completa en `docs/SPEC.md` → "Animaciones".
+6. Especificación funcional: `docs/SPEC.md`. Estado y fases: `docs/PLAN.md`.

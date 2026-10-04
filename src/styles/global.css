@@ -191,13 +191,33 @@
   }
 }
 
+/*
+ * View Transitions API: transición de tema claro/oscuro.
+ * Los valores vienen de `src/shared/motion.ts` ( MotionProvider los inyecta
+ * como variables CSS ), así hay una sola fuente de verdad.
+ * NUNCA se dispara en la carga inicial: eso lo controla el script inline de
+ * index.html, que aplica el tema antes de montar React.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--motion-duration-theme, 200ms);
+  animation-timing-function: var(--motion-ease-ios, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
-  *::before,
-  *::after {
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* En reduced-motion el cambio de tema es un corte, no una animación */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
