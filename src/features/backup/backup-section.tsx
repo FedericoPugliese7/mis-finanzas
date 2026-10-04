@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react';
-import { Archive, Download, FileInput, Trash2, Upload } from 'lucide-react';
+import {
+  Archive,
+  Download,
+  FileInput,
+  Trash2,
+  Upload,
+  FileSpreadsheet
+} from 'lucide-react';
 import type { Settings } from '@/shared/lib/types';
 import type { ImportMode, ImportPlan } from '@/shared/lib/backup';
 import { backupRepo } from '@/shared/db/repos/backup.repo';
@@ -8,6 +15,7 @@ import { transactionsRepo } from '@/shared/db/repos/transactions.repo';
 import { generateDemoTransactions } from '@/shared/lib/demo-data';
 import { parseBackup, backupFileName, buildImportPlan } from '@/shared/lib/backup';
 import { transactionsToCsv } from '@/shared/lib/csv';
+import { transactionsToExcel } from '@/shared/lib/excel';
 import { downloadFile } from '@/shared/lib/download';
 import { useUiStore } from '@/shared/stores/ui.store';
 import { Button } from '@/shared/ui/button';
@@ -55,6 +63,29 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
       show({ message: 'CSV exportado correctamente.' });
     } catch {
       show({ message: 'No se pudo generar el CSV.' });
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const [transactions, categories] = await Promise.all([
+        transactionsRepo.getAll(),
+        categoriesRepo.getAll()
+      ]);
+      const excel = transactionsToExcel(
+        transactions,
+        categories,
+        _settings.referenceRate
+      );
+      const filename = `mis-finanzas-movimientos-${new Date().toISOString().split('T')[0]}.xlsx`;
+      downloadFile(
+        filename,
+        excel,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      show({ message: 'Excel exportado correctamente.' });
+    } catch {
+      show({ message: 'No se pudo generar el Excel.' });
     }
   };
 
@@ -153,6 +184,9 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
           </Button>
           <Button variant="secondary" onClick={handleExportCsv}>
             <FileInput size={16} aria-hidden /> Exportar CSV
+          </Button>
+          <Button variant="secondary" onClick={handleExportExcel}>
+            <FileSpreadsheet size={16} aria-hidden /> Exportar Excel
           </Button>
         </div>
 

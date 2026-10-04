@@ -1,4 +1,5 @@
 import { Suspense, lazy, useMemo, useState } from 'react';
+import { LayoutDashboard } from 'lucide-react';
 import { Wallet } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useTransactions } from '@/features/transactions/hooks/use-transactions';
@@ -14,6 +15,7 @@ import { usePreferencesStore } from '@/shared/stores/preferences.store';
 import { Card } from '@/shared/ui/card';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { MonthSelector } from '@/shared/ui/month-selector';
+import { SectionHeader } from '@/shared/ui/section-header';
 import { Segmented, type SegmentedOption } from '@/shared/ui/segmented';
 import { Spinner } from '@/shared/ui/spinner';
 import { BarsTable, DonutTable } from './chart-tables';
@@ -87,15 +89,19 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight text-content">Dashboard</h2>
-        <Segmented
-          value={display}
-          onChange={setDisplay}
-          options={DISPLAY_OPTIONS}
-          ariaLabel="Moneda de visualización"
-        />
-      </div>
+      <SectionHeader
+        icon={LayoutDashboard}
+        title="Dashboard"
+        subtitle="Resumen del mes actual"
+        action={
+          <Segmented
+            value={display}
+            onChange={setDisplay}
+            options={DISPLAY_OPTIONS}
+            ariaLabel="Moneda de visualización"
+          />
+        }
+      />
 
       <div className="rounded-card border border-border bg-surface p-3">
         <MonthSelector month={month} onChange={setMonth} className="sm:justify-start" />

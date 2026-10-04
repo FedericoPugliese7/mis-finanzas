@@ -1,18 +1,22 @@
 import { useDeferredValue, useMemo, useState } from 'react';
 import { m } from 'motion/react';
-import { ArrowLeftRight, Plus, Search } from 'lucide-react';
+import { ArrowLeftRight, Plus, Search, Wallet, Download } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
-import { presses, springs } from '@/shared/motion';
+import { presses, springs, listContainerVariants } from '@/shared/motion';
 import { formatDayLabel, formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
 import { useToast } from '@/shared/hooks/useToast';
+import { useSettings } from '@/shared/hooks/useSettings';
 import type { NewTransaction } from '@/shared/db/repos/transactions.repo';
 import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Input } from '@/shared/ui/input';
 import { MonthSelector } from '@/shared/ui/month-selector';
+import { SectionHeader } from '@/shared/ui/section-header';
 import { Segmented, type SegmentedOption } from '@/shared/ui/segmented';
 import { Select } from '@/shared/ui/select';
 import { Spinner } from '@/shared/ui/spinner';
+import { downloadFile } from '@/shared/lib/download';
+import { transactionsToExcel } from '@/shared/lib/excel';
 import { TransactionForm } from './transaction-form';
 import { TransactionRow } from './transaction-row';
 import {
@@ -46,6 +50,7 @@ export default function TransactionsPage() {
   const categories = useCategories();
   const actions = useTransactionActions();
   const { show } = useToast();
+  const settings = useSettings();
 
   const [month, setMonth] = useState(() => monthOf(todayISO()));
   const [type, setType] = useState<TypeFilter>('all');
@@ -138,15 +143,46 @@ export default function TransactionsPage() {
     }
   }
 
+  async function handleExportExcel(): Promise<void> {
+    if (!transactions || !categories || !settings) return;
+    try {
+      const excel = transactionsToExcel(transactions, categories, settings.referenceRate);
+      const filename = `mis-finanzas-movimientos-${new Date().toISOString().split('T')[0]}.xlsx`;
+      downloadFile(
+        filename,
+        excel,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      show({ message: 'Excel exportado correctamente.' });
+    } catch {
+      show({ message: 'No se pudo generar el Excel.' });
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight text-content">Movimientos</h2>
-        <Button size="sm" className="hidden lg:inline-flex" onClick={openCreate}>
-          <Plus size={16} aria-hidden />
-          Nuevo movimiento
-        </Button>
-      </div>
+      <SectionHeader
+        icon={Wallet}
+        title="Movimientos"
+        subtitle="Lista de ingresos y gastos con filtros y búsqueda"
+        action={
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleExportExcel}
+              className="hidden lg:inline-flex"
+            >
+              <Download size={16} aria-hidden />
+              Exportar Excel
+            </Button>
+            <Button size="sm" className="hidden lg:inline-flex" onClick={openCreate}>
+              <Plus size={16} aria-hidden />
+              Nuevo movimiento
+            </Button>
+          </div>
+        }
+      />
 
       <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-3">
         <MonthSelector month={month} onChange={setMonth} className="sm:justify-start" />
@@ -227,8 +263,11 @@ export default function TransactionsPage() {
               <h3 className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-content-muted">
                 {dayLabel}
               </h3>
-              <ul className="rounded-card border border-border bg-surface px-2">
-                {group.items.map((transaction) => (
+              <m.ul
+                variants={listContainerVariants}
+                className="rounded-card border border-border bg-surface px-2"
+              >
+                {group.items.map((transaction, index) => (
                   <TransactionRow
                     key={transaction.id}
                     transaction={transaction}
@@ -238,9 +277,10 @@ export default function TransactionsPage() {
                       setFormOpen(true);
                     }}
                     onDelete={() => void actions.remove(transaction)}
+                    style={{ transitionDelay: `${index * 30}ms` }}
                   />
                 ))}
-              </ul>
+              </m.ul>
             </section>
           );
         })

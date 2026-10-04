@@ -4,6 +4,7 @@ import { useToast } from '@/shared/hooks/useToast';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { SectionHeader } from '@/shared/ui/section-header';
 import { Spinner } from '@/shared/ui/spinner';
 import { CategoryCard } from './category-card';
 import { CategoryForm } from './category-form';
@@ -70,19 +71,23 @@ export default function CategoriesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight text-content">Categorías</h2>
-        <Button
-          size="sm"
-          onClick={() => {
-            setEditing(null);
-            setFormOpen(true);
-          }}
-        >
-          <Plus size={16} aria-hidden />
-          Nueva categoría
-        </Button>
-      </div>
+      <SectionHeader
+        icon={Tags}
+        title="Categorías"
+        subtitle="Organizá tus ingresos y gastos por categorías personalizadas"
+        action={
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditing(null);
+              setFormOpen(true);
+            }}
+          >
+            <Plus size={16} aria-hidden />
+            Nueva categoría
+          </Button>
+        }
+      />
 
       {active.length === 0 ? (
         <EmptyState

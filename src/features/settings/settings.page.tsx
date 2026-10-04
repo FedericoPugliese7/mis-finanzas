@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Settings } from 'lucide-react';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { useSettingsActions } from './hooks/use-settings-actions';
 import { AppearanceSection } from './appearance-section';
 import { RateSection } from './rate-section';
 import { BackupSection } from '@/features/backup/backup-section';
+import { SectionHeader } from '@/shared/ui/section-header';
 
 export default function SettingsPage() {
   const settings = useSettings();
@@ -35,14 +37,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-content">Ajustes</h2>
-          <p className="mt-0.5 text-sm text-content-secondary">
-            Tema, moneda de visualización, cotización de referencia y backup de datos.
-          </p>
-        </div>
-      </header>
+      <SectionHeader
+        icon={Settings}
+        title="Ajustes"
+        subtitle="Tema, moneda de visualización, cotización de referencia y backup de datos"
+      />
 
       <div className="flex flex-col gap-5">
         <AppearanceSection onUpdate={handleUpdate} />

@@ -11,13 +11,13 @@
   --background: #f8fafc;
   --background-subtle: #f1f5f9;
   --surface: #ffffff;
-  --surface-hover: #f8fafc;
-  --border: #e2e8f0;
-  --border-subtle: #f1f5f9;
+  --surface-hover: #f1f5f9;
+  --border: #cbd5e1;
+  --border-subtle: #e2e8f0;
 
   --content: #0f172a;
   --content-secondary: #475569;
-  --content-muted: #5b6478;
+  --content-muted: #64748b;
   --content-inverse: #ffffff;
 
   --accent: #4f46e5;
@@ -45,10 +45,12 @@
   --chart-5: #ec4899;
   --chart-6: #8b5cf6;
 
-  --shadow-subtle: 0 1px 3px 0 rgb(15 23 42 / 0.04), 0 1px 2px -1px rgb(15 23 42 / 0.04);
-  --shadow-card: 0 4px 6px -1px rgb(15 23 42 / 0.04), 0 2px 4px -2px rgb(15 23 42 / 0.04);
-  --shadow-elevated:
-    0 10px 15px -3px rgb(15 23 42 / 0.06), 0 4px 6px -4px rgb(15 23 42 / 0.04);
+  --shadow-1: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow-2: 0 4px 6px -1px rgb(15 23 42 / 0.07), 0 2px 4px -2px rgb(15 23 42 / 0.07);
+  --shadow-3: 0 10px 15px -3px rgb(15 23 42 / 0.1), 0 4px 6px -4px rgb(15 23 42 / 0.1);
+  --shadow-subtle: var(--shadow-1);
+  --shadow-card: var(--shadow-2);
+  --shadow-elevated: var(--shadow-3);
 }
 
 [data-theme='dark'] {
@@ -56,12 +58,12 @@
   --background-subtle: #131d33;
   --surface: #17223b;
   --surface-hover: #1e2c4c;
-  --border: #24355a;
-  --border-subtle: #1c2947;
+  --border: #334155;
+  --border-subtle: #1e293b;
 
   --content: #f1f5f9;
   --content-secondary: #b6c2d4;
-  --content-muted: #7c8ba1;
+  --content-muted: #94a3b8;
   --content-inverse: #0f172a;
 
   --accent: #818cf8;
@@ -89,9 +91,12 @@
   --chart-5: #f472b6;
   --chart-6: #a78bfa;
 
-  --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
-  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.28), 0 2px 4px -2px rgb(0 0 0 / 0.24);
-  --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-2: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-3: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-subtle: var(--shadow-1);
+  --shadow-card: var(--shadow-2);
+  --shadow-elevated: var(--shadow-3);
 }
 
 /* ---------------------------------------------------------------------------

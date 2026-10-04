@@ -21,6 +21,8 @@ y se arregla lo que falle antes de seguir.
 | 4 — Movimientos (filtros, form, deshacer)     | ✅     | `60df032`        |
 | 5b — Cotización DolarApi + leyenda            | ✅     | `906b026`        |
 | 5 — Dashboard                                 | ✅     | `fb06789`        |
+| 6 — Ajustes + Backup                          | ✅     | `32ab041`        |
+| 7 — Pulido de diseño y animaciones            | 🔄     | en curso         |
 
 Detalle del punto de parada:
 
@@ -420,7 +422,24 @@ Spec: `SPEC.md` → 4.5.
 
 ---
 
-## Fase 7 — PWA + pulido
+## Fase 7 — Pulido de diseño y animaciones
+
+- **Navegación**: Sidebar fija → header con menú desplegable (desktop) + tab bar (mobile)
+- **Tokens de color**: Bordes más visibles (`--border: slate-300/700`), escala de sombras (`--shadow-1/2/3`)
+- **Card variants**: `default | outlined | elevated | filled` con `variant` prop
+- **SectionHeader**: Componente unificado (icono + título + subtitle + acción) en todas las páginas
+- **Gráficos**: Donut con labels/centro/leyenda; Barras con labels, gradientes, Y-axis moneda
+- **Export Excel**: `xlsx` lib pura → `transactionsToExcel()` (hojas: Resumen, Detalle, Config)
+- **Animaciones**: Stagger en listas, micro-interacciones consistentes, auditoría `prefers-reduced-motion`
+- **Accesibilidad**: Targets ≥ 44px, foco visible, contraste AA verificado
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`, `npm run format`
+
+**Commit**: `feat(design): polish navigation, cards, charts, excel export and animations`
+
+---
+
+## Fase 8 — PWA + Docs y deploy
 
 - Manifest completo, precache offline, service worker
 - Íconos 192/512/maskable definitivos

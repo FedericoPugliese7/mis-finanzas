@@ -1,8 +1,10 @@
 import { Trash2 } from 'lucide-react';
+import { m } from 'motion/react';
 import { iconFor } from '@/features/categories/category.constants';
 import { formatMoney } from '@/shared/lib/money';
 import { RateLegend } from '@/shared/ui/rate-legend';
 import { cn } from '@/shared/ui/utils';
+import { listItemVariants } from '@/shared/motion';
 import type { Category, Transaction } from '@/shared/lib/types';
 
 interface TransactionRowProps {
@@ -10,6 +12,7 @@ interface TransactionRowProps {
   category?: Category;
   onEdit: () => void;
   onDelete: () => void;
+  style?: React.CSSProperties;
 }
 
 /** One movement inside a day group: tap to edit, trash to delete (undoable). */
@@ -31,7 +34,10 @@ export function TransactionRow({
   );
 
   return (
-    <li className="flex items-center gap-1 border-b border-border last:border-b-0">
+    <m.li
+      variants={listItemVariants}
+      className="flex items-center gap-1 border-b border-border last:border-b-0"
+    >
       <button
         type="button"
         onClick={onEdit}
@@ -72,6 +78,6 @@ export function TransactionRow({
       >
         <Trash2 size={16} aria-hidden />
       </button>
-    </li>
+    </m.li>
   );
 }

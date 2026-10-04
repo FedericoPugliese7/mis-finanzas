@@ -18,12 +18,12 @@ describe('AppShell', () => {
     expect(screen.getByText(formatLongDate(todayISO()))).toBeDefined();
   });
 
-  it('shows the brand and the four section links', () => {
+  it('shows the brand and the four section navigation buttons', () => {
     renderShell();
     expect(screen.getAllByText('Mis Finanzas').length).toBeGreaterThan(0);
-    expect(screen.getByRole('link', { name: /dashboard/i })).toBeDefined();
-    expect(screen.getByRole('link', { name: /movimientos/i })).toBeDefined();
-    expect(screen.getByRole('link', { name: /categorías/i })).toBeDefined();
-    expect(screen.getByRole('link', { name: /ajustes/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /dashboard/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /movimientos/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /categorías/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /ajustes/i })).toBeDefined();
   });
 });

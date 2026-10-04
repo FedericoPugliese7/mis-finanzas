@@ -10,6 +10,7 @@ export interface ChartTheme {
   surface: string;
   content: string;
   contentMuted: string;
+  contentInverse: string;
 }
 
 export function chartTheme(): ChartTheme {
@@ -21,6 +22,7 @@ export function chartTheme(): ChartTheme {
     border: read('--color-border'),
     surface: read('--color-surface'),
     content: read('--color-content'),
-    contentMuted: read('--color-content-muted')
+    contentMuted: read('--color-content-muted'),
+    contentInverse: read('--color-content-inverse')
   };
 }
