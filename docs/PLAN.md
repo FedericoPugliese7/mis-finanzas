@@ -172,12 +172,41 @@ en verde.
 
 ---
 
-## Fase 3 — Categorías
+## Fase 3 — Categorías ✅
 
 - `src/features/categories/` — page, form (RHF + zod), cards, selector de color e ícono
 - `hooks/useCategories.ts` (`useLiveQuery`) y `hooks/use-category-actions.ts`
 - Regla: si la categoría tiene movimientos, se **archiva** en vez de borrarse
 - Test de la lógica de archivado
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run format`, `npm run test`
+(11 archivos, 78 tests) y `npm run build` en verde.
+
+**Decisiones de la fase**
+
+1. **Regla de archivado**: `remove(category)` consulta `hasTransactions` — con movimientos
+   archiva y avisa `«X» tiene movimientos: se archivó en vez de borrarla` (retorna
+   `'archived'`); sin movimientos borra y avisa `'deleted'`. La UI siempre muestra un
+   diálogo de confirmación previo que explica ambas salidas.
+2. **Tipo inmutable al editar**: `type` solo se elige al crear (las transacciones guardan
+   su propio `type`; cambiarlo después rompería la coherencia categoría ↔ movimiento). El
+   form muestra un badge estático en modo edición.
+3. **Archivar manual con Deshacer**: `archive()` aprovecha `ToastAction` de la Fase 2
+   (`Deshacer` → `unarchive`); `remove()` con la regla **no** ofrece deshacer (fue un
+   intento de borrado). `unarchive` → toast «restaurada».
+4. **Selectores**: paleta de 15 colores fijos (cubre los 14 del seed) y catálogo de 24
+   íconos lucide; `Category.icon` guarda el string kebab-case del seed y `iconFor()`
+   cae en `circle-help` si el nombre no existe. Ambos como `radiogroup` accesible
+   (`role="radio"`, `aria-checked`, label en español).
+5. **Form**: `category.schema.ts` (zod: nombre 1-40 trim, color `#rrggbb`, ícono) fuera
+   del `.tsx` para no chocar con `react-refresh/only-export-components`; RHF + resolver,
+   preview del ícono/color junto al nombre, reset al abrir el diálogo.
+6. **Listado**: `useCategories()` (`useLiveQuery`) distingue cargando (`undefined` →
+   Spinner) de vacío (EmptyState con acción); activas en grilla + sección «Archivadas»
+   con restaurar / editar / eliminar.
+7. **Tests**: se mockea `categoriesRepo` con `vi.mock` (sin `fake-indexeddb`) → 4 tests:
+   archivar-si-tiene-movimientos, borrar-si-no-tiene, deshacer del archivado manual y
+   restaurar. La página no tiene smoke test todavía (pendiente de integración con IDB).
 
 **Commit**: `feat(categories): add category management with archive-if-used rule`
 
