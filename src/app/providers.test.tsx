@@ -1,7 +1,16 @@
-import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
 import { MotionProvider } from './providers';
 import { durationsMs, easingsCss, fadeVariants, presses, springs } from '@/shared/motion';
+
+afterEach(async () => {
+  // `LazyMotion` loads its features asynchronously and calls `setState` when
+  // the import resolves. Settling that promise here keeps the update inside
+  // the test environment instead of leaking into the torn-down one.
+  await act(async () => {
+    await import('./motion-features');
+  });
+});
 
 describe('MotionProvider', () => {
   it('renders its children', () => {

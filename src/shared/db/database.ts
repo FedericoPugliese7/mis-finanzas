@@ -11,7 +11,7 @@ export const defaultSettings: Settings = {
   theme: 'system',
   displayCurrency: 'ARS',
   referenceRate: 1000,
-  rateSource: 'manual'
+  rateSource: 'dolarapi'
 };
 
 /**

@@ -11,6 +11,7 @@ import {
 import { m } from 'motion/react';
 import { routeVariants } from '@/shared/motion';
 import { formatLongDate, todayISO } from '@/shared/lib/dates';
+import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { Spinner } from '@/shared/ui/spinner';
@@ -74,6 +75,7 @@ function navLinkClasses(isActive: boolean, isDesktop: boolean): string {
  */
 export function AppShell() {
   useTheme();
+  useExchangeRate();
   const isDesktop = useIsDesktop();
   const location = useLocation();
   const sectionTitle = SECTION_TITLES[location.pathname] ?? 'Mis Finanzas';

@@ -193,7 +193,7 @@ El repo remoto ya existe (`FedericoPugliese7/mis-finanzas`): **no volver a crear
 
 ---
 
-## Fase 5b — Cotización del dólar (DolarApi oficial) + leyenda
+## Fase 5b — Cotización del dólar (DolarApi oficial) + leyenda ✅
 
 Spec: `SPEC.md` → 4.5.
 
@@ -222,6 +222,41 @@ Spec: `SPEC.md` → 4.5.
 | 3   | **Staleness (TTL 1 h)**          | fresca (< 60 min), vencida (> 60 min), límite exacto (60 min = vencida)           |
 | 4   | **Mapeo a `referenceRate`**      | `rateSource: 'dolarapi'` + fetch OK → `referenceRate = venta`; `'manual'` intacto |
 | 5   | **Leyenda**                      | Renderiza `≈ $ … en pesos` con tasa; sin tasa y en error no renderiza             |
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run format`, `npm run test`
+(10 archivos, 74 tests, 3 corridas seguidas en verde) y `npm run build` en verde.
+
+**Decisiones de la fase**
+
+1. **Tipos de error**: HTTP no-OK → `RateFetchError` (con el status); payload inválido →
+   `ZodError` del esquema `{ compra, venta, fechaActualizacion }`; fallo de red → se propaga.
+   El store los captura todos: nunca lanza fuera de `refresh()` y siempre queda
+   `status: 'error'` conservando el último rate conocido.
+2. **Staleness**: `isRateStale(lastFetched, now, ttlMs = 60 min)` — `null` siempre vencido y
+   el límite exacto cuenta como vencido (`>=`). `refreshIfStale()` además evita refreshes
+   superpuestos (`status === 'loading'` → corta).
+3. **Persistencia**: `persist` en `mis-finanzas-rate` guarda solo `{ rate, lastFetched }`;
+   `status`/`error` son transitorios y arrancan en `idle` al rehidratar (decide
+   `refreshIfStale`).
+4. **Mapeo a `referenceRate` (test 4)**: decisión pura `referenceRateFor(settings, rate)`
+   (`'dolarapi'` → `venta`, `'manual'` → `null`) aplicada por el store vía
+   `settingsRepo.update`. Se testea la función pura porque los repos siguen sin
+   `fake-indexeddb` (misma decisión 9 de la Fase 1). La escritura es best-effort en
+   `try/catch`: un fallo de la DB nunca bloquea la cotización para display.
+5. **Default**: `defaultSettings.rateSource` pasa a `'dolarapi'` (tasa fresca desde el
+   primer arranque; Ajustes podrá volver a manual en la Fase 6).
+6. **Punto único de montaje**: `useExchangeRate()` se engancha una vez en `AppShell`
+   (check inicial, intervalo cada 60 min y evento `online`); el store es el que serializa.
+7. **Leyenda**: con monto → `≈ $ 15.400,00 en pesos` (convierte con la tasa vigente);
+   sin monto → `1 USD ≈ $ 1.540`; sin tasa y cargando → texto con `role="status"`;
+   sin tasa y en error → no renderiza; con tasa en caché → la usa aunque el refresh falle.
+   El **wiring en las tarjetas USD del dashboard y la lista de movimientos queda pendiente**
+   (Fases 4 y 5 todavía no existen); el componente, su test y la sincronización global de
+   `referenceRate` ya están entregados.
+8. **Fix de test flaky (previo)**: `providers.test.tsx` ahora asegura en `afterEach` que el
+   import asíncrono de `motion-features` (que `LazyMotion` setea con `setState`) resuelva
+   **dentro** del entorno; antes podía resolver después del teardown de jsdom y producir
+   unhandled rejections intermitentes (`window is not defined`).
 
 **Commit**: `feat(rate): add dolarapi official rate service with hourly refresh and ars legend`
 
