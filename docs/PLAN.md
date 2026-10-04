@@ -20,7 +20,7 @@ y se arregla lo que falle antes de seguir.
 | 3 — Categorías con regla de archivado         | ✅     | `51753af`        |
 | 4 — Movimientos (filtros, form, deshacer)     | ✅     | `60df032`        |
 | 5b — Cotización DolarApi + leyenda            | ✅     | `906b026`        |
-| 5 — Dashboard                                 | ✅     | ver abajo        |
+| 5 — Dashboard                                 | ✅     | `fb06789`        |
 
 Detalle del punto de parada:
 
