@@ -164,8 +164,9 @@ en verde.
    `build` ya ejecuta `typecheck` internamente (se repite ~10 s a cambio de mantener
    los 4 comandos explícitos del plan).
 2. `node-version: 24` (misma major que en local) y `cache: npm` sobre `package-lock.json`.
-3. **Pendiente de push**: `main` está adelantado respecto de `origin/main`; el pipeline
-   real recién se verifica al pushear los commits existentes (requiere confirmación).
+3. **Pipeline verificado**: push de `main` y run #1 del workflow en verde
+   (`conclusion: success`; Checkout → Setup Node → npm ci → Lint → Typecheck →
+   Test → Build, todos `success`) antes de arrancar la Fase 3.
 
 **Commit**: `ci: add github actions workflow for lint, typecheck, test and build`
 
