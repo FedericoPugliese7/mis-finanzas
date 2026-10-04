@@ -26,10 +26,15 @@ export const isoDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida (AAAA-MM-DD)');
 
+export type DateISO = z.infer<typeof isoDateSchema>;
+
 export const TransactionSchema = z.object({
-  id: z.string().uuid('Id inválido'),
+  id: z.string().min(1, 'Id inválido'),
   type: TransactionTypeSchema,
-  amountMinor: z.number().int('El monto debe ser un entero en centavos'),
+  amountMinor: z
+    .number()
+    .int('El monto debe ser un entero en centavos')
+    .positive('El monto debe ser mayor a cero'),
   currency: CurrencySchema,
   categoryId: categoryIdSchema,
   date: isoDateSchema,
