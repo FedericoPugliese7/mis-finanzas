@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es-AR" data-theme="system">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b1120" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Mis Finanzas — Control de gastos e ingresos en ARS y USD con privacidad total."
+    />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <title>Mis Finanzas</title>
+    <!-- Script inline para aplicar el tema antes del primer renderizado y evitar parpadeo (FOUC) -->
+    <script>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem('mis-finanzas-theme');
+          var theme = storedTheme ? JSON.parse(storedTheme) : 'system';
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var effectiveTheme =
+            theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+          document.documentElement.setAttribute('data-theme', effectiveTheme);
+          document.documentElement.style.colorScheme = effectiveTheme;
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute(
+              'content',
+              effectiveTheme === 'dark' ? '#0b1120' : '#f8fafc'
+            );
+          }
+        } catch (e) {
+          /* fallback silencioso */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

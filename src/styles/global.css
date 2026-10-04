@@ -1,0 +1,203 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+/* Modo oscuro controlado por atributo (aplicado por el script inline de index.html) */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ---------------------------------------------------------------------------
+ * Tokens de color: valores "crudos" por tema (se sobreescriben en dark)
+ * ------------------------------------------------------------------------- */
+:root {
+  --background: #f8fafc;
+  --background-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --surface-hover: #f8fafc;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+
+  --content: #0f172a;
+  --content-secondary: #475569;
+  --content-muted: #94a3b8;
+  --content-inverse: #ffffff;
+
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #eef2ff;
+  --accent-content: #ffffff;
+
+  --income: #059669;
+  --income-soft: #ecfdf5;
+  --income-content: #065f46;
+
+  --expense: #e11d48;
+  --expense-soft: #fff1f2;
+  --expense-content: #9f1239;
+
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --info: #0369a1;
+  --info-soft: #f0f9ff;
+
+  --chart-1: #6366f1;
+  --chart-2: #0ea5e9;
+  --chart-3: #14b8a6;
+  --chart-4: #f59e0b;
+  --chart-5: #ec4899;
+  --chart-6: #8b5cf6;
+
+  --shadow-subtle: 0 1px 3px 0 rgb(15 23 42 / 0.04), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+  --shadow-card: 0 4px 6px -1px rgb(15 23 42 / 0.04), 0 2px 4px -2px rgb(15 23 42 / 0.04);
+  --shadow-elevated:
+    0 10px 15px -3px rgb(15 23 42 / 0.06), 0 4px 6px -4px rgb(15 23 42 / 0.04);
+}
+
+[data-theme='dark'] {
+  --background: #0b1120;
+  --background-subtle: #131d33;
+  --surface: #17223b;
+  --surface-hover: #1e2c4c;
+  --border: #24355a;
+  --border-subtle: #1c2947;
+
+  --content: #f1f5f9;
+  --content-secondary: #b6c2d4;
+  --content-muted: #7c8ba1;
+  --content-inverse: #0f172a;
+
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --accent-soft: #26264a;
+  --accent-content: #0b1120;
+
+  --income: #34d399;
+  --income-soft: #0b3b31;
+  --income-content: #a7f3d0;
+
+  --expense: #fb7185;
+  --expense-soft: #43152a;
+  --expense-content: #fecdd3;
+
+  --warning: #fbbf24;
+  --warning-soft: #422006;
+  --info: #38bdf8;
+  --info-soft: #0c4a6e;
+
+  --chart-1: #818cf8;
+  --chart-2: #38bdf8;
+  --chart-3: #2dd4bf;
+  --chart-4: #fbbf24;
+  --chart-5: #f472b6;
+  --chart-6: #a78bfa;
+
+  --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.28), 0 2px 4px -2px rgb(0 0 0 / 0.24);
+  --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+/* ---------------------------------------------------------------------------
+ * Exposición de los tokens como utilidades de Tailwind
+ * ------------------------------------------------------------------------- */
+@theme inline {
+  --font-sans:
+    'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+
+  --color-content: var(--content);
+  --color-content-secondary: var(--content-secondary);
+  --color-content-muted: var(--content-muted);
+  --color-content-inverse: var(--content-inverse);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-content: var(--accent-content);
+
+  --color-income: var(--income);
+  --color-income-soft: var(--income-soft);
+  --color-income-content: var(--income-content);
+
+  --color-expense: var(--expense);
+  --color-expense-soft: var(--expense-soft);
+  --color-expense-content: var(--expense-content);
+
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  --radius-card: 16px;
+  --radius-control: 12px;
+
+  --shadow-subtle: var(--shadow-subtle);
+  --shadow-card: var(--shadow-card);
+  --shadow-elevated: var(--shadow-elevated);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--content);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Foco visible y consistente en toda la app */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Targets táctiles cómodos en mobile */
+  button,
+  a,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+}
+
+/* Áreas seguras en dispositivos con notch (iOS) */
+@supports (padding: max(0px)) {
+  .safe-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+  .safe-top {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
