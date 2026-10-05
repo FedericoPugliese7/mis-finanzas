@@ -11,18 +11,18 @@ y se arregla lo que falle antes de seguir.
 
 ## Estado al cierre de la sesión (4 de octubre de 2026)
 
-| Fase                                          | Estado | Commit           |
-| --------------------------------------------- | ------ | ---------------- |
-| 0 — Bootstrap                                 | ✅     | inicial          |
-| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅     | `8a10f90`        |
-| 2 — Shell, router, tema y UI kit              | ✅     | `0e0d9f3`        |
-| 2b — CI (pipeline en verde, run #1)           | ✅     | `c60041c` + push |
-| 3 — Categorías con regla de archivado         | ✅     | `51753af`        |
-| 4 — Movimientos (filtros, form, deshacer)     | ✅     | `60df032`        |
-| 5b — Cotización DolarApi + leyenda            | ✅     | `906b026`        |
-| 5 — Dashboard                                 | ✅     | `fb06789`        |
-| 6 — Ajustes + Backup                          | ✅     | `32ab041`        |
-| 7 — Pulido de diseño y animaciones            | 🔄     | en curso         |
+| Fase                                          | Estado | Commit                |
+| --------------------------------------------- | ------ | --------------------- |
+| 0 — Bootstrap                                 | ✅     | inicial               |
+| 1 — Núcleo (DB, dinero, fechas, agregaciones) | ✅     | `8a10f90`             |
+| 2 — Shell, router, tema y UI kit              | ✅     | `0e0d9f3`             |
+| 2b — CI (pipeline en verde, run #1)           | ✅     | `c60041c` + push      |
+| 3 — Categorías con regla de archivado         | ✅     | `51753af`             |
+| 4 — Movimientos (filtros, form, deshacer)     | ✅     | `60df032`             |
+| 5b — Cotización DolarApi + leyenda            | ✅     | `906b026`             |
+| 5 — Dashboard                                 | ✅     | `fb06789`             |
+| 6 — Ajustes + Backup                          | ✅     | `32ab041`             |
+| 7 — Pulido de diseño y animaciones            | ✅     | `6090edd` + `306959a` |
 
 Detalle del punto de parada:
 
