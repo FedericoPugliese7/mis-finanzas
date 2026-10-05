@@ -62,3 +62,4 @@ npm run format:fix   # Formatear archivos con Prettier
 4. Todas las rutas pesadas (especialmente Recharts) deben cargarse con `React.lazy`.
 5. **Animaciones:** todo valor de animación (spring, duración, easing, offset) se importa de `src/shared/motion.ts`. Prohibido declarar números sueltos en los componentes. Usar `m` (no `motion`) dentro del `LazyMotion` de `src/app/providers.tsx`, animar solo `transform` y `opacity`, y respetar `prefers-reduced-motion` (`MotionConfig reducedMotion="user"` + CSS). Especificación completa en `docs/SPEC.md` → "Animaciones".
 6. Especificación funcional: `docs/SPEC.md`. Estado y fases: `docs/PLAN.md`.
+7. Para revisión y pulido visual de la UI, invocá el subagente @designer.
