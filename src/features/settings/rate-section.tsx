@@ -94,7 +94,7 @@ export function RateSection({ settings, onUpdate }: RateSectionProps) {
                   </p>
                 ) : null}
                 {rateState.error ? (
-                  <p className="mt-0.5 font-medium text-danger">
+                  <p className="mt-0.5 font-medium text-expense-content">
                     Sin conexión ({rateState.error}); usando último valor conocido.
                   </p>
                 ) : null}

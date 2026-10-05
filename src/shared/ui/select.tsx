@@ -69,7 +69,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
               <SelectPrimitive.Item
                 key={option.value}
                 value={option.value}
-                className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-sm text-content transition-colors data-[highlighted]:bg-background-subtle data-[highlighted]:outline-2 data-[highlighted]:-outline-offset-2 data-[highlighted]:outline-accent data-[state=checked]:font-semibold"
+                className="flex cursor-pointer items-center justify-between rounded-control px-3 py-3 text-sm text-content transition-colors data-[highlighted]:bg-background-subtle data-[highlighted]:outline-2 data-[highlighted]:-outline-offset-2 data-[highlighted]:outline-accent data-[state=checked]:font-semibold"
               >
                 <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                 <SelectPrimitive.ItemIndicator>

@@ -27,11 +27,16 @@ interface CardProps extends Omit<
   children?: ReactNode;
 }
 
+/**
+ * One way to separate surfaces per variant:
+ * in-page cards use a fine border (no shadow); `elevated` is reserved for
+ * floating layers (dialog, sheet, toast) and drops the border for the shadow.
+ */
 const variantClasses: Record<CardVariant, string> = {
-  default: 'rounded-card border border-border bg-surface shadow-card',
-  outlined: 'rounded-card border-2 border-border bg-surface',
-  elevated: 'rounded-card border border-border bg-surface shadow-elevated',
-  filled: 'rounded-card border-0 bg-background-subtle'
+  default: 'rounded-card border border-border-subtle bg-surface',
+  outlined: 'rounded-card border border-border bg-surface',
+  elevated: 'rounded-card bg-surface shadow-elevated',
+  filled: 'rounded-card border border-border-subtle bg-background-subtle'
 };
 
 export function Card({
@@ -47,7 +52,6 @@ export function Card({
       <m.div
         className={classes}
         whileTap={presses.tap}
-        whileHover={presses.hover}
         transition={springs.micro}
         {...props}
       >

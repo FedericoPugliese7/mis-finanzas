@@ -70,14 +70,17 @@ dólares estadounidenses (USD), organizados por categorías, con un dashboard cl
 
 ## 4. Funcionalidades (MVP)
 
-Cabecera global: el header de la app (sidebar desktop / header mobile) muestra siempre la
-**fecha actual** en formato largo (`Domingo 4 de octubre de 2026`, locale `es`) junto al
-título de la sección.
+Cabecera global: el header de la app muestra siempre la **fecha actual** en formato largo
+(`Domingo 4 de octubre de 2026`, locale `es`) junto al **selector de moneda de visualización**
+(ARS / USD / ambas, visible desde `sm`; en mobile se cambia desde Ajustes → Apariencia) y un
+**chip informativo** `Dólar actual: $ X.XXX` con la venta vigente. No hay otros selectores de
+moneda en las páginas.
 
 ### 4.1 Dashboard mensual
 
 - Selector de mes (anterior / siguiente).
-- Tarjetas de ingresos, gastos y balance, con selector ARS / USD / ambas.
+- Tarjetas de ingresos, gastos y balance (la moneda de visualización se elige en el header o en
+  Ajustes, no en la página).
 - Gráfico de dona con gastos por categoría.
 - Barras de ingresos vs gastos de los últimos 6 meses.
 - Top categorías y últimos movimientos.
@@ -109,13 +112,14 @@ título de la sección.
   `{ compra: number, venta: number, fechaActualizacion: string }` (validación zod).
 - Se actualiza **como mínimo cada hora** (TTL de 60 min), con estados de carga y error
   explícitos. Nunca bloquea la UI.
-- Bajo los montos en USD (tarjetas del dashboard y lista de movimientos) se muestra una
-  **leyenda corta** `≈ $ X.XXX en pesos` con la venta vigente.
+- Bajo los montos en USD de la lista de movimientos se muestra una **leyenda corta**
+  `≈ $ X.XXX en pesos` con la venta vigente; en el header, el chip `Dólar actual: $ X.XXX`
+  informa la tasa global en todas las rutas (el dashboard ya no repite leyenda).
 - Cuando `Settings.rateSource = 'dolarapi'`, cada cotización exitosa actualiza
   `Settings.referenceRate` con `venta`, de modo que las conversiones ARS ↔ USD usan la
   tasa fresca. Con `rateSource = 'manual'` la tasa la define el usuario en Ajustes.
-- Fallos: si hay caché se usa la última tasa conocida; sin caché la leyenda no se
-  renderiza y las conversiones siguen con el último `referenceRate`.
+- Fallos: si hay caché se usa la última tasa conocida; sin caché el chip y la leyenda no se
+  renderizan y las conversiones siguen con el último `referenceRate`.
 
 ### 4.6 Estados vacíos
 

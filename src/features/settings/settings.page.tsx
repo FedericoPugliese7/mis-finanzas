@@ -6,6 +6,7 @@ import { AppearanceSection } from './appearance-section';
 import { RateSection } from './rate-section';
 import { BackupSection } from '@/features/backup/backup-section';
 import { SectionHeader } from '@/shared/ui/section-header';
+import { Spinner } from '@/shared/ui/spinner';
 
 export default function SettingsPage() {
   const settings = useSettings();
@@ -18,12 +19,8 @@ export default function SettingsPage() {
 
   if (!hydrated || settings === undefined) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-12rem)]">
-        <div
-          className="animate-spin rounded-full h-8 w-8 border-2 border-accent border-t-transparent"
-          aria-label="Cargando ajustes"
-        />
-        <p className="mt-3 text-sm text-content-secondary">Cargando ajustes…</p>
+      <div className="flex justify-center py-16">
+        <Spinner label="Cargando ajustes" />
       </div>
     );
   }
@@ -36,14 +33,14 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       <SectionHeader
         icon={Settings}
         title="Ajustes"
         subtitle="Tema, moneda de visualización, cotización de referencia y backup de datos"
       />
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
         <AppearanceSection onUpdate={handleUpdate} />
         <RateSection settings={settings} onUpdate={handleUpdate} />
         <BackupSection settings={settings} onUpdate={handleUpdate} />

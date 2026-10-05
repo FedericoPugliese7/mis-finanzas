@@ -23,7 +23,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-alquiler',
     name: 'Alquiler',
     type: 'expense',
-    color: '#6366f1',
+    color: '#a34f1b',
     icon: 'house',
     isDefault: true,
     archived: false
@@ -32,7 +32,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-expensas',
     name: 'Expensas',
     type: 'expense',
-    color: '#8b5cf6',
+    color: '#0e6258',
     icon: 'building-2',
     isDefault: true,
     archived: false
@@ -50,7 +50,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-transporte',
     name: 'Transporte',
     type: 'expense',
-    color: '#0ea5e9',
+    color: '#3e6b85',
     icon: 'bus',
     isDefault: true,
     archived: false
@@ -68,7 +68,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-impuestos',
     name: 'Impuestos',
     type: 'expense',
-    color: '#64748b',
+    color: '#6b665e',
     icon: 'landmark',
     isDefault: true,
     archived: false
@@ -95,7 +95,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-suscripciones',
     name: 'Suscripciones',
     type: 'expense',
-    color: '#a855f7',
+    color: '#6b7a3a',
     icon: 'refresh-cw',
     isDefault: true,
     archived: false
@@ -104,7 +104,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-educacion',
     name: 'Educación',
     type: 'expense',
-    color: '#3b82f6',
+    color: '#33587f',
     icon: 'graduation-cap',
     isDefault: true,
     archived: false
@@ -122,7 +122,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'expense-otros',
     name: 'Otros',
     type: 'expense',
-    color: '#94a3b8',
+    color: '#9b958a',
     icon: 'circle-help',
     isDefault: true,
     archived: false
@@ -149,7 +149,7 @@ export const defaultCategories: readonly Category[] = [
     id: 'income-otros',
     name: 'Otros',
     type: 'income',
-    color: '#94a3b8',
+    color: '#9b958a',
     icon: 'circle-help',
     isDefault: true,
     archived: false

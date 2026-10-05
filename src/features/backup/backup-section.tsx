@@ -213,7 +213,7 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
           </Button>
         </div>
 
-        <div className="border-t border-border pt-4 space-y-4">
+        <div className="border-t border-border-subtle pt-4 space-y-4">
           <h3 className="text-sm font-medium text-content">Datos de ejemplo</h3>
           <p className="text-xs text-content-muted">
             Genera ~500 movimientos realistas (últimos 12 meses) para probar gráficos y
@@ -224,7 +224,7 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
           </Button>
         </div>
 
-        <div className="border-t border-border pt-4 space-y-4 text-danger">
+        <div className="border-t border-border-subtle pt-4 space-y-4 text-expense-content">
           <h3 className="text-sm font-medium text-content">Zona de peligro</h3>
           <p className="text-xs text-content-muted">
             Borra todos los movimientos y categorías, y restablece los ajustes a valores

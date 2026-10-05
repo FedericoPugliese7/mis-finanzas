@@ -26,7 +26,7 @@ export function LatestMovements({ transactions, categoriesById }: LatestMovement
         const isExpense = transaction.type === 'expense';
         const note = transaction.note?.trim();
         const title = note || category?.name || 'Sin categoría';
-        const color = category?.color ?? '#94a3b8';
+        const color = category?.color ?? '#9b958a';
         const Icon = iconFor(category?.icon ?? 'circle-help');
         const amount = formatMoney(
           isExpense ? -transaction.amountMinor : transaction.amountMinor,
@@ -50,7 +50,7 @@ export function LatestMovements({ transactions, categoriesById }: LatestMovement
             </span>
             <span
               className={cn(
-                'shrink-0 text-sm font-semibold tabular-nums',
+                'amount shrink-0 text-sm font-semibold',
                 isExpense ? 'text-expense-content' : 'text-income-content'
               )}
             >

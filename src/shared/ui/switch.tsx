@@ -28,7 +28,9 @@ export function Switch({
       disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        'relative h-6 w-11 shrink-0 rounded-full border transition-colors',
+        'relative h-7 w-12 shrink-0 rounded-full border transition-colors',
+        /* invisible padding grows the touch target to 44 px */
+        "before:absolute before:inset-x-0 before:-inset-y-2 before:content-['']",
         checked ? 'border-accent bg-accent' : 'border-border bg-background-subtle',
         disabled && 'opacity-50',
         className
@@ -37,7 +39,7 @@ export function Switch({
       <span
         aria-hidden
         className={cn(
-          'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-content-inverse shadow-subtle',
+          'absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-content-inverse shadow-subtle',
           checked && 'translate-x-5'
         )}
         style={{

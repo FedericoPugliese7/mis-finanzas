@@ -37,9 +37,6 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
   const maxExpense = Math.max(...bars.map((b) => b.expense), 0);
   const maxValue = Math.max(maxIncome, maxExpense);
 
-  const incomeGradientId = 'incomeGradient';
-  const expenseGradientId = 'expenseGradient';
-
   const formatBarLabel = (value: unknown) => {
     if (typeof value === 'number' && value > 0) {
       return formatMoney(value, currency, { decimals: false });
@@ -59,17 +56,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
           barGap={6}
           barCategoryGap={12}
         >
-          <defs>
-            <linearGradient id={incomeGradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={colors.income} stopOpacity={0.9} />
-              <stop offset="100%" stopColor={colors.income} stopOpacity={0.5} />
-            </linearGradient>
-            <linearGradient id={expenseGradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={colors.expense} stopOpacity={0.9} />
-              <stop offset="100%" stopColor={colors.expense} stopOpacity={0.5} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid vertical={false} stroke={colors.border} strokeDasharray="4 4" />
+          <CartesianGrid vertical={false} stroke={colors.border} strokeDasharray="3 4" />
           <XAxis
             dataKey="month"
             interval={0}
@@ -82,6 +69,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
             width={72}
             tickLine={false}
             axisLine={false}
+            tickCount={4}
             tick={{ fill: colors.contentMuted, fontSize: 11 }}
             tickFormatter={(value: number) =>
               formatMoney(value, currency, { decimals: false, symbol: false })
@@ -105,7 +93,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
           />
           <Bar
             dataKey="income"
-            fill={`url(#${incomeGradientId})`}
+            fill={colors.income}
             radius={[6, 6, 0, 0]}
             maxBarSize={32}
             isAnimationActive={animateOnMount}
@@ -122,7 +110,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
           </Bar>
           <Bar
             dataKey="expense"
-            fill={`url(#${expenseGradientId})`}
+            fill={colors.expense}
             radius={[6, 6, 0, 0]}
             maxBarSize={32}
             isAnimationActive={animateOnMount}

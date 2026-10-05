@@ -57,7 +57,7 @@ export function AppearanceSection({ onUpdate }: AppearanceSectionProps) {
           />
         </div>
 
-        <div className="border-t border-border pt-5">
+        <div className="border-t border-border-subtle pt-5">
           <label
             id="currency-selection-label"
             className="block text-sm font-medium text-content"

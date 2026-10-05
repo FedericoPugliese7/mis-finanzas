@@ -46,7 +46,9 @@ export function Segmented<T extends string>({
             aria-checked={active}
             onClick={() => onChange(option.value)}
             className={cn(
-              'relative flex h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors',
+              'relative flex h-9 items-center justify-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors',
+              /* invisible padding grows the touch target to 44 px */
+              "before:absolute before:inset-x-0 before:-inset-y-1 before:content-['']",
               active ? 'text-content' : 'text-content-secondary hover:text-content'
             )}
           >
@@ -54,7 +56,7 @@ export function Segmented<T extends string>({
               <m.span
                 layoutId={`segmented-indicator-${id}`}
                 transition={springs.ui}
-                className="absolute inset-0 rounded-lg border border-border bg-surface shadow-subtle"
+                className="absolute inset-0 rounded-md bg-surface shadow-subtle"
               />
             ) : null}
             <span className="relative z-10 flex items-center gap-1.5">

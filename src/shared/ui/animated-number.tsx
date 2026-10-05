@@ -32,7 +32,7 @@ export function AnimatedNumber({ value, format, className }: AnimatedNumberProps
     <>
       {/* El valor final, legible y estable, es lo que escucha el lector de pantalla. */}
       <span className="sr-only">{format(value)}</span>
-      <m.span aria-hidden className={cn('tabular-nums', className)}>
+      <m.span aria-hidden className={cn('amount', className)}>
         {text}
       </m.span>
     </>

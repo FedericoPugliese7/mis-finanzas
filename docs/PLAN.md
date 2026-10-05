@@ -422,7 +422,7 @@ Spec: `SPEC.md` → 4.5.
 
 ---
 
-## Fase 7 — Pulido de diseño y animaciones
+## Fase 7 — Pulido de dirección de diseño y animaciones
 
 - **Navegación**: Sidebar fija → header con menú desplegable (desktop) + tab bar (mobile)
 - **Tokens de color**: Bordes más visibles (`--border: slate-300/700`), escala de sombras (`--shadow-1/2/3`)
@@ -432,6 +432,30 @@ Spec: `SPEC.md` → 4.5.
 - **Export Excel**: `xlsx` lib pura → `transactionsToExcel()` (hojas: Resumen, Detalle, Config)
 - **Animaciones**: Stagger en listas, micro-interacciones consistentes, auditoría `prefers-reduced-motion`
 - **Accesibilidad**: Targets ≥ 44px, foco visible, contraste AA verificado
+
+**Estado (2026-10-04): ✅ Completada.** Dirección de diseño aplicada en 7 bloques, todos con
+`lint + typecheck + test + build` en verde. Resumen:
+
+- **Paleta**: neutros cálidos (piedra) + acento terracota (`#a34f1b` / `#e08a4c` en oscuro), sin
+  violetas/azules; `theme-color` sincronizado (index.html + `useTheme`), favicon y seed de
+  categorías sin colores violeta; `CATEGORY_COLORS` con 16 swatches que cubren el seed.
+- **Navegación**: `DesktopNav` (NavLink reales con `aria-current` + subrayado) y `TabBar` mobile
+  con `material`; `@radix-ui/react-navigation-menu` desinstalado; FAB sobre la tab bar.
+- **UI kit**: `Card` con 4 variantes, botones/toggles con targets ≥ 44px (pseudo-elemento para
+  mantener look compacto en `Segmented`/`Switch`/swatches), `SectionHeader` con el único `h1` de
+  cada página, `EmptyState` sin círculo, overlay `bg-overlay`, `rounded-sheet` en sheets.
+- **Dashboard**: hero de balance invertida con `amount`, montos firmados, dona con leyenda visible
+  (sin labels de arco), barras con color sólido (sin gradiente), `chart-theme` leyendo variables
+  crudas, entrada escalonada de las filas con `staggerContainerVariants`.
+- **Movimiento**: stagger real en listas (contenedor con `initial/animate`, sin `transitionDelay`
+  CSS), `layout="position"` para reordenamiento, cero números sueltos fuera de `src/shared/motion.ts`,
+  `prefers-reduced-motion` respetado (`MotionConfig reducedMotion="user"` + CSS).
+- **Accesibilidad**: jerarquía de encabezados h1 → h2/h3, contraste AA verificado en la paleta,
+  skip link, `aria-current`, `sr-only` en tablas de gráficos.
+- **Ajustes finales**: un solo selector de moneda (el del header; el del dashboard se eliminó),
+  chip `Dólar actual: $ X.XXX` en el header (`rate-chip.tsx`) en lugar de la leyenda del
+  dashboard, y centro de la dona acortado (sin centavos, `innerRadius` 68) con "Total gastos"
+  en el encabezado de la card para no tapar el gráfico.
 
 **Verificación**: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`, `npm run format`
 

@@ -19,7 +19,7 @@ const TYPE_OPTIONS: readonly SegmentedOption<TransactionType>[] = [
 const CREATE_DEFAULTS: CategoryFormValues = {
   name: '',
   type: 'expense',
-  color: '#6366f1',
+  color: '#a34f1b',
   icon: 'house'
 };
 
@@ -118,7 +118,11 @@ export function CategoryForm({
             />
           </div>
           {errors.name ? (
-            <p id={`${fieldId}-name-error`} role="alert" className="text-xs text-expense">
+            <p
+              id={`${fieldId}-name-error`}
+              role="alert"
+              className="text-xs text-expense-content"
+            >
               {errors.name.message}
             </p>
           ) : null}
@@ -165,7 +169,7 @@ export function CategoryForm({
                     setValue('color', option.value, { shouldValidate: true })
                   }
                   className={cn(
-                    'grid h-9 w-9 place-items-center rounded-full transition-transform',
+                    'relative grid h-9 w-9 place-items-center rounded-full transition-transform after:absolute after:-inset-1 after:content-[""]',
                     selected
                       ? 'outline-2 outline-offset-2 outline-content'
                       : 'hover:scale-105'
@@ -204,7 +208,7 @@ export function CategoryForm({
                   aria-label={option.label}
                   onClick={() => setValue('icon', option.value, { shouldValidate: true })}
                   className={cn(
-                    'grid h-9 w-9 place-items-center rounded-control border transition-colors',
+                    'relative grid h-9 w-9 place-items-center rounded-control border transition-colors after:absolute after:-inset-1 after:content-[""]',
                     selected
                       ? 'border-accent bg-accent-soft text-accent outline-2 outline-offset-1 outline-content'
                       : 'border-border bg-surface text-content-secondary hover:text-content'

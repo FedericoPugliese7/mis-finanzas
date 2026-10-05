@@ -30,7 +30,7 @@ export function Dialog({
           <DialogPrimitive.Portal key="dialog" forceMount>
             <DialogPrimitive.Overlay asChild forceMount>
               <m.div
-                className="fixed inset-0 z-50 bg-content/40"
+                className="fixed inset-0 z-50 bg-overlay"
                 variants={dialogOverlayVariants}
                 initial="hidden"
                 animate="visible"

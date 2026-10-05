@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { m } from 'motion/react';
 import { Plus, Tags } from 'lucide-react';
 import { useToast } from '@/shared/hooks/useToast';
+import { listItemVariants, listContainerVariants } from '@/shared/motion';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { EmptyState } from '@/shared/ui/empty-state';
@@ -70,7 +72,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <SectionHeader
         icon={Tags}
         title="Categorías"
@@ -107,9 +109,14 @@ export default function CategoriesPage() {
           }
         />
       ) : (
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <m.ul
+          variants={listContainerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+        >
           {active.map((category) => (
-            <li key={category.id}>
+            <m.li key={category.id} variants={listItemVariants} layout="position">
               <CategoryCard
                 category={category}
                 onEdit={() => {
@@ -119,22 +126,27 @@ export default function CategoriesPage() {
                 onToggleArchive={() => void actions.archive(category)}
                 onDelete={() => setPendingDelete(category)}
               />
-            </li>
+            </m.li>
           ))}
-        </ul>
+        </m.ul>
       )}
 
       {archived.length > 0 ? (
         <section className="flex flex-col gap-3" aria-labelledby="archived-heading">
-          <h3
+          <h2
             id="archived-heading"
             className="text-sm font-semibold text-content-secondary"
           >
             Archivadas
-          </h3>
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          </h2>
+          <m.ul
+            variants={listContainerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+          >
             {archived.map((category) => (
-              <li key={category.id}>
+              <m.li key={category.id} variants={listItemVariants} layout="position">
                 <CategoryCard
                   category={category}
                   onEdit={() => {
@@ -144,9 +156,9 @@ export default function CategoriesPage() {
                   onToggleArchive={() => void actions.unarchive(category)}
                   onDelete={() => setPendingDelete(category)}
                 />
-              </li>
+              </m.li>
             ))}
-          </ul>
+          </m.ul>
         </section>
       ) : null}
 

@@ -154,7 +154,7 @@ export function TransactionForm({
           <p
             id={`${fieldId}-amountMinor-error`}
             role="alert"
-            className="text-xs text-expense"
+            className="text-xs text-expense-content"
           >
             {errors.amountMinor.message}
           </p>
@@ -191,7 +191,7 @@ export function TransactionForm({
           <p
             id={`${fieldId}-categoryId-error`}
             role="alert"
-            className="text-xs text-expense"
+            className="text-xs text-expense-content"
           >
             {errors.categoryId.message}
           </p>
@@ -210,7 +210,11 @@ export function TransactionForm({
           {...register('date')}
         />
         {errors.date ? (
-          <p id={`${fieldId}-date-error`} role="alert" className="text-xs text-expense">
+          <p
+            id={`${fieldId}-date-error`}
+            role="alert"
+            className="text-xs text-expense-content"
+          >
             {errors.date.message}
           </p>
         ) : null}
@@ -236,7 +240,7 @@ export function TransactionForm({
             <p
               id={`${fieldId}-exchangeRate-error`}
               role="alert"
-              className="text-xs text-expense"
+              className="text-xs text-expense-content"
             >
               {errors.exchangeRate.message}
             </p>
@@ -260,7 +264,11 @@ export function TransactionForm({
           {...register('note')}
         />
         {errors.note ? (
-          <p id={`${fieldId}-note-error`} role="alert" className="text-xs text-expense">
+          <p
+            id={`${fieldId}-note-error`}
+            role="alert"
+            className="text-xs text-expense-content"
+          >
             {errors.note.message}
           </p>
         ) : null}
@@ -293,7 +301,7 @@ export function TransactionForm({
   return (
     <Drawer.Root open={open} onOpenChange={onOpenChange}>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-50 bg-content/40" />
+        <Drawer.Overlay className="fixed inset-0 z-50 bg-overlay" />
         <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col overflow-y-auto rounded-t-card border border-border bg-surface p-6 safe-bottom">
           <div
             aria-hidden

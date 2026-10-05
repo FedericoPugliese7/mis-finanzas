@@ -41,7 +41,7 @@ function ToastEntry({ toast }: { toast: ToastItem }) {
               toast.action?.onAction();
               dismiss(toast.id);
             }}
-            className="rounded-lg px-2 py-1 text-sm font-semibold text-accent transition-colors hover:bg-accent-soft"
+            className="rounded-control px-2.5 py-1.5 text-sm font-semibold text-accent transition-colors hover:bg-accent-soft"
           >
             {toast.action.label}
           </button>
@@ -50,7 +50,7 @@ function ToastEntry({ toast }: { toast: ToastItem }) {
           type="button"
           aria-label="Cerrar aviso"
           onClick={() => dismiss(toast.id)}
-          className="grid h-8 w-8 place-items-center rounded-lg text-content-muted transition-colors hover:bg-surface-hover hover:text-content"
+          className="grid h-11 w-11 place-items-center rounded-control text-content-muted transition-colors hover:bg-surface-hover hover:text-content"
         >
           <X size={16} aria-hidden />
         </button>

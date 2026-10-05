@@ -42,10 +42,10 @@ export function DonutTable({ slices, currency }: DonutTableProps) {
                 <th scope="row" className="py-1 text-left font-normal text-content">
                   {slice.name}
                 </th>
-                <td className="py-1 text-right tabular-nums text-content">
+                <td className="py-1 text-right amount text-content">
                   {formatMoney(slice.total, currency)}
                 </td>
-                <td className="py-1 text-right tabular-nums text-content-secondary">
+                <td className="py-1 text-right amount text-content-secondary">
                   {slice.percent} %
                 </td>
               </tr>
@@ -56,10 +56,10 @@ export function DonutTable({ slices, currency }: DonutTableProps) {
               <th scope="row" className="py-1 text-left font-medium">
                 Total
               </th>
-              <td className="py-1 text-right font-medium tabular-nums">
+              <td className="py-1 text-right font-medium amount">
                 {formatMoney(total, currency)}
               </td>
-              <td className="py-1 text-right font-medium tabular-nums">100 %</td>
+              <td className="py-1 text-right font-medium amount">100 %</td>
             </tr>
           </tfoot>
         </table>
@@ -102,10 +102,10 @@ export function BarsTable({ bars, currency }: BarsTableProps) {
                 <th scope="row" className="py-1 text-left font-normal text-content">
                   {formatMonth(bar.month)}
                 </th>
-                <td className="py-1 text-right tabular-nums text-income-content">
+                <td className="py-1 text-right amount text-income-content">
                   {formatMoney(bar.income, currency)}
                 </td>
-                <td className="py-1 text-right tabular-nums text-expense-content">
+                <td className="py-1 text-right amount text-expense-content">
                   {formatMoney(bar.expense, currency)}
                 </td>
               </tr>

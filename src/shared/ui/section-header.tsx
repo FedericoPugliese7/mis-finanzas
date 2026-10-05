@@ -6,7 +6,7 @@ import { cn } from './utils';
 interface SectionHeaderProps {
   /** Lucide icon component */
   icon: ComponentType<{ size?: number; 'aria-hidden'?: boolean; className?: string }>;
-  /** Main section title */
+  /** Main section title (renders the page's `h1`) */
   title: string;
   /** Optional subtitle/description */
   subtitle?: string;
@@ -17,11 +17,9 @@ interface SectionHeaderProps {
 }
 
 /**
- * Consistent section header across all pages:
- * - Accent bar on the left
- * - Icon + title + optional subtitle
- * - Optional action slot on the right
- * - Staggered entrance animation
+ * The page's single `h1`: plain accent icon + title + optional subtitle,
+ * with the action aligned to the right. No decorative badges or bars —
+ * hierarchy comes from typography alone.
  */
 export function SectionHeader({
   icon,
@@ -38,33 +36,19 @@ export function SectionHeader({
       initial="hidden"
       animate="visible"
       className={cn(
-        'flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3',
+        'flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between',
         className
       )}
     >
-      <div className="flex items-start gap-3">
-        <span
-          aria-hidden
-          className="relative shrink-0 grid h-10 w-10 place-items-center rounded-lg bg-accent-soft"
-        >
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-accent rounded-r-full" />
-          <Icon size={20} className="text-accent" aria-hidden />
-        </span>
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-content">{title}</h2>
-          {subtitle && (
-            <p className="mt-0.5 text-sm text-content-secondary">{subtitle}</p>
-          )}
+      <div className="min-w-0">
+        <div className="flex items-center gap-2.5">
+          <Icon size={22} className="shrink-0 text-accent" aria-hidden />
+          <h1 className="text-2xl font-semibold tracking-tight text-content">{title}</h1>
         </div>
+        {subtitle && <p className="mt-1 text-sm text-content-secondary">{subtitle}</p>}
       </div>
       {action && (
-        <m.div
-          variants={fadeVariants}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: 0.05 }}
-          className="shrink-0"
-        >
+        <m.div variants={fadeVariants} className="shrink-0">
           {action}
         </m.div>
       )}

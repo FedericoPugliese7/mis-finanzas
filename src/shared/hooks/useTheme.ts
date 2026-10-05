@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type { Theme } from '@/shared/lib/types';
 import { useThemeStore } from '@/shared/stores/theme.store';
 
-const META_COLORS = { light: '#f8fafc', dark: '#0b1120' } as const;
+const META_COLORS = { light: '#f7f5f2', dark: '#141311' } as const;
 
 function resolveEffective(theme: Theme): 'light' | 'dark' {
   if (theme !== 'system') return theme;

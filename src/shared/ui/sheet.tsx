@@ -26,7 +26,7 @@ export function Sheet({ open, onOpenChange, title, children, className }: SheetP
           <DialogPrimitive.Portal key="sheet" forceMount>
             <DialogPrimitive.Overlay asChild forceMount>
               <m.div
-                className="fixed inset-0 z-50 bg-content/40"
+                className="fixed inset-0 z-50 bg-overlay"
                 variants={dialogOverlayVariants}
                 initial="hidden"
                 animate="visible"
@@ -37,7 +37,7 @@ export function Sheet({ open, onOpenChange, title, children, className }: SheetP
               <DialogPrimitive.Content asChild forceMount>
                 <m.div
                   className={cn(
-                    'pointer-events-auto max-h-[85dvh] w-full overflow-y-auto rounded-t-card border-t border-border bg-surface px-4 pb-4 pt-3 safe-bottom shadow-elevated',
+                    'pointer-events-auto max-h-[85dvh] w-full overflow-y-auto rounded-t-sheet border-t border-border bg-surface px-4 pb-4 pt-3 safe-bottom shadow-elevated',
                     className
                   )}
                   variants={sheetVariants}

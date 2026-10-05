@@ -160,7 +160,7 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <SectionHeader
         icon={Wallet}
         title="Movimientos"
@@ -184,7 +184,7 @@ export default function TransactionsPage() {
         }
       />
 
-      <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-3">
+      <div className="flex flex-col gap-3 rounded-card border border-border-subtle bg-background-subtle p-3">
         <MonthSelector month={month} onChange={setMonth} className="sm:justify-start" />
         <div className="flex flex-wrap gap-2">
           <Segmented
@@ -260,14 +260,16 @@ export default function TransactionsPage() {
           const dayLabel = formatDayLabel(group.date);
           return (
             <section key={group.date} aria-label={dayLabel}>
-              <h3 className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-content-muted">
+              <h2 className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-content-muted">
                 {dayLabel}
-              </h3>
+              </h2>
               <m.ul
                 variants={listContainerVariants}
+                initial="hidden"
+                animate="visible"
                 className="rounded-card border border-border bg-surface px-2"
               >
-                {group.items.map((transaction, index) => (
+                {group.items.map((transaction) => (
                   <TransactionRow
                     key={transaction.id}
                     transaction={transaction}
@@ -277,7 +279,6 @@ export default function TransactionsPage() {
                       setFormOpen(true);
                     }}
                     onDelete={() => void actions.remove(transaction)}
-                    style={{ transitionDelay: `${index * 30}ms` }}
                   />
                 ))}
               </m.ul>
@@ -292,7 +293,7 @@ export default function TransactionsPage() {
         onClick={openCreate}
         whileTap={presses.tap}
         transition={springs.micro}
-        className="fixed bottom-20 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-accent text-accent-content shadow-elevated lg:hidden"
+        className="fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full border border-border bg-accent text-accent-content shadow-card lg:hidden"
       >
         <Plus size={24} aria-hidden />
       </m.button>

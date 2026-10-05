@@ -33,21 +33,22 @@ export interface ColorOption {
 
 /** Preset palette covering every color used by the seed (SPEC 4.3). */
 export const CATEGORY_COLORS: readonly ColorOption[] = [
-  { value: '#6366f1', label: 'Índigo' },
-  { value: '#8b5cf6', label: 'Violeta' },
-  { value: '#a855f7', label: 'Púrpura' },
-  { value: '#ec4899', label: 'Rosa' },
-  { value: '#f43f5e', label: 'Rojo' },
+  { value: '#a34f1b', label: 'Terracota' },
+  { value: '#8a4216', label: 'Chocolate' },
+  { value: '#0e6258', label: 'Petróleo' },
+  { value: '#6b7a3a', label: 'Oliva' },
   { value: '#f59e0b', label: 'Ámbar' },
   { value: '#eab308', label: 'Amarillo' },
   { value: '#22c55e', label: 'Verde' },
   { value: '#10b981', label: 'Esmeralda' },
   { value: '#14b8a6', label: 'Turquesa' },
   { value: '#06b6d4', label: 'Cian' },
-  { value: '#0ea5e9', label: 'Celeste' },
-  { value: '#3b82f6', label: 'Azul' },
-  { value: '#64748b', label: 'Gris' },
-  { value: '#94a3b8', label: 'Gris claro' }
+  { value: '#3e6b85', label: 'Celeste' },
+  { value: '#33587f', label: 'Azul' },
+  { value: '#f43f5e', label: 'Rojo' },
+  { value: '#ec4899', label: 'Rosa' },
+  { value: '#6b665e', label: 'Gris' },
+  { value: '#9b958a', label: 'Gris claro' }
 ];
 
 export interface IconOption {

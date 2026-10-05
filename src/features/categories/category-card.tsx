@@ -5,7 +5,7 @@ import { iconFor } from './category.constants';
 import type { Category } from '@/shared/lib/types';
 
 const ICON_BUTTON =
-  'grid h-10 w-10 place-items-center rounded-lg text-content-secondary transition-colors hover:bg-surface-hover hover:text-content';
+  'grid h-11 w-11 place-items-center rounded-control text-content-secondary transition-colors hover:bg-surface-hover hover:text-content';
 
 interface CategoryCardProps {
   category: Category;
@@ -81,7 +81,7 @@ export function CategoryCard({
           type="button"
           aria-label={`Eliminar ${category.name}`}
           onClick={onDelete}
-          className={cn(ICON_BUTTON, 'hover:text-expense')}
+          className={cn(ICON_BUTTON, 'hover:text-expense-content')}
         >
           <Trash2 size={16} aria-hidden />
         </button>
