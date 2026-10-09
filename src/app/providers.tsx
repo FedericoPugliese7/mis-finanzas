@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { LazyMotion, MotionConfig } from 'motion/react';
+import { useThemeSync } from '@/shared/hooks/use-theme-sync';
 import { motionCssVars } from '@/shared/motion';
 
 const loadMotionFeatures = () => import('./motion-features').then((m) => m.default);
@@ -17,6 +18,8 @@ const loadMotionFeatures = () => import('./motion-features').then((m) => m.defau
  *   (including the View Transitions API) use the exact same values.
  */
 export function MotionProvider({ children }: { children: ReactNode }) {
+  useThemeSync();
+
   useEffect(() => {
     const root = document.documentElement;
     for (const [name, value] of Object.entries(motionCssVars())) {
