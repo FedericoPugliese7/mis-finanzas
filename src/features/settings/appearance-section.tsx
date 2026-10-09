@@ -69,6 +69,7 @@ export function AppearanceSection({ onUpdate }: AppearanceSectionProps) {
             cotización de referencia.
           </p>
           <Segmented
+            controlId="display-currency"
             ariaLabel="Seleccionar moneda de visualización"
             value={displayCurrency}
             onChange={handleCurrencyChange}

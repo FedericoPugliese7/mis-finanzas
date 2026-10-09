@@ -66,6 +66,7 @@ export function AppShell() {
                 Moneda de visualización
               </label>
               <Segmented
+                controlId="display-currency"
                 ariaLabel="Moneda de visualización"
                 value={display}
                 onChange={setDisplay}

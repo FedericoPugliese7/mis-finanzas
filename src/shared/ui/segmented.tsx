@@ -15,6 +15,13 @@ interface SegmentedProps<T extends string> {
   options: readonly SegmentedOption<T>[];
   ariaLabel: string;
   className?: string;
+  /**
+   * Optional stable id shared across instances. When two `Segmented` controls
+   * represent the same logical choice (e.g. display currency in the header and
+   * in settings), using the same `controlId` lets the indicator travel between
+   * them with `layoutId`.
+   */
+  controlId?: string;
 }
 
 /** Segmented control (`role="radiogroup"`). Indicator moves with the shared UI spring. */
@@ -23,9 +30,11 @@ export function Segmented<T extends string>({
   onChange,
   options,
   ariaLabel,
-  className
+  className,
+  controlId
 }: SegmentedProps<T>) {
-  const id = useId();
+  const generatedId = useId();
+  const layoutId = `segmented-indicator-${controlId ?? generatedId}`;
   return (
     <div
       role="radiogroup"
@@ -54,7 +63,7 @@ export function Segmented<T extends string>({
           >
             {active ? (
               <m.span
-                layoutId={`segmented-indicator-${id}`}
+                layoutId={layoutId}
                 transition={springs.ui}
                 className="absolute inset-0 rounded-md bg-surface shadow-subtle"
               />
