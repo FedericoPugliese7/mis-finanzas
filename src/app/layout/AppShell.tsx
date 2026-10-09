@@ -1,7 +1,7 @@
 import { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, m } from 'motion/react';
-import { routeVariants } from '@/shared/motion';
+import { fadeOnlyVariants, routeVariants } from '@/shared/motion';
 import { formatLongDate, todayISO } from '@/shared/lib/dates';
 import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
 import { useTheme } from '@/shared/hooks/useTheme';
@@ -88,9 +88,15 @@ export function AppShell() {
       >
         <Suspense
           fallback={
-            <div className="flex justify-center py-16">
+            <m.div
+              variants={fadeOnlyVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="flex justify-center py-16"
+            >
               <Spinner label="Cargando sección" />
-            </div>
+            </m.div>
           }
         >
           <AnimatePresence mode="wait">

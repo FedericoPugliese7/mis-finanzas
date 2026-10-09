@@ -1,6 +1,6 @@
 import { m } from 'motion/react';
 import { formatMoney } from '@/shared/lib/money';
-import { chartVariants, transitions } from '@/shared/motion';
+import { chartVariants, durations, transitions } from '@/shared/motion';
 import type { Currency } from '@/shared/lib/types';
 import { useChartEntrance } from './hooks/use-chart-entrance';
 import type { DonutSlice } from './dashboard.helpers';
@@ -47,7 +47,7 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
           animate="visible"
           variants={chartVariants}
         >
-          {arcs.map(({ slice, offset, visible }) => (
+          {arcs.map(({ slice, offset, visible }, index) => (
             <m.circle
               key={slice.categoryId}
               cx={CENTER}
@@ -64,7 +64,13 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
                   ? { strokeDashoffset: offset - visible }
                   : false
               }
-              animate={{ strokeDashoffset: offset, transition: transitions.chart }}
+              animate={{
+                strokeDashoffset: offset,
+                transition: {
+                  ...transitions.chart,
+                  delay: index * durations.stagger
+                }
+              }}
             >
               <title>{`${slice.name}: ${formatMoney(slice.total, currency)}`}</title>
             </m.circle>

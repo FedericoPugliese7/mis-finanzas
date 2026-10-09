@@ -23,6 +23,7 @@ y se arregla lo que falle antes de seguir.
 | 5 — Dashboard                                 | ✅     | `fb06789`             |
 | 6 — Ajustes + Backup                          | ✅     | `32ab041`             |
 | 7 — Pulido de diseño y animaciones            | ✅     | `6090edd` + `306959a` |
+| 10 — Pulido de animaciones                    | ✅     | serie de commits      |
 
 Detalle del punto de parada:
 
@@ -38,6 +39,8 @@ Detalle del punto de parada:
 - **Fase 5: cerrada** — ver la sección «Fase 5 — Dashboard ✅» más abajo; con ella se
   completó también el wiring de `RateLegend` que quedó pendiente en la Fase 5b
   (tarjetas USD del dashboard y montos USD de la lista de movimientos).
+- **Fase 10: cerrada** — revisión transversal de animaciones completada; ver
+  [`MOTION-QA.md`](./MOTION-QA.md).
 - **Pendiente a futuro**: justificación de la dependencia `vaul` en `README.md` (Fase 8,
   regla de AGENTS).
 
@@ -506,17 +509,40 @@ Spec: `SPEC.md` → 4.5.
 
 ---
 
-## Fase 10 — Pulido de animaciones ⏳
+## Fase 10 — Pulido de animaciones ✅
 
 Revisión transversal de toda la app contra `SPEC.md` → "Animaciones":
 
-- Barrido de componentes animados: confirmar que **ninguno** declara números sueltos y que todo
-  sale de `src/shared/motion.ts`
-- Confirmar que solo se animan `transform` y `opacity`; eliminar `width`/`height`/`top`/`left`
-  animados y `will-change` innecesarios
-- Ajustar springs/duraciones que generen jank en dispositivos de gama media (objetivo 60 fps)
-- Unificar entrances/exits con `AnimatePresence` y `layout` en listas
-- Verificar el fallback de `prefers-reduced-motion` en CSS y en cada componente
-- Medir con Lighthouse y revisar Core Web Vitals
+- [x] Barrido de componentes animados: ninguno declara números sueltos; todo sale de
+  `src/shared/motion.ts`.
+- [x] Solo se animan `transform` y `opacity` (excepción controlada: `strokeDashoffset` para
+  la dona SVG).
+- [x] Springs/duraciones ajustados para 60 fps en gama media.
+- [x] Entrances/exits unificados con `AnimatePresence` y `layout` en listas.
+- [x] Fallback de `prefers-reduced-motion` en CSS (`global.css`) y en componentes
+  (`MotionConfig reducedMotion="user"`, `useReducedMotion`, `useChartEntrance`).
+- [ ] Medición con Lighthouse y Core Web Vitals (pendiente manual).
 
-**Commit**: `refactor(animation): apply shared motion tokens across the app`
+**Cambios entregados**
+
+- `docs/MOTION-AUDIT.md`: auditoría inicial con hallazgos críticos.
+- `src/shared/motion.ts`: tokens, springs, easings, variants y CSS variables completos.
+- `eslint.config.js`: regla `no-restricted-syntax` anti-literales de animación.
+- `src/app/providers.tsx` + `src/app/providers.test.tsx`: MotionProvider con variables CSS.
+- `src/shared/ui/animated-drawer.tsx`: drawer unificado (Vaul + Motion overlay).
+- `src/shared/ui/navigation-menu.tsx` / `tab-bar.tsx`: indicadores `layoutId`.
+- `src/shared/ui/month-selector.tsx`: transición direccional del mes.
+- `src/app/layout/AppShell.tsx`: `AnimatePresence mode="wait"` en rutas.
+- `src/features/dashboard/*`: dona animada, barras desde la base, stagger corregido,
+  progress bars y lista de últimos movimientos con stagger.
+- `src/features/transactions/*`: `AnimatePresence`, `layout` y exit animation en filas.
+- `src/shared/hooks/use-theme-sync.ts`: cambio de tema con View Transitions API.
+- `src/shared/ui/spinner.tsx`, `error-state.tsx`, `form-error.tsx`: estados animados.
+
+**Verificación**: `npm run lint`, `npm run typecheck`, `npm run test` (119 tests),
+`npm run build` en verde.
+
+**Documentación**: [`MOTION-QA.md`](./MOTION-QA.md).
+
+**Commits**: serie desde `feat(ui): unificar controlId en segmented...` hasta
+`feat(ui): animar estados de carga, vacío y errores de formulario`.

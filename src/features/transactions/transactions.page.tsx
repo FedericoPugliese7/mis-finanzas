@@ -2,7 +2,7 @@ import { useDeferredValue, useMemo, useState } from 'react';
 import { AnimatePresence, m } from 'motion/react';
 import { ArrowLeftRight, Plus, Search, Wallet, Download } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
-import { presses, springs, listContainerVariants } from '@/shared/motion';
+import { presses, springs, tightListContainerVariants } from '@/shared/motion';
 import { formatDayLabel, formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
 import { useToast } from '@/shared/hooks/useToast';
 import { useSettings } from '@/shared/hooks/useSettings';
@@ -29,6 +29,7 @@ import {
 import type { TransactionFormValues } from './transaction.schema';
 import { useTransactions } from './hooks/use-transactions';
 import { useTransactionActions } from './hooks/use-transaction-actions';
+import { useListEntrance } from './hooks/use-list-entrance';
 import type { Transaction } from '@/shared/lib/types';
 
 const TYPE_FILTER_OPTIONS: readonly SegmentedOption<TypeFilter>[] = [
@@ -59,6 +60,7 @@ export default function TransactionsPage() {
   const [query, setQuery] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
+  const animateListEntrance = useListEntrance();
 
   const deferredQuery = useDeferredValue(query);
 
@@ -264,10 +266,10 @@ export default function TransactionsPage() {
                 {dayLabel}
               </h2>
               <m.ul
-                variants={listContainerVariants}
-                initial="hidden"
+                variants={tightListContainerVariants}
+                initial={animateListEntrance ? 'hidden' : false}
                 animate="visible"
-                layout
+                layout="position"
                 className="rounded-card border border-border bg-surface px-2"
               >
                 <AnimatePresence initial={false}>

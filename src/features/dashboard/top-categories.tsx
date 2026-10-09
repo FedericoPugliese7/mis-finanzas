@@ -55,9 +55,9 @@ export function TopCategories({
                 className="h-1.5 flex-1 overflow-hidden rounded-full bg-accent-soft"
               >
                 <m.div
-                  className="h-full rounded-full bg-accent"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${share}%` }}
+                  className="h-full w-full origin-left rounded-full bg-accent"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: share / 100 }}
                   transition={transitions.chart}
                 />
               </div>

@@ -190,7 +190,7 @@ export const tightListContainerVariants: Variants = {
   visible: { transition: tightStagger }
 };
 
-/** Ítem de lista: entra con fade + 8 px, sale corto. `layout` para reordenamiento. */
+/** Ítem de lista: entra con fade + 8 px, sale corto. Usar con prop `layout` en el consumidor. */
 export const listItemVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0, transition: springs.ui },
@@ -217,13 +217,6 @@ export const dialogContentVariants: Variants = {
   exit: { opacity: 0, scale: 0.98, y: 8, transition: transitions.exit }
 };
 
-/** Bottom sheet de mobile: sube desde abajo con el spring de sheet. */
-export const sheetVariants: Variants = {
-  hidden: { y: '100%' },
-  visible: { y: 0, transition: springs.sheet },
-  exit: { y: '100%', transition: { duration: durations.exit, ease: easings.exit } }
-};
-
 /** Toasts: entran desde arriba con desplazamiento corto. */
 export const toastVariants: Variants = {
   hidden: { opacity: 0, y: -12 },
@@ -233,15 +226,20 @@ export const toastVariants: Variants = {
 
 /**
  * Barras de gráficos: crecen desde la base.
+ * Acepta un `custom` number para escalonar el delay (índice * durations.stagger).
  * Aplicar a un `m.div` con `style={{ transformOrigin: 'bottom' }}`.
  */
 export const barGrowthVariants: Variants = {
   hidden: { opacity: 0, scaleY: 0 },
-  visible: {
+  visible: (index = 0) => ({
     opacity: 1,
     scaleY: 1,
-    transition: { duration: durations.chart, ease: easings.out }
-  },
+    transition: {
+      duration: durations.chart,
+      ease: easings.out,
+      delay: index * durations.stagger
+    }
+  }),
   exit: { opacity: 0, scaleY: 0, transition: transitions.exit }
 };
 

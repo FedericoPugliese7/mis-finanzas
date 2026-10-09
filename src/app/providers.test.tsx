@@ -102,9 +102,9 @@ describe('shared motion tokens', () => {
 
   it('exports bar growth variants with origin-friendly defaults', () => {
     const hidden = barGrowthVariants.hidden as { scaleY?: number };
-    const visible = barGrowthVariants.visible as { scaleY?: number };
+    const visibleTarget = (barGrowthVariants.visible as (index?: number) => { scaleY?: number })(0);
     expect(hidden.scaleY).toBe(0);
-    expect(visible.scaleY).toBe(1);
+    expect(visibleTarget.scaleY).toBe(1);
   });
 
   it('exports path sweep variants for SVG charts', () => {

@@ -1,5 +1,5 @@
 import { useReducedMotion, m } from 'motion/react';
-import { transitions } from '@/shared/motion';
+import { fadeOnlyVariants } from '@/shared/motion';
 import { cn } from './utils';
 
 interface SpinnerProps {
@@ -19,9 +19,9 @@ export function Spinner({ size = 20, label = 'Cargando', className }: SpinnerPro
     <m.span
       role="status"
       aria-label={label}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={transitions.microFast}
+      variants={fadeOnlyVariants}
+      initial="hidden"
+      animate="visible"
       className={cn(
         'inline-block rounded-full border-2 border-border border-t-accent',
         !reduced && 'animate-spin',

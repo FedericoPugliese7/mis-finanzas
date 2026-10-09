@@ -79,7 +79,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
 
             {/* Barras */}
             <div className="absolute inset-0 flex items-end justify-around">
-              {bars.map((bar) => (
+              {bars.map((bar, barIndex) => (
                 <div
                   key={bar.month}
                   className="flex h-full flex-1 items-end justify-center gap-1.5"
@@ -98,6 +98,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
                       variants={barGrowthVariants}
                       initial={animateOnMount ? 'hidden' : false}
                       animate="visible"
+                      custom={barIndex * 2 + (kind === 'Ingresos' ? 0 : 1)}
                     >
                         {value > 0 && (
                         <span
