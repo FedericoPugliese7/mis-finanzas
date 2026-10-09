@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import { m } from 'motion/react';
+import { springs } from '@/shared/motion';
 
 import { cn } from './utils';
 import { NAV_ITEMS } from './nav-items';
@@ -22,13 +24,25 @@ export function TabBar() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 pt-1.5 pb-1 text-[11px] font-medium transition-colors',
+                  'relative flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 pt-1.5 pb-1 text-[11px] font-medium transition-colors',
                   isActive ? 'text-accent' : 'text-content-muted'
                 )
               }
             >
-              <item.icon size={20} aria-hidden />
-              <span>{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  {isActive ? (
+                    <m.span
+                      aria-hidden
+                      layoutId="tab-bar-indicator"
+                      transition={springs.ui}
+                      className="absolute inset-x-4 top-0 h-0.5 rounded-full bg-accent"
+                    />
+                  ) : null}
+                  <item.icon size={20} aria-hidden />
+                  <span>{item.label}</span>
+                </>
+              )}
             </NavLink>
           </li>
         ))}

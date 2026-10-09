@@ -1,5 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
+import { m } from 'motion/react';
+import { springs } from '@/shared/motion';
 
 import { cn } from './utils';
 import { NAV_ITEMS } from './nav-items';
@@ -30,13 +32,14 @@ export function DesktopNav() {
               {({ isActive }) => (
                 <>
                   <span>{item.label}</span>
-                  <span
-                    aria-hidden
-                    className={cn(
-                      'absolute inset-x-3 -bottom-0.5 h-0.5 origin-left rounded-full bg-accent transition-transform',
-                      isActive ? 'scale-x-100' : 'scale-x-0'
-                    )}
-                  />
+                  {isActive ? (
+                    <m.span
+                      aria-hidden
+                      layoutId="desktop-nav-indicator"
+                      transition={springs.ui}
+                      className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
+                    />
+                  ) : null}
                 </>
               )}
             </NavLink>

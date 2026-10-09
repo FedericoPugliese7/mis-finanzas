@@ -122,10 +122,13 @@ describe('shared motion tokens', () => {
       (monthChangeVariants.exitRight as { x?: number }).x
     ).toBeGreaterThan(0);
     expect(
-      (monthChangeVariants.enterLeft as { opacity?: number }).opacity
-    ).toBe(1);
+      (monthChangeVariants.enterFromLeft as { x?: number }).x
+    ).toBeLessThan(0);
     expect(
-      (monthChangeVariants.enterRight as { opacity?: number }).opacity
+      (monthChangeVariants.enterFromRight as { x?: number }).x
+    ).toBeGreaterThan(0);
+    expect(
+      (monthChangeVariants.settle as { opacity?: number }).opacity
     ).toBe(1);
   });
 

@@ -261,15 +261,16 @@ export const pathSweepVariants: Variants = {
 
 /**
  * Cambio direccional del selector de mes.
- * Usar con `AnimatePresence mode="wait"` y elegir dinámicamente
- * `exit="exitLeft"` / `enter="enterRight"` según la dirección.
+ * Usar con `AnimatePresence mode="wait"`:
+ * - Avanzar (mes nuevo > mes viejo): `initial="enterFromRight"`, `animate="settle"`, `exit="exitLeft"`.
+ * - Retroceder (mes nuevo < mes viejo): `initial="enterFromLeft"`, `animate="settle"`, `exit="exitRight"`.
  */
 export const monthChangeVariants: Variants = {
-  initial: { opacity: 1, x: 0 },
+  enterFromLeft: { opacity: 0, x: -16 },
+  enterFromRight: { opacity: 0, x: 16 },
+  settle: { opacity: 1, x: 0, transition: transitions.microFast },
   exitLeft: { opacity: 0, x: -16, transition: transitions.microFast },
-  exitRight: { opacity: 0, x: 16, transition: transitions.microFast },
-  enterLeft: { opacity: 1, x: 0, transition: transitions.microFast },
-  enterRight: { opacity: 1, x: 0, transition: transitions.microFast }
+  exitRight: { opacity: 0, x: 16, transition: transitions.microFast }
 };
 
 /** Slide suave para indicadores de navegación (tab bar, sidebar). */

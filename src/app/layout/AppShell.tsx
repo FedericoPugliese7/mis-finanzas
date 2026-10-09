@@ -1,6 +1,6 @@
 import { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { m } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { routeVariants } from '@/shared/motion';
 import { formatLongDate, todayISO } from '@/shared/lib/dates';
 import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
@@ -93,14 +93,17 @@ export function AppShell() {
             </div>
           }
         >
-          <m.div
-            variants={routeVariants}
-            initial="initial"
-            animate="animate"
-            key={location.pathname}
-          >
-            <Outlet />
-          </m.div>
+          <AnimatePresence mode="wait">
+            <m.div
+              variants={routeVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              key={location.pathname}
+            >
+              <Outlet />
+            </m.div>
+          </AnimatePresence>
         </Suspense>
       </main>
 
