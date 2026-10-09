@@ -1,3 +1,4 @@
+import { easingsCss } from '@/shared/motion';
 import { cn } from './utils';
 
 interface SwitchProps {
@@ -43,8 +44,7 @@ export function Switch({
           checked && 'translate-x-5'
         )}
         style={{
-          transition:
-            'transform var(--motion-duration-micro, 180ms) var(--motion-ease-standard, cubic-bezier(0.4, 0, 0.2, 1))'
+          transition: `transform var(--motion-duration-micro, 180ms) var(--motion-ease-standard, ${easingsCss.standard})`
         }}
       />
     </button>

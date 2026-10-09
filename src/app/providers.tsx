@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { LazyMotion, MotionConfig } from 'motion/react';
-import { durationsMs, easingsCss } from '@/shared/motion';
+import { motionCssVars } from '@/shared/motion';
 
 const loadMotionFeatures = () => import('./motion-features').then((m) => m.default);
 
@@ -19,11 +19,9 @@ const loadMotionFeatures = () => import('./motion-features').then((m) => m.defau
 export function MotionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty('--motion-duration-theme', `${durationsMs.theme}ms`);
-    root.style.setProperty('--motion-duration-enter', `${durationsMs.enter}ms`);
-    root.style.setProperty('--motion-duration-micro', `${durationsMs.micro}ms`);
-    root.style.setProperty('--motion-ease-ios', easingsCss.ios);
-    root.style.setProperty('--motion-ease-standard', easingsCss.standard);
+    for (const [name, value] of Object.entries(motionCssVars())) {
+      root.style.setProperty(name, value);
+    }
   }, []);
 
   return (

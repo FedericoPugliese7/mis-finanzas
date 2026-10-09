@@ -15,13 +15,26 @@ import type { Transition, Variants } from 'motion/react';
 export type BezierCurve = [number, number, number, number];
 
 export const easings = {
-  /** Curva estándar de UI iOS (usada en sheets y drawers). */
+  /**
+   * Curva estándar de UI iOS (usada en sheets y drawers).
+   * Para acelerar el inicio sin perder suavidad de llegada, subir el primer
+   * valor (0.32 → 0.4). Para más suavidad al final, subir el segundo (0.72).
+   */
   ios: [0.32, 0.72, 0, 1] as BezierCurve,
-  /** Curva neutra para entradas y salidas cortas. */
+  /**
+   * Curva neutra para entradas y salidas cortas.
+   * Buen punto medio: salida rápida, llegada sin rebote.
+   */
   standard: [0.4, 0, 0.2, 1] as BezierCurve,
-  /** Salida acelerada (elementos que se van). */
+  /**
+   * Salida acelerada (elementos que se van).
+   * Rápida de inicio a fin: el usuario no espera a que desaparezca algo.
+   */
   exit: [0.4, 0, 1, 1] as BezierCurve,
-  /** Desaceleración suave, ideal para gráficos. */
+  /**
+   * Desaceleración suave, ideal para gráficos y contadores.
+   * Para hacerla más relajada, acercar el segundo punto a (0.2, 1).
+   */
   out: [0.16, 1, 0.3, 1] as BezierCurve
 } satisfies Record<string, BezierCurve>;
 
@@ -38,17 +51,34 @@ export const easingsCss = {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Springs de UI: stiffness 260-400, damping ~30 (sin rebote notorio).
+ * Springs de UI: damping ratio alto (sin rebote notorio).
  * La velocidad de un spring se define con stiffness/damping, no con duration.
+ *
+ * Cómo ajustar la sensación:
+ * - Más rápido: subir `stiffness` o bajar `mass`.
+ * - Más lento: bajar `stiffness` o subir `mass`.
+ * - Más suave (menos rebote): subir `damping`. Menos suave: bajar `damping`.
  */
 export const springs = {
-  /** Feedback de presión (botones, tarjetas). Rápido y contenido. */
+  /**
+   * Feedback de presión (botones, tarjetas, FAB).
+   * Rápido y contenido: la respuesta al toque debe sentirse en el primer frame.
+   */
   micro: { type: 'spring', stiffness: 500, damping: 34, mass: 0.6 },
-  /** Transiciones de UI everyday (toasts, inline expands). */
+  /**
+   * Transiciones de UI everyday (toasts, inline expands, indicadores).
+   * Equilibrio entre rapidez y suavidad.
+   */
   ui: { type: 'spring', stiffness: 360, damping: 30, mass: 0.9 },
-  /** Sheets y drawers: equivalente suave al cubic-bezier iOS (~400 ms). */
+  /**
+   * Sheets y drawers: equivalente suave al cubic-bezier iOS (~400 ms).
+   * Se usa para capas que se deslizan y que pueden ser interrumpidas.
+   */
   sheet: { type: 'spring', stiffness: 340, damping: 34, mass: 1 },
-  /** Entradas grandes (página, modal): algo más pesado y calmado. */
+  /**
+   * Entradas grandes (página, modal) y valores numéricos (count-up).
+   * Más pesado y calmado; no compite con el protagonista de la pantalla.
+   */
   gentle: { type: 'spring', stiffness: 260, damping: 28, mass: 1 }
 } satisfies Record<string, Transition>;
 
@@ -60,6 +90,7 @@ export const springs = {
 export const durations = {
   /** Micro-interacciones (hover, foco, toggle): 150-250 ms. */
   micro: 0.18,
+  /** Micro-interacciones muy cortas (indicadores, toggles). */
   microFast: 0.15,
   /** Entrada de elementos: fade + desplazamiento corto. */
   enter: 0.24,
@@ -71,7 +102,7 @@ export const durations = {
   theme: 0.2,
   /** Contadores numéricos del dashboard. */
   count: 0.6,
-  /** Gráficos de Recharts (solo primer montaje): 600-800 ms. */
+  /** Gráficos (solo primer montaje): 600-800 ms. */
   chart: 0.7,
   /** Stagger entre ítems de lista. */
   stagger: 0.03
@@ -87,7 +118,8 @@ export const durationsMs = {
   exit: durations.exit * MS_PER_SECOND,
   route: durations.route * MS_PER_SECOND,
   theme: durations.theme * MS_PER_SECOND,
-  chart: durations.chart * MS_PER_SECOND
+  chart: durations.chart * MS_PER_SECOND,
+  stagger: durations.stagger * MS_PER_SECOND
 } satisfies Record<string, number>;
 
 /* -------------------------------------------------------------------------- */
@@ -108,6 +140,16 @@ export const transitions = {
   stagger: { staggerChildren: durations.stagger, delayChildren: 0.04 }
 } satisfies Record<string, Transition>;
 
+/**
+ * Stagger acotado: usa el delayChildren justo para que los primeros ítems
+ * visibles entren rápido sin superar ~300-400 ms en total.
+ * Ajustar `staggerChildren` para listas grandes.
+ */
+export const tightStagger: Transition = {
+  staggerChildren: durations.stagger,
+  delayChildren: 0.02
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                  Variantes                                  */
 /* -------------------------------------------------------------------------- */
@@ -126,10 +168,26 @@ export const fadeOnlyVariants: Variants = {
   exit: { opacity: 0, transition: transitions.exit }
 };
 
+/** Gráficos: fade puro en el primer montaje (SPEC 7.7), duración chart. */
+export const chartVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: transitions.chart },
+  exit: { opacity: 0, transition: transitions.exit }
+};
+
 /** Contenedor de listas: orquestador del stagger. */
 export const listContainerVariants: Variants = {
   hidden: {},
   visible: { transition: transitions.stagger }
+};
+
+/**
+ * Contenedor de listas acotado: para listas largas donde el stagger total
+ * no debe superar ~300-400 ms.
+ */
+export const tightListContainerVariants: Variants = {
+  hidden: {},
+  visible: { transition: tightStagger }
 };
 
 /** Ítem de lista: entra con fade + 8 px, sale corto. `layout` para reordenamiento. */
@@ -173,18 +231,114 @@ export const toastVariants: Variants = {
   exit: { opacity: 0, y: -12, transition: transitions.exit }
 };
 
-/** Tappable elements press feedback: scale 0.97 with a smooth spring return. */
-const pressableTap = { scale: 0.97 } as const;
-const pressableWhileHover = { scale: 1.015 } as const;
+/**
+ * Barras de gráficos: crecen desde la base.
+ * Aplicar a un `m.div` con `style={{ transformOrigin: 'bottom' }}`.
+ */
+export const barGrowthVariants: Variants = {
+  hidden: { opacity: 0, scaleY: 0 },
+  visible: {
+    opacity: 1,
+    scaleY: 1,
+    transition: { duration: durations.chart, ease: easings.out }
+  },
+  exit: { opacity: 0, scaleY: 0, transition: transitions.exit }
+};
 
-/** Press feedback for tappable elements (buttons, cards): scale 0.97. */
+/**
+ * Dona / path SVG: se dibuja con barrido.
+ * Aplicar a un `m.path` o `m.circle` (vía `pathLength` o `strokeDashoffset`).
+ */
+export const pathSweepVariants: Variants = {
+  hidden: { opacity: 0, pathLength: 0 },
+  visible: {
+    opacity: 1,
+    pathLength: 1,
+    transition: { duration: durations.chart, ease: easings.out }
+  },
+  exit: { opacity: 0, pathLength: 0, transition: transitions.exit }
+};
+
+/**
+ * Cambio direccional del selector de mes.
+ * Usar con `AnimatePresence mode="wait"` y elegir dinámicamente
+ * `exit="exitLeft"` / `enter="enterRight"` según la dirección.
+ */
+export const monthChangeVariants: Variants = {
+  initial: { opacity: 1, x: 0 },
+  exitLeft: { opacity: 0, x: -16, transition: transitions.microFast },
+  exitRight: { opacity: 0, x: 16, transition: transitions.microFast },
+  enterLeft: { opacity: 1, x: 0, transition: transitions.microFast },
+  enterRight: { opacity: 1, x: 0, transition: transitions.microFast }
+};
+
+/** Slide suave para indicadores de navegación (tab bar, sidebar). */
+export const indicatorVariants: Variants = {
+  hidden: { opacity: 0, scaleX: 0 },
+  visible: { opacity: 1, scaleX: 1, transition: springs.ui },
+  exit: { opacity: 0, transition: transitions.exit }
+};
+
+/**
+ * Press feedback para elementos tocables (botones, cards, FAB).
+ * `tap` es el default. `hover` está reservado para casos aislados;
+ * por regla del proyecto no se aplica a botones/cards por defecto.
+ */
 export const presses = {
-  tap: pressableTap,
-  hover: pressableWhileHover
+  tap: { scale: 0.97 } as const,
+  hover: { scale: 1.015 } as const
 } as const;
+
+/** Variantes pre-armadas para elementos pressables (tap + hover opcional). */
+export const pressableVariants: Variants = {
+  tap: presses.tap,
+  hover: presses.hover
+};
 
 /** Stagger container for dashboard cards and grouped sections. */
 export const staggerContainerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: durations.stagger, delayChildren: 0.05 } }
 };
+
+/**
+ * Stagger acotado para dashboards: entra más rápido para no competir con el
+ * protagonista principal (count-up o gráfico).
+ */
+export const dashboardStaggerVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: durations.stagger, delayChildren: 0.02 } }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                           Tokens como CSS variables                         */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Nombres de variables CSS que `MotionProvider` inyecta en `:root`.
+ * Los componentes que usan transiciones CSS puras (Switch, View Transitions)
+ * consumen estas variables para compartir la misma fuente de verdad.
+ */
+export const motionCssVarNames = {
+  durationTheme: '--motion-duration-theme',
+  durationEnter: '--motion-duration-enter',
+  durationMicro: '--motion-duration-micro',
+  durationStagger: '--motion-duration-stagger',
+  easeIos: '--motion-ease-ios',
+  easeStandard: '--motion-ease-standard'
+} as const;
+
+/**
+ * Devuelve el set de propiedades CSS listo para inyectar con
+ * `root.style.setProperty(...)` en `MotionProvider`.
+ */
+export function motionCssVars(): Record<string, string> {
+  return {
+    [motionCssVarNames.durationTheme]: `${durationsMs.theme}ms`,
+    [motionCssVarNames.durationEnter]: `${durationsMs.enter}ms`,
+    [motionCssVarNames.durationMicro]: `${durationsMs.micro}ms`,
+    [motionCssVarNames.durationStagger]: `${durationsMs.stagger}ms`,
+    [motionCssVarNames.easeIos]: easingsCss.ios,
+    [motionCssVarNames.easeStandard]: easingsCss.standard
+  };
+}
