@@ -1,10 +1,8 @@
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { useThemeStore } from '@/shared/stores/theme.store';
-import { durationsMs } from '@/shared/motion';
+import { m } from 'motion/react';
 import { formatMoney } from '@/shared/lib/money';
+import { chartVariants } from '@/shared/motion';
 import type { Currency } from '@/shared/lib/types';
 import { useChartEntrance } from './hooks/use-chart-entrance';
-import { chartTheme } from './chart-theme';
 import type { DonutSlice } from './dashboard.helpers';
 
 interface CategoryDonutProps {
@@ -12,20 +10,28 @@ interface CategoryDonutProps {
   currency: Currency;
 }
 
+/* Geometry: matches the previous innerRadius 68 / outerRadius 96 pie. */
+const SIZE = 240;
+const CENTER = SIZE / 2;
+const RADIUS = 82;
+const STROKE = 28;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+/** Slice separator, in degrees (the previous `paddingAngle`). */
+const GAP_DEGREES = 2;
+const GAP_ARCS = (GAP_DEGREES / 360) * CIRCUMFERENCE;
+
 /** Expense donut by category (SPEC 4.1). Animates only on first mount (SPEC 7.7). */
 export default function CategoryDonut({ slices, currency }: CategoryDonutProps) {
   const animateOnMount = useChartEntrance();
-  useThemeStore((state) => state.theme);
-  const colors = chartTheme();
-  const data = slices.map((slice) => ({
-    id: slice.categoryId,
-    name: slice.name,
-    value: slice.total,
-    color: slice.color,
-    percent: slice.percent
-  }));
-
   const totalValue = slices.reduce((sum, s) => sum + s.total, 0);
+
+  let cursor = 0;
+  const arcs = slices.map((slice) => {
+    const length = totalValue > 0 ? (slice.total / totalValue) * CIRCUMFERENCE : 0;
+    const start = cursor;
+    cursor += length;
+    return { slice, offset: -start, visible: Math.max(length - GAP_ARCS, 0) };
+  });
 
   return (
     <div>
@@ -34,38 +40,30 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
         aria-label={`Gastos por categoría en dona. Total: ${formatMoney(totalValue, currency, { decimals: false })}. Los montos exactos están en la tabla siguiente.`}
         className="relative"
       >
-        <ResponsiveContainer width="100%" height={240}>
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={68}
-              outerRadius={96}
-              paddingAngle={2}
-              isAnimationActive={animateOnMount}
-              animationDuration={durationsMs.chart}
-              animationEasing="ease-out"
-              stroke={colors.surface}
-              strokeWidth={2}
+        <m.svg
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          className="h-[240px] w-full"
+          initial={animateOnMount ? 'hidden' : false}
+          animate="visible"
+          variants={chartVariants}
+        >
+          {arcs.map(({ slice, offset, visible }) => (
+            <circle
+              key={slice.categoryId}
+              cx={CENTER}
+              cy={CENTER}
+              r={RADIUS}
+              fill="none"
+              stroke={slice.color}
+              strokeWidth={STROKE}
+              strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
+              strokeDashoffset={offset}
+              transform={`rotate(-90 ${CENTER} ${CENTER})`}
             >
-              {data.map((entry) => (
-                <Cell key={entry.id} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip
-              cursor={false}
-              contentStyle={{
-                backgroundColor: colors.surface,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 8,
-                color: colors.content,
-                fontSize: 12
-              }}
-              formatter={(value, name) => [formatMoney(Number(value), currency), name]}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+              <title>{`${slice.name}: ${formatMoney(slice.total, currency)}`}</title>
+            </circle>
+          ))}
+        </m.svg>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="amount whitespace-nowrap text-base font-semibold text-content sm:text-lg">
             {formatMoney(totalValue, currency, { decimals: false })}
