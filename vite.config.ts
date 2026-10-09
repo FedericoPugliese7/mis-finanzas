@@ -1,15 +1,58 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
+
+/** Chunks that must start downloading with the HTML, not after entry evaluation. */
+const CRITICAL_CHUNKS = [
+  /^assets\/dashboard\.page-.+\.js$/,
+  /^assets\/motion-features-.+\.js$/
+];
+
+/**
+ * Critical-path optimizer for the production HTML: injects
+ * `<link rel="modulepreload">` for the first-route chunk graph, so the
+ * dashboard/motion chunks download in parallel with the entry bundle instead
+ * of after its evaluation. Runs in `writeBundle` because that is where Vite
+ * has already emitted the final `index.html` with hashed asset URLs.
+ */
+function criticalHtml(): Plugin {
+  return {
+    name: 'critical-html',
+    apply: 'build',
+    writeBundle(options, bundle) {
+      const outDir = options.dir ?? '.';
+      const htmlFile = path.resolve(outDir, 'index.html');
+      let html = readFileSync(htmlFile, 'utf8');
+
+      const preloads = new Set<string>();
+      for (const fileName of Object.keys(bundle)) {
+        if (CRITICAL_CHUNKS.some((pattern) => pattern.test(fileName)))
+          preloads.add(fileName);
+      }
+
+      const base = process.env.VITE_BASE ?? '/';
+      const prefix = base.endsWith('/') ? base : `${base}/`;
+      const tags = [...preloads]
+        .sort()
+        .map((fileName) => `<link rel="modulepreload" href="${prefix}${fileName}" />`)
+        .join('');
+      html = html.replace('</head>', `${tags}</head>`);
+
+      writeFileSync(htmlFile, html);
+    }
+  };
+}
 
 export default defineConfig({
   base: process.env.VITE_BASE ?? '/',
   plugins: [
     tailwindcss(),
     react(),
+    criticalHtml(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
