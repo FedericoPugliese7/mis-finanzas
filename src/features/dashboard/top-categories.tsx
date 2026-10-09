@@ -1,6 +1,8 @@
 import { iconFor } from '@/features/categories/category.constants';
+import { m } from 'motion/react';
 import type { CategoryTotal } from '@/shared/lib/aggregations';
 import { formatMoney } from '@/shared/lib/money';
+import { transitions } from '@/shared/motion';
 import type { Currency } from '@/shared/lib/types';
 
 interface TopCategoriesProps {
@@ -52,9 +54,11 @@ export function TopCategories({
                 aria-hidden
                 className="h-1.5 flex-1 overflow-hidden rounded-full bg-accent-soft"
               >
-                <div
+                <m.div
                   className="h-full rounded-full bg-accent"
-                  style={{ width: `${share}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${share}%` }}
+                  transition={transitions.chart}
                 />
               </div>
               <span className="w-9 shrink-0 text-right text-xs amount text-content-muted">

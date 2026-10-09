@@ -1,6 +1,6 @@
 import { m } from 'motion/react';
 import { formatMoney } from '@/shared/lib/money';
-import { chartVariants } from '@/shared/motion';
+import { chartVariants, transitions } from '@/shared/motion';
 import type { Currency } from '@/shared/lib/types';
 import { useChartEntrance } from './hooks/use-chart-entrance';
 import type { DonutSlice } from './dashboard.helpers';
@@ -48,7 +48,7 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
           variants={chartVariants}
         >
           {arcs.map(({ slice, offset, visible }) => (
-            <circle
+            <m.circle
               key={slice.categoryId}
               cx={CENTER}
               cy={CENTER}
@@ -59,9 +59,15 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
               strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
               strokeDashoffset={offset}
               transform={`rotate(-90 ${CENTER} ${CENTER})`}
+              initial={
+                animateOnMount
+                  ? { strokeDashoffset: offset - visible }
+                  : false
+              }
+              animate={{ strokeDashoffset: offset, transition: transitions.chart }}
             >
               <title>{`${slice.name}: ${formatMoney(slice.total, currency)}`}</title>
-            </circle>
+            </m.circle>
           ))}
         </m.svg>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

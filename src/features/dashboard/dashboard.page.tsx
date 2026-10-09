@@ -11,7 +11,10 @@ import {
   totalsForDisplay
 } from '@/shared/lib/aggregations';
 import { formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
-import { fadeVariants, staggerContainerVariants } from '@/shared/motion';
+import {
+  dashboardStaggerVariants,
+  fadeVariants
+} from '@/shared/motion';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { usePreferencesStore } from '@/shared/stores/preferences.store';
 import { Card } from '@/shared/ui/card';
@@ -87,20 +90,24 @@ export default function DashboardPage() {
 
   return (
     <m.div
-      variants={staggerContainerVariants}
+      variants={dashboardStaggerVariants}
       initial="hidden"
       animate="visible"
       className="flex flex-col gap-6"
     >
-      <SectionHeader
-        icon={LayoutDashboard}
-        title="Dashboard"
-        subtitle="Resumen del mes actual"
-      />
+      <m.div variants={fadeVariants}>
+        <SectionHeader
+          icon={LayoutDashboard}
+          title="Dashboard"
+          subtitle="Resumen del mes actual"
+        />
+      </m.div>
 
-      <Card variant="filled" className="p-2">
-        <MonthSelector month={month} onChange={setMonth} className="sm:justify-start" />
-      </Card>
+      <m.div variants={fadeVariants}>
+        <Card variant="filled" className="p-2">
+          <MonthSelector month={month} onChange={setMonth} className="sm:justify-start" />
+        </Card>
+      </m.div>
 
       <SummaryCards totals={totals} display={display} />
 

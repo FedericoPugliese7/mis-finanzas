@@ -1,6 +1,8 @@
 import { iconFor } from '@/features/categories/category.constants';
+import { m } from 'motion/react';
 import { formatDayLabel } from '@/shared/lib/dates';
 import { formatMoney } from '@/shared/lib/money';
+import { listContainerVariants, listItemVariants } from '@/shared/motion';
 import { cn } from '@/shared/ui/utils';
 import type { Category, Transaction } from '@/shared/lib/types';
 
@@ -20,7 +22,12 @@ export function LatestMovements({ transactions, categoriesById }: LatestMovement
   }
 
   return (
-    <ul className="flex flex-col gap-2.5">
+    <m.ul
+      variants={listContainerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col gap-2.5"
+    >
       {transactions.map((transaction) => {
         const category = categoriesById.get(transaction.categoryId);
         const isExpense = transaction.type === 'expense';
@@ -34,7 +41,7 @@ export function LatestMovements({ transactions, categoriesById }: LatestMovement
         );
 
         return (
-          <li key={transaction.id} className="flex items-center gap-3">
+          <m.li key={transaction.id} variants={listItemVariants} className="flex items-center gap-3">
             <span
               aria-hidden
               className="grid h-8 w-8 shrink-0 place-items-center rounded-control"
@@ -56,9 +63,9 @@ export function LatestMovements({ transactions, categoriesById }: LatestMovement
             >
               {isExpense ? amount : `+${amount}`}
             </span>
-          </li>
+          </m.li>
         );
       })}
-    </ul>
+    </m.ul>
   );
 }

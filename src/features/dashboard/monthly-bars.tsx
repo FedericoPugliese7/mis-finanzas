@@ -1,6 +1,6 @@
 import { m } from 'motion/react';
 import { useThemeStore } from '@/shared/stores/theme.store';
-import { chartVariants } from '@/shared/motion';
+import { barGrowthVariants, chartVariants } from '@/shared/motion';
 import { formatMonthShort } from '@/shared/lib/dates';
 import { formatMoney } from '@/shared/lib/money';
 import type { MonthlyBars } from '@/shared/lib/aggregations';
@@ -90,13 +90,16 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
                       { kind: 'Gastos', value: bar.expense, color: colors.expense }
                     ] as const
                   ).map(({ kind, value, color }) => (
-                    <div
+                    <m.div
                       key={kind}
                       title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
                       className="relative w-6 rounded-t-md sm:w-8"
-                      style={{ height: heightOf(value), backgroundColor: color }}
+                      style={{ height: heightOf(value), backgroundColor: color, transformOrigin: 'bottom' }}
+                      variants={barGrowthVariants}
+                      initial={animateOnMount ? 'hidden' : false}
+                      animate="visible"
                     >
-                      {value > 0 && (
+                        {value > 0 && (
                         <span
                           aria-hidden
                           className="amount absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold text-content"
@@ -104,7 +107,7 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
                           {formatMoney(value, currency, { decimals: false })}
                         </span>
                       )}
-                    </div>
+                    </m.div>
                   ))}
                 </div>
               ))}
