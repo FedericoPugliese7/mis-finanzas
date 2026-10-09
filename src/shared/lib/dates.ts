@@ -1,6 +1,3 @@
-import { format, isSameDay, parseISO, subDays } from 'date-fns';
-import { es } from 'date-fns/locale';
-
 /** Plain date string, no timezone: `YYYY-MM-DD`. */
 export type DateISO = string;
 /** Plain month key, no timezone: `YYYY-MM`. */
@@ -8,6 +5,7 @@ export type MonthKey = string;
 
 const MONTH_KEY_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] as const;
+const LOCALE = 'es-AR';
 
 export function isLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -55,29 +53,87 @@ export function todayISO(now: Date = new Date()): DateISO {
   return `${year}-${month}-${day}`;
 }
 
-/** Month label for the UI, e.g. `Octubre 2026` (locale `es`). */
+/** Month label for the UI, e.g. `Octubre 2026` (locale `es-AR`). */
 export function formatMonth(month: MonthKey): string {
-  const label = format(parseISO(monthStart(month)), 'MMMM yyyy', { locale: es });
-  return capitalize(label);
+  const parts = partsOf(parseDate(monthStart(month)), { month: 'long', year: 'numeric' });
+  return capitalize(`${partText(parts, 'month')} ${partText(parts, 'year')}`);
 }
 
-/** Short month label for chart axes, e.g. `oct` (locale `es`). */
+/** Short month label for chart axes, e.g. `oct` (locale `es-AR`). */
 export function formatMonthShort(month: MonthKey): string {
-  return format(parseISO(monthStart(month)), 'MMM', { locale: es });
+  return partText(partsOf(parseDate(monthStart(month)), { month: 'short' }), 'month');
 }
 
-/** Day label for grouped lists: `Hoy`, `Ayer` or `Lunes 4 de octubre` (locale `es`). */
+/** Day label for grouped lists: `Hoy`, `Ayer` or `Lunes 4 de octubre` (locale `es-AR`). */
 export function formatDayLabel(date: DateISO, today: DateISO = todayISO()): string {
-  const parsed = parseISO(date);
-  const parsedToday = parseISO(today);
+  const parsed = parseDate(date);
+  const parsedToday = parseDate(today);
   if (isSameDay(parsed, parsedToday)) return 'Hoy';
-  if (isSameDay(parsed, subDays(parsedToday, 1))) return 'Ayer';
-  return capitalize(format(parsed, "EEEE d 'de' MMMM", { locale: es }));
+  if (isSameDay(parsed, previousDay(parsedToday))) return 'Ayer';
+  const parts = partsOf(parsed, { weekday: 'long', day: 'numeric', month: 'long' });
+  return capitalize(
+    `${partText(parts, 'weekday')} ${partText(parts, 'day')} de ${partText(parts, 'month')}`
+  );
 }
 
-/** Long date for the app header, e.g. `Domingo 4 de octubre de 2026` (locale `es`). */
+/** Long date for the app header, e.g. `Domingo 4 de octubre de 2026` (locale `es-AR`). */
 export function formatLongDate(date: DateISO): string {
-  return capitalize(format(parseISO(date), "EEEE d 'de' MMMM 'de' yyyy", { locale: es }));
+  const parts = partsOf(parseDate(date), {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  return capitalize(
+    `${partText(parts, 'weekday')} ${partText(parts, 'day')} de ${partText(
+      parts,
+      'month'
+    )} de ${partText(parts, 'year')}`
+  );
+}
+
+/** `YYYY-MM-DD` → local midnight (plain string, no timezone shift). */
+function parseDate(date: DateISO): Date {
+  return new Date(
+    Number(date.slice(0, 4)),
+    Number(date.slice(5, 7)) - 1,
+    Number(date.slice(8, 10))
+  );
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function previousDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+}
+
+/** `Intl.DateTimeFormat` instances are expensive to build: cache per options shape. */
+const formatterCache = new Map<string, Intl.DateTimeFormat>();
+
+function partsOf(
+  date: Date,
+  options: Intl.DateTimeFormatOptions
+): Intl.DateTimeFormatPart[] {
+  const key = JSON.stringify(options);
+  let formatter = formatterCache.get(key);
+  if (formatter === undefined) {
+    formatter = new Intl.DateTimeFormat(LOCALE, options);
+    formatterCache.set(key, formatter);
+  }
+  return formatter.formatToParts(date);
+}
+
+function partText(
+  parts: Intl.DateTimeFormatPart[],
+  type: Intl.DateTimeFormatPartTypes
+): string {
+  return parts.find((part) => part.type === type)?.value ?? '';
 }
 
 function capitalize(value: string): string {
