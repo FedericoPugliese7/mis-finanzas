@@ -1,7 +1,12 @@
 import { useEffect, useId, useRef } from 'react';
 import { useController, Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Drawer } from 'vaul';
+import {
+  AnimatedDrawer,
+  AnimatedDrawerContent,
+  AnimatedDrawerDescription,
+  AnimatedDrawerTitle
+} from '@/shared/ui/animated-drawer';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { parseMoney } from '@/shared/lib/money';
 import { Button } from '@/shared/ui/button';
@@ -299,23 +304,20 @@ export function TransactionForm({
   }
 
   return (
-    <Drawer.Root open={open} onOpenChange={onOpenChange}>
-      <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-50 bg-overlay" />
-        <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col overflow-y-auto rounded-t-card border border-border bg-surface p-6 safe-bottom">
-          <div
-            aria-hidden
-            className="mx-auto mb-4 h-1.5 w-12 shrink-0 rounded-full bg-border"
-          />
-          <Drawer.Title className="text-lg font-semibold text-content">
-            {title}
-          </Drawer.Title>
-          <Drawer.Description className="mt-1 text-sm text-content-secondary">
-            {description}
-          </Drawer.Description>
-          <div className="mt-4">{fields}</div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+    <AnimatedDrawer open={open} onOpenChange={onOpenChange}>
+      <AnimatedDrawerContent>
+        <div
+          aria-hidden
+          className="mx-auto mb-4 h-1.5 w-12 shrink-0 rounded-full bg-border"
+        />
+        <AnimatedDrawerTitle className="text-lg font-semibold text-content">
+          {title}
+        </AnimatedDrawerTitle>
+        <AnimatedDrawerDescription className="mt-1 text-sm text-content-secondary">
+          {description}
+        </AnimatedDrawerDescription>
+        <div className="mt-4">{fields}</div>
+      </AnimatedDrawerContent>
+    </AnimatedDrawer>
   );
 }
