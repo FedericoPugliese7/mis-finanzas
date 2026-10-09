@@ -155,7 +155,7 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
-          <div className="mt-3">
+          <div className="mt-8">
             <Suspense
               fallback={
                 <div className="flex justify-center py-8">
