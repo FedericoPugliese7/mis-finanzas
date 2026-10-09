@@ -27,7 +27,7 @@ dólares estadounidenses (USD), organizados por categorías, con un dashboard cl
 | Persistencia      | Dexie 4 + `dexie-react-hooks` (`useLiveQuery`)                                                     |
 | Estado de UI      | Zustand (solo UI transitoria y preferencias)                                                       |
 | Formularios       | `react-hook-form` + `@hookform/resolvers` + `zod`                                                  |
-| Gráficos / fechas | `recharts` (lazy), `date-fns` (locale `es`)                                                        |
+| Gráficos / fechas | Gráficos a medida (SVG/CSS), `Intl.DateTimeFormat` (locale `es-AR`)                                |
 | Animación         | `motion` (`motion/react`, `LazyMotion` + `m`), tokens en `src/shared/motion.ts`                    |
 | PWA               | `vite-plugin-pwa` (manifest + service worker + precache)                                           |
 | Calidad           | Vitest + React Testing Library, ESLint 9 flat, Prettier                                            |

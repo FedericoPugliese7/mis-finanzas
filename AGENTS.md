@@ -11,7 +11,7 @@ Este repositorio es una PWA local-first para el control de ingresos y gastos per
 - **Persistencia local:** Dexie 4+ (IndexedDB) con `dexie-react-hooks` (`useLiveQuery`). Cero backend, cero telemetría.
 - **Estado de UI:** Zustand (solo para UI transitoria y preferencias como tema/moneda).
 - **Formularios & Validación:** `react-hook-form` + `@hookform/resolvers` + `zod`
-- **Gráficos & Fechas:** `recharts` (carga diferida `React.lazy`), `date-fns` (locale `es`)
+- **Gráficos & Fechas:** gráficos a medida (SVG/CSS, sin librerías), fechas con `Intl.DateTimeFormat` (locale `es-AR`)
 - **Animación:** `motion` (`motion/react`) con `LazyMotion` + componente `m` (`import { m } from 'motion/react'`). Tokens, springs, duraciones, easings y variantes compartidas en `src/shared/motion.ts`.
 - **PWA:** `vite-plugin-pwa` (service worker, manifest, precache offline)
 - **Calidad:** Vitest (jsdom, React Testing Library), ESLint 9 (flat config), Prettier
