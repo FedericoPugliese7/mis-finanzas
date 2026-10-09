@@ -1,5 +1,5 @@
 import { useDeferredValue, useMemo, useState } from 'react';
-import { m } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { ArrowLeftRight, Plus, Search, Wallet, Download } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { presses, springs, listContainerVariants } from '@/shared/motion';
@@ -267,20 +267,23 @@ export default function TransactionsPage() {
                 variants={listContainerVariants}
                 initial="hidden"
                 animate="visible"
+                layout
                 className="rounded-card border border-border bg-surface px-2"
               >
-                {group.items.map((transaction) => (
-                  <TransactionRow
-                    key={transaction.id}
-                    transaction={transaction}
-                    category={categoryById.get(transaction.categoryId)}
-                    onEdit={() => {
-                      setEditing(transaction);
-                      setFormOpen(true);
-                    }}
-                    onDelete={() => void actions.remove(transaction)}
-                  />
-                ))}
+                <AnimatePresence initial={false}>
+                  {group.items.map((transaction) => (
+                    <TransactionRow
+                      key={transaction.id}
+                      transaction={transaction}
+                      category={categoryById.get(transaction.categoryId)}
+                      onEdit={() => {
+                        setEditing(transaction);
+                        setFormOpen(true);
+                      }}
+                      onDelete={() => void actions.remove(transaction)}
+                    />
+                  ))}
+                </AnimatePresence>
               </m.ul>
             </section>
           );

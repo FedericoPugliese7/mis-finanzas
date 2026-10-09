@@ -35,6 +35,9 @@ export function TransactionRow({
   return (
     <m.li
       variants={listItemVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
       layout="position"
       className="flex items-center gap-1 border-b border-border-subtle last:border-b-0"
     >
