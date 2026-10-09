@@ -79,6 +79,7 @@ describe('rate store', () => {
     const first = useRateStore.getState().refresh();
     const second = useRateStore.getState().refresh();
     expect(useRateStore.getState().status).toBe('loading');
+    await vi.waitFor(() => expect(globalThis.fetch).toHaveBeenCalledTimes(1));
     resolveFetch({ ok: false, status: 500, json: async () => ({}) });
     await Promise.all([first, second]);
     expect(vi.mocked(globalThis.fetch)).toHaveBeenCalledTimes(1);

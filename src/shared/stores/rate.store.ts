@@ -1,13 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { settingsRepo } from '@/shared/db/repos/settings.repo';
-import {
-  fetchOfficialRate,
-  isRateStale,
-  RATE_TTL_MS,
-  referenceRateFor,
-  type OfficialRate
-} from '@/shared/lib/dolarapi';
+import { RATE_TTL_MS } from '@/shared/lib/rate-config';
+import type { OfficialRate } from '@/shared/lib/dolarapi';
 
 export type RateStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -23,6 +18,7 @@ interface RateState {
 
 async function syncReferenceRate(rate: OfficialRate): Promise<void> {
   try {
+    const { referenceRateFor } = await import('@/shared/lib/dolarapi');
     const settings = await settingsRepo.get();
     const next = referenceRateFor(settings, rate);
     if (next !== null && next !== settings.referenceRate) {
@@ -50,6 +46,7 @@ export const useRateStore = create<RateState>()(
         if (get().status === 'loading') return;
         set({ status: 'loading' });
         try {
+          const { fetchOfficialRate } = await import('@/shared/lib/dolarapi');
           const rate = await fetchOfficialRate();
           set({ rate, status: 'success', lastFetched: Date.now(), error: null });
           await syncReferenceRate(rate);
@@ -65,6 +62,7 @@ export const useRateStore = create<RateState>()(
       refreshIfStale: async () => {
         const { lastFetched, status } = get();
         if (status === 'loading') return;
+        const { isRateStale } = await import('@/shared/lib/dolarapi');
         if (!isRateStale(lastFetched, Date.now(), RATE_TTL_MS)) return;
         await get().refresh();
       }

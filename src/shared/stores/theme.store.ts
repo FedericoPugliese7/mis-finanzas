@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { ThemeSchema, type Theme } from '@/shared/lib/types';
+import { isTheme } from '@/shared/lib/guards';
+import type { Theme } from '@/shared/lib/types';
 
 /**
  * Theme preference.
@@ -15,8 +16,7 @@ function readStoredTheme(): Theme {
     const raw = localStorage.getItem(THEME_STORAGE_KEY);
     if (raw === null) return 'system';
     const parsed: unknown = JSON.parse(raw);
-    const result = ThemeSchema.safeParse(parsed);
-    return result.success ? result.data : 'system';
+    return isTheme(parsed) ? parsed : 'system';
   } catch {
     return 'system';
   }

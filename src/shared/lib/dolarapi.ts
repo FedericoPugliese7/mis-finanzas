@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import type { Settings } from './types';
+import { RATE_TTL_MS } from './rate-config';
 
 export const DOLARAPI_OFICIAL_URL = 'https://dolarapi.com/v1/dolares/oficial';
 
 /** Minimum refresh interval: the rate is kept up to date at least hourly. */
-export const RATE_TTL_MS = 60 * 60 * 1000;
+export { RATE_TTL_MS };
 
 export const OfficialRateSchema = z.object({
   compra: z.number().positive('Cotización de compra inválida'),
