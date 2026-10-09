@@ -11,6 +11,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { parseMoney } from '@/shared/lib/money';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
+import { FormError } from '@/shared/ui/form-error';
 import { Input } from '@/shared/ui/input';
 import { MoneyInput } from '@/shared/ui/money-input';
 import { Segmented, type SegmentedOption } from '@/shared/ui/segmented';
@@ -156,13 +157,7 @@ export function TransactionForm({
           )}
         />
         {errors.amountMinor ? (
-          <p
-            id={`${fieldId}-amountMinor-error`}
-            role="alert"
-            className="text-xs text-expense-content"
-          >
-            {errors.amountMinor.message}
-          </p>
+          <FormError id={`${fieldId}-amountMinor-error`}>{errors.amountMinor.message}</FormError>
         ) : null}
       </div>
 
@@ -193,13 +188,7 @@ export function TransactionForm({
           invalid={Boolean(errors.categoryId)}
         />
         {errors.categoryId ? (
-          <p
-            id={`${fieldId}-categoryId-error`}
-            role="alert"
-            className="text-xs text-expense-content"
-          >
-            {errors.categoryId.message}
-          </p>
+          <FormError id={`${fieldId}-categoryId-error`}>{errors.categoryId.message}</FormError>
         ) : null}
       </div>
 
@@ -215,13 +204,7 @@ export function TransactionForm({
           {...register('date')}
         />
         {errors.date ? (
-          <p
-            id={`${fieldId}-date-error`}
-            role="alert"
-            className="text-xs text-expense-content"
-          >
-            {errors.date.message}
-          </p>
+          <FormError id={`${fieldId}-date-error`}>{errors.date.message}</FormError>
         ) : null}
       </div>
 
@@ -242,13 +225,7 @@ export function TransactionForm({
             })}
           />
           {errors.exchangeRate ? (
-            <p
-              id={`${fieldId}-exchangeRate-error`}
-              role="alert"
-              className="text-xs text-expense-content"
-            >
-              {errors.exchangeRate.message}
-            </p>
+            <FormError id={`${fieldId}-exchangeRate-error`}>{errors.exchangeRate.message}</FormError>
           ) : null}
           <p className="text-xs text-content-muted">
             Si lo dejás vacío se usa la cotización de referencia.
@@ -269,13 +246,7 @@ export function TransactionForm({
           {...register('note')}
         />
         {errors.note ? (
-          <p
-            id={`${fieldId}-note-error`}
-            role="alert"
-            className="text-xs text-expense-content"
-          >
-            {errors.note.message}
-          </p>
+          <FormError id={`${fieldId}-note-error`}>{errors.note.message}</FormError>
         ) : null}
       </div>
 

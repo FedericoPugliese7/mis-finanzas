@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Check } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
+import { FormError } from '@/shared/ui/form-error';
 import { Input } from '@/shared/ui/input';
 import { Segmented, type SegmentedOption } from '@/shared/ui/segmented';
 import { cn } from '@/shared/ui/utils';
@@ -118,13 +119,7 @@ export function CategoryForm({
             />
           </div>
           {errors.name ? (
-            <p
-              id={`${fieldId}-name-error`}
-              role="alert"
-              className="text-xs text-expense-content"
-            >
-              {errors.name.message}
-            </p>
+            <FormError id={`${fieldId}-name-error`}>{errors.name.message}</FormError>
           ) : null}
         </div>
 

@@ -1,3 +1,5 @@
+import { useReducedMotion, m } from 'motion/react';
+import { transitions } from '@/shared/motion';
 import { cn } from './utils';
 
 interface SpinnerProps {
@@ -6,13 +8,23 @@ interface SpinnerProps {
   className?: string;
 }
 
+/**
+ * Loading indicator with a gentle fade-in and reduced-motion support.
+ * The spin animation is disabled when the user prefers reduced motion.
+ */
 export function Spinner({ size = 20, label = 'Cargando', className }: SpinnerProps) {
+  const reduced = useReducedMotion();
+
   return (
-    <span
+    <m.span
       role="status"
       aria-label={label}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={transitions.microFast}
       className={cn(
-        'inline-block animate-spin rounded-full border-2 border-border border-t-accent',
+        'inline-block rounded-full border-2 border-border border-t-accent',
+        !reduced && 'animate-spin',
         className
       )}
       style={{ width: size, height: size }}
