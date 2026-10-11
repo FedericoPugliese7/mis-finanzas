@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { m } from 'motion/react';
-import { fadeVariants } from '@/shared/motion';
+import { breathingVariants, fadeVariants } from '@/shared/motion';
 import { cn } from './utils';
 
 interface EmptyStateProps {
@@ -29,7 +29,17 @@ export function EmptyState({
         className
       )}
     >
-      {Icon ? <Icon size={26} className="mb-1 text-accent" aria-hidden /> : null}
+      {Icon ? (
+        <m.span
+          aria-hidden
+          variants={breathingVariants}
+          initial="rest"
+          animate="breathe"
+          className="mb-1 grid h-14 w-14 place-items-center rounded-full bg-accent-soft text-accent"
+        >
+          <Icon size={24} />
+        </m.span>
+      ) : null}
       <h3 className="text-base font-semibold text-content">{title}</h3>
       {description ? (
         <p className="max-w-sm text-sm text-content-secondary">{description}</p>

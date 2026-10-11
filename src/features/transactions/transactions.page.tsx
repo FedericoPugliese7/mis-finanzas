@@ -2,8 +2,7 @@ import { useDeferredValue, useMemo, useState } from 'react';
 import { AnimatePresence, m } from 'motion/react';
 import { ArrowLeftRight, Plus, Search, Wallet, Download } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
-import { presses, springs, tightListContainerVariants } from '@/shared/motion';
-import { formatDayLabel, formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
+import { presses, springs, tightListContainerVariants } from '@/shared/motion';import { formatDayLabel, formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
 import { useToast } from '@/shared/hooks/useToast';
 import { useSettings } from '@/shared/hooks/useSettings';
 import type { NewTransaction } from '@/shared/db/repos/transactions.repo';
@@ -294,13 +293,21 @@ export default function TransactionsPage() {
 
       <m.button
         type="button"
-        aria-label="Nuevo movimiento"
-        onClick={openCreate}
+        aria-label={formOpen ? 'Cerrar formulario' : 'Nuevo movimiento'}
+        aria-expanded={formOpen}
+        onClick={formOpen ? () => closeForm(false) : openCreate}
         whileTap={presses.tap}
         transition={springs.micro}
-        className="fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full border border-border bg-accent text-accent-content shadow-card lg:hidden"
+        className="glow-accent fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full border border-border bg-accent text-accent-content shadow-elevated ring-1 ring-accent/20 lg:hidden"
       >
-        <Plus size={24} aria-hidden />
+        <m.span
+          aria-hidden
+          animate={{ rotate: formOpen ? 45 : 0 }}
+          transition={springs.snappy}
+          className="grid place-items-center"
+        >
+          <Plus size={24} />
+        </m.span>
       </m.button>
 
       <TransactionForm

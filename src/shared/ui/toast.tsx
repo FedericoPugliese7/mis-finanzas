@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { AnimatePresence, m } from 'motion/react';
 import { X } from 'lucide-react';
 import { toastVariants } from '@/shared/motion';
 import { useUiStore, type ToastItem } from '@/shared/stores/ui.store';
+import { cn } from './utils';
 
 /**
  * Single toast: owns its own countdown so adding/removing other toasts never
  * restarts or clears this one's timer. Hovering or focusing it pauses the
- * countdown (undo toasts stay reachable for keyboard and pointer users).
+ * countdown (undo toasts stay reachable for keyboard and pointer users) and
+ * the progress bar with it. The surface is glass over the page.
  */
 function ToastEntry({ toast }: { toast: ToastItem }) {
   const dismiss = useUiStore((state) => state.dismiss);
@@ -30,7 +32,10 @@ function ToastEntry({ toast }: { toast: ToastItem }) {
       onPointerLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="pointer-events-auto flex w-full max-w-sm items-center justify-between gap-3 rounded-control border border-border bg-surface px-4 py-3 shadow-elevated"
+      className={cn(
+        'glass pointer-events-auto relative flex w-full max-w-sm items-center justify-between gap-3 overflow-hidden rounded-control px-4 py-3',
+        paused && 'toast-paused'
+      )}
     >
       <span className="text-sm text-content">{toast.message}</span>
       <div className="flex shrink-0 items-center gap-1">
@@ -55,6 +60,14 @@ function ToastEntry({ toast }: { toast: ToastItem }) {
           <X size={16} aria-hidden />
         </button>
       </div>
+      {toast.durationMs > 0 ? (
+        <span
+          aria-hidden
+          key={paused ? 'paused' : 'running'}
+          className="toast-progress absolute inset-x-0 bottom-0 h-0.5 bg-accent"
+          style={{ '--toast-duration': `${toast.durationMs}ms` } as CSSProperties}
+        />
+      ) : null}
     </m.div>
   );
 }

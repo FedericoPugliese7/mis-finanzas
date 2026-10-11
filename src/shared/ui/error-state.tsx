@@ -32,7 +32,12 @@ export function ErrorState({
         className
       )}
     >
-      <Icon size={26} className="mb-1 text-expense-content" aria-hidden />
+      <span
+        aria-hidden
+        className="mb-1 grid h-14 w-14 place-items-center rounded-full bg-expense-soft text-expense-content"
+      >
+        <Icon size={24} />
+      </span>
       <h3 className="text-base font-semibold text-content">{title}</h3>
       {description ? (
         <p className="max-w-sm text-sm text-content-secondary">{description}</p>

@@ -243,6 +243,35 @@ export const dialogContentVariants: Variants = {
   exit: { opacity: 0, scale: 0.98, y: 8, transition: transitions.exit }
 };
 
+/**
+ * Contenido del drawer: fade presentado apenas después de que el panel
+ * empieza a subir (Vaul maneja el slide del panel; esto viste el contenido).
+ */
+export const drawerContentVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: durations.enter, ease: easings.out, delay: durations.microFast }
+  },
+  exit: { opacity: 0, transition: transitions.exit }
+};
+
+/**
+ * Respiración sutil para empty states: el ícono "está vivo" sin competir.
+ * `MotionConfig reducedMotion="user"` la anula para quien lo pide.
+ */
+export const breathingVariants: Variants = {
+  rest: { scale: 1 },
+  breathe: {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: durations.micro * 13,
+      repeat: Infinity,
+      ease: easings.standard
+    }
+  }
+};
+
 /** Toasts: entran desde arriba con desplazamiento corto. */
 export const toastVariants: Variants = {
   hidden: { opacity: 0, y: -12 },

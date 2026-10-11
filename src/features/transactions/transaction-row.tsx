@@ -4,7 +4,7 @@ import { iconFor } from '@/features/categories/category.constants';
 import { formatMoney } from '@/shared/lib/money';
 import { RateLegend } from '@/shared/ui/rate-legend';
 import { cn } from '@/shared/ui/utils';
-import { listItemVariants } from '@/shared/motion';
+import { listItemVariants, presses, springs } from '@/shared/motion';
 import type { Category, Transaction } from '@/shared/lib/types';
 
 interface TransactionRowProps {
@@ -39,6 +39,7 @@ export function TransactionRow({
       animate="visible"
       exit="exit"
       layout="position"
+      whileHover={{ x: 2, transition: springs.micro }}
       className="flex items-center gap-1 border-b border-border-subtle last:border-b-0"
     >
       <button
@@ -73,14 +74,17 @@ export function TransactionRow({
           ) : null}
         </span>
       </button>
-      <button
+      <m.button
         type="button"
         aria-label={`Eliminar ${title}`}
         onClick={onDelete}
+        whileHover={{ rotate: -6 }}
+        whileTap={presses.tap}
+        transition={springs.micro}
         className="grid h-11 w-11 shrink-0 place-items-center rounded-control text-content-secondary transition-colors hover:bg-surface-hover hover:text-expense-content"
       >
         <Trash2 size={16} aria-hidden />
-      </button>
+      </m.button>
     </m.li>
   );
 }

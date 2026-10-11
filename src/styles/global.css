@@ -278,6 +278,31 @@
 }
 
 /*
+ * Barra de progreso de los toasts con acción (Deshacer): se vacía en
+ * `--toast-duration` y se pausa junto con el temporizador (clase .toast-paused).
+ */
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.toast-progress {
+  transform-origin: left;
+  animation-name: toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  animation-duration: var(--toast-duration, 5s);
+}
+
+.toast-paused .toast-progress {
+  animation-play-state: paused;
+}
+
+/*
  * View Transitions API: transición de tema claro/oscuro.
  */
 ::view-transition-old(root),

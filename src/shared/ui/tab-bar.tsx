@@ -39,7 +39,15 @@ export function TabBar() {
                       className="absolute inset-x-4 top-0 h-0.5 rounded-full bg-accent"
                     />
                   ) : null}
-                  <item.icon size={20} aria-hidden />
+                  <m.span
+                    key={isActive ? 'active' : 'idle'}
+                    initial={isActive ? { scale: 0.85 } : false}
+                    animate={{ scale: 1 }}
+                    transition={springs.snappy}
+                    className="grid place-items-center"
+                  >
+                    <item.icon size={20} aria-hidden />
+                  </m.span>
                   <span>{item.label}</span>
                 </>
               )}
