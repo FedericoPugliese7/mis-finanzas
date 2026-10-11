@@ -14,9 +14,9 @@ interface SummaryCardsProps {
 }
 
 /**
- * Balance as the hero (inverted surface, biggest number) plus smaller
- * income/expense cards to its right. Amounts are signed and tabular so the
- * direction of the money never depends on color alone.
+ * Balance as the hero (glass card with a lime edge, biggest number) plus
+ * smaller income/expense glass cards with gradient icon badges. Amounts are
+ * signed and tabular so the direction of the money never depends on color alone.
  */
 export function SummaryCards({ totals, display }: SummaryCardsProps) {
   const currencies: Currency[] = display === 'BOTH' ? ['ARS', 'USD'] : [display];
@@ -25,7 +25,7 @@ export function SummaryCards({ totals, display }: SummaryCardsProps) {
   const amounts = (
     key: keyof Totals,
     signFor: (value: number) => string,
-    toneFor: (value: number) => string,
+    tone: string,
     size: string
   ) =>
     currencies.map((currency) => {
@@ -33,7 +33,7 @@ export function SummaryCards({ totals, display }: SummaryCardsProps) {
       if (value === undefined) return null;
       return (
         <div key={currency}>
-          <span className={cn('amount block font-semibold', size, toneFor(value))}>
+          <span className={cn('amount block font-semibold', tone, size)}>
             {signFor(value)}
             <AnimatedNumber
               value={value}
@@ -52,48 +52,62 @@ export function SummaryCards({ totals, display }: SummaryCardsProps) {
       variants={fadeVariants}
       className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
-      <Card className="border-0 bg-content p-5 text-content-inverse sm:col-span-2 lg:col-span-2">
-        <div className="flex items-center gap-2 text-content-inverse/70">
-          <Scale size={16} aria-hidden />
-          <span className="text-sm font-medium">Balance</span>
-        </div>
-        <div className="mt-2 flex flex-col gap-1.5">
-          {amounts(
-            'balance',
-            (value) => (value > 0 ? '+' : ''),
-            () => 'text-content-inverse',
-            balanceSize
-          )}
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-2 text-content-secondary">
-          <TrendingUp size={16} aria-hidden />
-          <span className="text-sm font-medium">Ingresos</span>
-        </div>
-        <div className="mt-2 flex flex-col gap-1.5">
-          {amounts(
-            'income',
-            () => '+',
-            () => 'text-income-content',
-            incomeSize
-          )}
+      <Card className="glass relative overflow-hidden border-l-4 border-l-accent p-5 sm:col-span-2 lg:col-span-2">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent"
+        />
+        <div className="relative flex items-center gap-3">
+          <span
+            aria-hidden
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-gradient-content shadow-md"
+            style={{ background: 'linear-gradient(160deg, #b8ff63 0%, #5fab00 100%)' }}
+          >
+            <Scale size={20} />
+          </span>
+          <div>
+            <span className="text-sm font-medium text-content-secondary">Balance</span>
+            <div className="mt-1 flex flex-col gap-1">
+              {amounts(
+                'balance',
+                (value) => (value > 0 ? '+' : ''),
+                'text-content',
+                balanceSize
+              )}
+            </div>
+          </div>
         </div>
       </Card>
 
-      <Card className="p-4">
-        <div className="flex items-center gap-2 text-content-secondary">
-          <TrendingDown size={16} aria-hidden />
-          <span className="text-sm font-medium">Gastos</span>
+      <Card className="glass p-4">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-gradient-content shadow-md"
+            style={{ background: 'var(--income-gradient)' }}
+          >
+            <TrendingUp size={18} />
+          </span>
+          <span className="text-sm font-medium text-content-secondary">Ingresos</span>
         </div>
-        <div className="mt-2 flex flex-col gap-1.5">
-          {amounts(
-            'expense',
-            () => '\u2212',
-            () => 'text-expense-content',
-            incomeSize
-          )}
+        <div className="mt-3 flex flex-col gap-1">
+          {amounts('income', () => '+', 'text-income-content', incomeSize)}
+        </div>
+      </Card>
+
+      <Card className="glass p-4">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-gradient-content shadow-md"
+            style={{ background: 'var(--expense-gradient)' }}
+          >
+            <TrendingDown size={18} />
+          </span>
+          <span className="text-sm font-medium text-content-secondary">Gastos</span>
+        </div>
+        <div className="mt-3 flex flex-col gap-1">
+          {amounts('expense', () => '\u2212', 'text-expense-content', incomeSize)}
         </div>
       </Card>
     </m.div>

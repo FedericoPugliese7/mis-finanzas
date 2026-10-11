@@ -53,7 +53,7 @@ export function AppShell() {
         Saltar al contenido
       </a>
 
-      <header className="material sticky top-0 z-40 border-b border-border-subtle safe-top">
+      <header className="glass sticky top-0 z-40 border-b border-border-subtle safe-top">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <div className="flex min-w-0 items-center gap-6">
             <Brand />

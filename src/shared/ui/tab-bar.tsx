@@ -14,7 +14,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Secciones"
-      className="material fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle safe-bottom lg:hidden"
+      className="glass fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle safe-bottom lg:hidden"
     >
       <ul className="mx-auto flex w-full max-w-7xl items-stretch">
         {NAV_ITEMS.map((item) => (

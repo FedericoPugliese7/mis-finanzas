@@ -5,94 +5,118 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /* ---------------------------------------------------------------------------
- * Tokens de color: valores "crudos" por tema (se sobreescriben en dark)
+ * Tokens de color: acento lima eléctrico + dark premium con glass.
  * ------------------------------------------------------------------------- */
 :root {
-  /* Neutros cálidos tipo piedra (pares de texto verificados AA ≥ 4.5:1) */
-  --background: #f7f5f2;
-  --background-subtle: #f0ede8;
+  /* Neutros: mantenemos calidez sutil en light, neutro oscuro en dark */
+  --background: #f4f4f0;
+  --background-subtle: #eceae5;
   --surface: #ffffff;
   --surface-hover: #f1eee9;
-  --border: #cfc8bc;
-  --border-subtle: #e5e0d8;
+  --border: #d9d4cc;
+  --border-subtle: #e8e5de;
 
   --content: #1c1b19;
   --content-secondary: #56534e;
   --content-muted: #706b64;
   --content-inverse: #ffffff;
 
-  /* Acento de marca: terracota (NO violeta/azul). Solo chrome: CTA, foco, nav. */
-  --accent: #a34f1b;
-  --accent-hover: #8a4216;
-  --accent-soft: #f7ede4;
+  /* Acento lima: en light se usa el lima oscuro legible (#4a7a00, 5.15:1 sobre
+     blanco); el lima eléctrico #91FF16 vive en gradientes, glow y dark premium. */
+  --accent: #4a7a00;
+  --accent-hover: #3d6300;
+  --accent-strong: #3d6300;
+  --accent-soft: #eefad6;
   --accent-content: #ffffff;
+  --accent-glow: rgb(145 255 22 / 0.35);
+  /* Texto/íconos sobre gradientes de lima (siempre casi-negro, ambos temas) */
+  --gradient-content: #101008;
 
-  /* Semántica de datos: verde = ingreso, coral = gasto */
-  --income: #0b7a52;
-  --income-soft: #e6f4ee;
-  --income-content: #075c3e;
+  /* Semántica de datos: ingreso (lima legible), gasto (coral legible) */
+  --income: #439400;
+  --income-soft: #eefad6;
+  --income-content: #2f6b00;
+  --income-gradient: linear-gradient(160deg, #91ff16 0%, #4d9e00 100%);
 
-  --expense: #dc4a3f;
-  --expense-soft: #fcedeb;
-  --expense-content: #a6302a;
+  --expense: #e0483a;
+  --expense-soft: #fdeeea;
+  --expense-content: #b0301f;
+  --expense-gradient: linear-gradient(160deg, #ff7a6b 0%, #d63a2c 100%);
 
-  --warning: #8a6a12;
+  --warning: #9a7b18;
   --warning-soft: #fbf3dc;
-  --info: #3e6b85;
+  --info: #4a7a95;
   --info-soft: #edf3f6;
 
-  /* Overlay de diálogos/sheets (cálido, no gris puro) */
-  --overlay: rgb(28 27 25 / 0.45);
+  /* Overlay premium */
+  --overlay: rgb(12 12 10 / 0.55);
 
-  /* Sombra suave en página; shadow-2/3 solo en capas flotantes */
-  --shadow-1: 0 1px 2px 0 rgb(28 27 25 / 0.07);
-  --shadow-2: 0 2px 8px -2px rgb(28 27 25 / 0.1), 0 1px 2px 0 rgb(28 27 25 / 0.06);
-  --shadow-3: 0 12px 32px -8px rgb(28 27 25 / 0.16), 0 4px 10px -4px rgb(28 27 25 / 0.09);
+  /* Sombras */
+  --shadow-1: 0 1px 2px 0 rgb(28 27 25 / 0.06);
+  --shadow-2: 0 4px 14px -4px rgb(28 27 25 / 0.1), 0 1px 2px 0 rgb(28 27 25 / 0.05);
+  --shadow-3: 0 16px 48px -12px rgb(28 27 25 / 0.18), 0 4px 10px -4px rgb(28 27 25 / 0.08);
   --shadow-subtle: var(--shadow-1);
   --shadow-card: var(--shadow-2);
   --shadow-elevated: var(--shadow-3);
+
+  /* Glass: sutil en light */
+  --glass-bg: rgb(255 255 255 / 0.76);
+  --glass-border: rgb(255 255 255 / 0.45);
+  --glass-highlight: rgb(255 255 255 / 0.6);
+  --shadow-glass: 0 8px 32px -8px rgb(28 27 25 / 0.1), 0 2px 8px -2px rgb(28 27 25 / 0.04);
 }
 
 [data-theme='dark'] {
-  /* Oscuro diseñado por capas, no invertido */
-  --background: #141311;
-  --background-subtle: #1c1a18;
-  --surface: #211f1c;
-  --surface-hover: #2a2724;
-  --border: #3a3733;
-  --border-subtle: #2c2a26;
+  /* Dark premium: casi negro con borde lima sutil */
+  --background: #0c0c0a;
+  --background-subtle: #121210;
+  --surface: #141412;
+  --surface-hover: #1e1e1b;
+  --border: rgb(145 255 22 / 0.1);
+  --border-subtle: rgb(145 255 22 / 0.06);
 
-  --content: #f2efea;
-  --content-secondary: #c3bdb4;
-  --content-muted: #9c958c;
-  --content-inverse: #141311;
+  --content: #f2f2ed;
+  --content-secondary: #b5b5ad;
+  --content-muted: #8e8e85;
+  --content-inverse: #0c0c0a;
 
-  --accent: #e08a4c;
-  --accent-hover: #c9773d;
-  --accent-soft: #33241a;
-  --accent-content: #1a1108;
+  --accent: #91ff16;
+  --accent-hover: #a6ff42;
+  --accent-strong: #b8ff63;
+  --accent-soft: rgb(145 255 22 / 0.12);
+  --accent-content: #101008;
+  --accent-glow: rgb(145 255 22 / 0.5);
+  --gradient-content: #101008;
 
-  --income: #4ccb96;
-  --income-soft: #123026;
-  --income-content: #8fe3c0;
+  --income: #91ff16;
+  --income-soft: rgb(145 255 22 / 0.12);
+  --income-content: #b8ff63;
+  --income-gradient: linear-gradient(160deg, #b8ff63 0%, #5fab00 100%);
 
-  --expense: #ff8a7a;
-  --expense-soft: #3a1e1a;
+  --expense: #ff7a6b;
+  --expense-soft: rgb(255 122 107 / 0.12);
   --expense-content: #ffb3a8;
+  --expense-gradient: linear-gradient(160deg, #ff9b8d 0%, #e03e30 100%);
 
   --warning: #e7c25a;
   --warning-soft: #3a2f12;
   --info: #8fb6cc;
   --info-soft: #1b2a33;
 
-  --overlay: rgb(8 7 6 / 0.6);
+  --overlay: rgb(0 0 0 / 0.65);
 
-  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --shadow-2: 0 4px 14px -4px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.05);
-  --shadow-3: 0 18px 40px -12px rgb(0 0 0 / 0.65), 0 0 0 1px rgb(255 255 255 / 0.07);
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.45);
+  --shadow-2: 0 6px 18px -6px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(145 255 22 / 0.05);
+  --shadow-3: 0 20px 56px -16px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(145 255 22 / 0.08);
   --shadow-subtle: var(--shadow-1);
   --shadow-card: var(--shadow-2);
   --shadow-elevated: var(--shadow-3);
+
+  /* Glass premium en dark */
+  --glass-bg: rgb(20 20 18 / 0.66);
+  --glass-border: rgb(145 255 22 / 0.1);
+  --glass-highlight: rgb(255 255 255 / 0.05);
+  --shadow-glass: 0 16px 48px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(145 255 22 / 0.08);
 }
 
 /* ---------------------------------------------------------------------------
@@ -118,6 +142,7 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
   --color-accent-content: var(--accent-content);
+  --color-gradient-content: var(--gradient-content);
 
   --color-income: var(--income);
   --color-income-soft: var(--income-soft);
@@ -140,6 +165,7 @@
   --shadow-subtle: var(--shadow-subtle);
   --shadow-card: var(--shadow-card);
   --shadow-elevated: var(--shadow-elevated);
+  --shadow-glass: var(--shadow-glass);
 
   /* Transiciones por defecto alimentadas por los tokens de motion.ts */
   --default-transition-duration: var(--motion-duration-micro, 180ms);
@@ -174,6 +200,7 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
+    box-shadow: 0 0 16px 0 var(--accent-glow);
     /* El header sticky y el tab bar fijo nunca tapan el elemento enfocado (WCAG 2.4.11) */
     scroll-margin-top: 88px;
     scroll-margin-bottom: 96px;
@@ -197,20 +224,49 @@
   }
 }
 
-/* Montos: cifras tabulares para que las columnas de dinero se alineen */
+/* Montos: cifras tabulares */
 .amount {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
 /*
- * Material del chrome (header / tab bar): superficie translúcida con blur.
- * Con prefers-reduced-transparency cae a superficie opaca sin blur.
+ * Glass: superficie translúcida con blur + borde sutil.
+ * En dark es el protagonista del look premium.
+ */
+.glass {
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background-color: var(--surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/*
+ * Glow: sombra difusa del acento lima. Solo en dark por defecto;
+ * en light es más sutil.
+ */
+.glow-accent {
+  box-shadow: 0 0 20px 0 var(--accent-glow);
+}
+
+/*
+ * Material legacy: reemplazado por .glass. Se mantiene como alias
+ * para no romper componentes que aún lo usen.
  */
 .material {
-  background-color: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -223,10 +279,6 @@
 
 /*
  * View Transitions API: transición de tema claro/oscuro.
- * Los valores vienen de `src/shared/motion.ts` ( MotionProvider los inyecta
- * como variables CSS ), así hay una sola fuente de verdad.
- * NUNCA se dispara en la carga inicial: eso lo controla el script inline de
- * index.html, que aplica el tema antes de montar React.
  */
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -244,7 +296,6 @@
     scroll-behavior: auto !important;
   }
 
-  /* En reduced-motion el cambio de tema es un corte, no una animación */
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {

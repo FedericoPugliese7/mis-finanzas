@@ -3,7 +3,7 @@ import { m } from 'motion/react';
 import { presses, springs } from '@/shared/motion';
 import { cn } from './utils';
 
-export type CardVariant = 'default' | 'outlined' | 'elevated' | 'filled';
+export type CardVariant = 'default' | 'outlined' | 'elevated' | 'filled' | 'glass';
 
 interface CardProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
@@ -36,7 +36,8 @@ const variantClasses: Record<CardVariant, string> = {
   default: 'rounded-card border border-border-subtle bg-surface',
   outlined: 'rounded-card border border-border bg-surface',
   elevated: 'rounded-card bg-surface shadow-elevated',
-  filled: 'rounded-card border border-border-subtle bg-background-subtle'
+  filled: 'rounded-card border border-border-subtle bg-background-subtle',
+  glass: 'glass rounded-card'
 };
 
 export function Card({

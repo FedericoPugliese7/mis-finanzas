@@ -10,11 +10,14 @@
 export interface ChartTheme {
   income: string;
   expense: string;
+  incomeGradient: string;
+  expenseGradient: string;
   border: string;
   surface: string;
   content: string;
   contentMuted: string;
   contentInverse: string;
+  accentGlow: string;
 }
 
 export function chartTheme(): ChartTheme {
@@ -23,10 +26,13 @@ export function chartTheme(): ChartTheme {
   return {
     income: read('--income'),
     expense: read('--expense'),
+    incomeGradient: read('--income-gradient'),
+    expenseGradient: read('--expense-gradient'),
     border: read('--border'),
     surface: read('--surface'),
     content: read('--content'),
     contentMuted: read('--content-muted'),
-    contentInverse: read('--content-inverse')
+    contentInverse: read('--content-inverse'),
+    accentGlow: read('--accent-glow')
   };
 }

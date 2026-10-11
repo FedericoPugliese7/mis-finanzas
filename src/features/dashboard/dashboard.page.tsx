@@ -104,7 +104,7 @@ export default function DashboardPage() {
       </m.div>
 
       <m.div variants={fadeVariants}>
-        <Card variant="filled" className="p-2">
+        <Card variant="glass" className="p-2">
           <MonthSelector month={month} onChange={setMonth} className="sm:justify-start" />
         </Card>
       </m.div>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
       <SummaryCards totals={totals} display={display} />
 
       <m.div variants={fadeVariants} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card className="p-5">
+        <Card variant="glass" className="p-5">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold text-content">Gastos por categoría</h2>
             <span className="text-xs text-content-muted">
@@ -141,7 +141,7 @@ export default function DashboardPage() {
           )}
         </Card>
 
-        <Card className="p-5">
+        <Card variant="glass" className="p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-sm font-semibold text-content">Ingresos vs gastos</h2>
             <div className="flex items-center gap-3 text-xs text-content-muted">
@@ -171,7 +171,7 @@ export default function DashboardPage() {
       </m.div>
 
       <m.div variants={fadeVariants} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card className="p-5">
+        <Card variant="glass" className="p-5">
           <h2 className="text-sm font-semibold text-content">Top categorías de gastos</h2>
           <div className="mt-3">
             <TopCategories
@@ -181,7 +181,7 @@ export default function DashboardPage() {
             />
           </div>
         </Card>
-        <Card className="p-5">
+        <Card variant="glass" className="p-5">
           <h2 className="text-sm font-semibold text-content">Últimos movimientos</h2>
           <div className="mt-3">
             <LatestMovements transactions={latest} categoriesById={categoriesById} />

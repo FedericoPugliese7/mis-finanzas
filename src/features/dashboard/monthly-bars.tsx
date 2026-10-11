@@ -1,6 +1,6 @@
 import { m } from 'motion/react';
 import { useThemeStore } from '@/shared/stores/theme.store';
-import { barGrowthVariants, chartVariants } from '@/shared/motion';
+import { barGrowthVariants, chartVariants, springs } from '@/shared/motion';
 import { formatMonthShort } from '@/shared/lib/dates';
 import { formatMoney } from '@/shared/lib/money';
 import type { MonthlyBars } from '@/shared/lib/aggregations';
@@ -101,27 +101,29 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
                   >
                     {(
                       [
-                        { kind: 'Ingresos', value: bar.income, color: colors.income },
-                        { kind: 'Gastos', value: bar.expense, color: colors.expense }
+                        { kind: 'Ingresos', value: bar.income },
+                        { kind: 'Gastos', value: bar.expense }
                       ] as const
-                    ).map(({ kind, value, color }) => {
+                    ).map(({ kind, value }) => {
                       const height = heightOf(value);
                       const labelInside = height > LABEL_INSIDE_THRESHOLD * 100;
                       return (
-                        <m.div
-                          key={kind}
-                          title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
-                          className="relative w-6 rounded-t-md sm:w-8"
-                          style={{
-                            height: `${height}%`,
-                            backgroundColor: color,
-                            transformOrigin: 'bottom'
-                          }}
-                          variants={barGrowthVariants}
-                          initial={animateOnMount ? 'hidden' : false}
-                          animate="visible"
-                          custom={barIndex * 2 + (kind === 'Ingresos' ? 0 : 1)}
-                        >
+                    <m.div
+                      key={kind}
+                      title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
+                      className="relative w-6 rounded-t-md sm:w-8"
+                      style={{
+                        height: `${height}%`,
+                        background: kind === 'Ingresos' ? colors.incomeGradient : colors.expenseGradient,
+                        transformOrigin: 'bottom',
+                        boxShadow: `0 6px 16px -4px ${kind === 'Ingresos' ? colors.accentGlow.replace(')', ' / 0.45)') : 'rgb(255 122 107 / 0.35)'}`
+                      }}
+                      variants={barGrowthVariants}
+                      initial={animateOnMount ? 'hidden' : false}
+                      animate="visible"
+                      whileHover={{ y: -2, transition: springs.micro }}
+                      custom={barIndex * 2 + (kind === 'Ingresos' ? 0 : 1)}
+                    >
                           {value > 0 && (
                             <span
                               aria-hidden

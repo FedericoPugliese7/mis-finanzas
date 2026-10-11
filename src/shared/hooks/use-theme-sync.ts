@@ -19,7 +19,7 @@ function applyTheme(resolved: 'light' | 'dark'): void {
   if (meta) {
     meta.setAttribute(
       'content',
-      resolved === 'dark' ? '#141311' : '#f7f5f2'
+      resolved === 'dark' ? '#0c0c0a' : '#f4f4f0'
     );
   }
 }
