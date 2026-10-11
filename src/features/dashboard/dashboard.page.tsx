@@ -24,6 +24,7 @@ import { MonthSelector } from '@/shared/ui/month-selector';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { Spinner } from '@/shared/ui/spinner';
 import { BarsTable, DonutTable } from './chart-tables';
+import { BudgetSection } from './budget-section';
 import { chartCurrency, donutSlices, latestTransactions } from './dashboard.helpers';
 import { LatestMovements } from './latest-movements';
 import { SummaryCards } from './summary-cards';
@@ -84,6 +85,14 @@ export default function DashboardPage() {
     referenceRate,
     'expense'
   );
+  const expenseTotalsARS = totalsByCategory(
+    transactions,
+    month,
+    categories,
+    'ARS',
+    referenceRate,
+    'expense'
+  );
   const totalExpense = expenseTotals.reduce((sum, item) => sum + item.total, 0);
   const slices = donutSlices(expenseTotals);
   const top = topCategories(expenseTotals, TOP_CATEGORIES_LIMIT);
@@ -112,6 +121,10 @@ export default function DashboardPage() {
       </m.div>
 
       <SummaryCards totals={totals} display={display} />
+
+      <m.div variants={fadeVariants}>
+        <BudgetSection categories={categories} expenseTotals={expenseTotalsARS} />
+      </m.div>
 
       <m.div variants={fadeVariants} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card variant="glass" className="p-5">

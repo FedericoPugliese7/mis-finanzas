@@ -2,10 +2,12 @@ import { useEffect, useId, useMemo, useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check } from 'lucide-react';
+import { Controller } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { FormError } from '@/shared/ui/form-error';
 import { Input } from '@/shared/ui/input';
+import { MoneyInput } from '@/shared/ui/money-input';
 import { Segmented, type SegmentedOption } from '@/shared/ui/segmented';
 import { cn } from '@/shared/ui/utils';
 import { CATEGORY_COLORS, CATEGORY_ICONS, iconFor } from './category.constants';
@@ -21,7 +23,8 @@ const CREATE_DEFAULTS: CategoryFormValues = {
   name: '',
   type: 'expense',
   color: '#a34f1b',
-  icon: 'house'
+  icon: 'house',
+  budgetMinor: null
 };
 
 interface CategoryFormProps {
@@ -49,7 +52,8 @@ export function CategoryForm({
             name: category.name,
             type: category.type,
             color: category.color,
-            icon: category.icon
+            icon: category.icon,
+            budgetMinor: category.budgetMinor ?? null
           }
         : CREATE_DEFAULTS,
     [category]
@@ -214,6 +218,32 @@ export function CategoryForm({
               );
             })}
           </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${fieldId}-budget`} className="text-sm font-medium text-content">
+            Presupuesto mensual en ARS (opcional)
+          </label>
+          <Controller
+            control={control}
+            name="budgetMinor"
+            render={({ field }) => (
+              <MoneyInput
+                id={`${fieldId}-budget`}
+                currency="ARS"
+                value={field.value ?? null}
+                onValueChange={field.onChange}
+                placeholder="Ej: 150.000,00"
+                invalid={Boolean(errors.budgetMinor)}
+                aria-describedby={
+                  errors.budgetMinor ? `${fieldId}-budget-error` : undefined
+                }
+              />
+            )}
+          />
+          {errors.budgetMinor ? (
+            <FormError id={`${fieldId}-budget-error`}>{errors.budgetMinor.message}</FormError>
+          ) : null}
         </div>
 
         <div className="flex justify-end gap-2 pt-1">

@@ -41,7 +41,8 @@ export default function CategoriesPage() {
         await actions.update(editing.id, {
           name: values.name,
           color: values.color,
-          icon: values.icon
+          icon: values.icon,
+          budgetMinor: values.budgetMinor
         });
       } else {
         await actions.create({
@@ -49,6 +50,7 @@ export default function CategoriesPage() {
           type: values.type,
           color: values.color,
           icon: values.icon,
+          budgetMinor: values.budgetMinor,
           isDefault: false,
           archived: false
         });

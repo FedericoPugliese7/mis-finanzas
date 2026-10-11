@@ -1,6 +1,7 @@
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react';
 import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/utils';
+import { formatMoney } from '@/shared/lib/money';
 import { iconFor } from './category.constants';
 import type { Category } from '@/shared/lib/types';
 
@@ -49,6 +50,11 @@ export function CategoryCard({
           {category.archived ? (
             <span className="inline-flex rounded-full bg-background-subtle px-2 py-0.5 text-[11px] font-medium text-content-muted">
               Archivada
+            </span>
+          ) : null}
+          {category.budgetMinor != null && category.budgetMinor > 0 ? (
+            <span className="inline-flex rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent-content">
+              Presupuesto: {formatMoney(category.budgetMinor, 'ARS')}
             </span>
           ) : null}
         </div>

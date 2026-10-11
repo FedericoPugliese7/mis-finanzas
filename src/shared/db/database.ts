@@ -25,6 +25,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#a34f1b',
     icon: 'house',
+    budgetMinor: 38_000_000,
     isDefault: true,
     archived: false
   },
@@ -34,6 +35,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#0e6258',
     icon: 'building-2',
+    budgetMinor: 5_200_000,
     isDefault: true,
     archived: false
   },
@@ -43,6 +45,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#f59e0b',
     icon: 'shopping-cart',
+    budgetMinor: 15_000_000,
     isDefault: true,
     archived: false
   },
@@ -52,6 +55,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#3e6b85',
     icon: 'bus',
+    budgetMinor: 2_000_000,
     isDefault: true,
     archived: false
   },
@@ -61,6 +65,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#14b8a6',
     icon: 'lightbulb',
+    budgetMinor: 2_500_000,
     isDefault: true,
     archived: false
   },
@@ -70,6 +75,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#6b665e',
     icon: 'landmark',
+    budgetMinor: 5_000_000,
     isDefault: true,
     archived: false
   },
@@ -79,6 +85,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#f43f5e',
     icon: 'heart-pulse',
+    budgetMinor: 1_500_000,
     isDefault: true,
     archived: false
   },
@@ -88,6 +95,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#ec4899',
     icon: 'ticket',
+    budgetMinor: 4_000_000,
     isDefault: true,
     archived: false
   },
@@ -97,6 +105,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#6b7a3a',
     icon: 'refresh-cw',
+    budgetMinor: 300_000,
     isDefault: true,
     archived: false
   },
@@ -106,6 +115,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#33587f',
     icon: 'graduation-cap',
+    budgetMinor: 2_000_000,
     isDefault: true,
     archived: false
   },
@@ -115,6 +125,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#22c55e',
     icon: 'piggy-bank',
+    budgetMinor: 5_000_000,
     isDefault: true,
     archived: false
   },
@@ -124,6 +135,7 @@ export const defaultCategories: readonly Category[] = [
     type: 'expense',
     color: '#9b958a',
     icon: 'circle-help',
+    budgetMinor: 1_000_000,
     isDefault: true,
     archived: false
   },
@@ -176,9 +188,26 @@ export class AppDatabase extends Dexie {
       settings: 'id'
     });
 
+    this.version(2).stores({
+      transactions: 'id, date, categoryId, [type+date], createdAt',
+      categories: 'id, type, name',
+      settings: 'id'
+    }).upgrade(async (trans) => {
+      // Patch existing default categories with the new monthly budgets.
+      const categoriesTable = trans.table<Category, string>('categories');
+      const existing = await categoriesTable.toArray();
+      const defaultsById = new Map(defaultCategories.map((category) => [category.id, category]));
+      for (const category of existing) {
+        const defaults = defaultsById.get(category.id);
+        if (defaults !== undefined && category.budgetMinor == null) {
+          await categoriesTable.update(category.id, { budgetMinor: defaults.budgetMinor });
+        }
+      }
+    });
+
     // Runs only the first time the database is created.
     this.on('populate', (trans) => {
-      trans.table<Category, string>('categories').bulkPut(defaultCategories);
+      trans.table<Category, string>('categories').bulkPut([...defaultCategories]);
       trans.table<SettingsRecord, string>('settings').put({
         id: SETTINGS_ID,
         ...defaultSettings
