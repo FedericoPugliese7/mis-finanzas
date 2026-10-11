@@ -61,8 +61,8 @@ export default defineConfig({
         short_name: 'Mis Finanzas',
         description:
           'App local-first para registrar ingresos y gastos en ARS y USD con privacidad total.',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#0c0c0a',
+        background_color: '#0c0c0a',
         display: 'standalone',
         orientation: 'portrait',
         scope: process.env.VITE_BASE ?? '/',
