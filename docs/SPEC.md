@@ -137,11 +137,20 @@ bloqueante.
 
 - Estética calma y aireada: mucho espacio en blanco, radios de 16 px, sombras muy suaves,
   bordes finos de bajo contraste.
-- Paleta con tokens: claro = fondo off-white cálido, superficies blancas, texto slate;
-  oscuro = fondo slate profundo (no negro puro), superficies un tono más claras.
-- Acento índigo. Ingresos verde suave. Gastos coral/rosa suave (nada de rojo agresivo).
-- Sin neones ni gradientes fuertes. Sin banners ni notificaciones intrusivas.
-  Modales solo cuando son imprescindibles.
+- **Identidad "lima eléctrico"**: acento `#91FF16` (hue 85-90°) como firma de marca.
+  - **Dark premium es el escaparate**: fondo casi negro (`#0c0c0a`), acento lima puro,
+    bordes con tinte lima al 10 %, glow suave del acento en foco/hover/FAB.
+  - **Light legible**: el acento como texto/borde usa el lima oscuro `#4a7a00` (AA ≥ 5:1
+    sobre blanco); el lima puro vive en gradientes, glow y dark.
+  - Ingresos = familia lima (gradiente `#91ff16 → #4d9e00`), gastos = coral (gradiente
+    `#ff7a6b → #d63a2c`).
+- **Glass**: header, tab bar, cards del dashboard, toasts y drawer usan superficie
+  translúcida con `backdrop-filter: blur(20px) saturate(1.4)` y borde sutil
+  (`.glass` en `global.css`). Con `prefers-reduced-transparency` caen a superficie opaca.
+- **Gradientes y profundidad**: barras de gráficos con gradiente vertical + sombra de
+  color; dona con halo (stroke expandido al 18 % de opacidad); badges de íconos con
+  gradiente semántico. Glow del acento **solo en interacción**, nunca estático.
+- Sin banners ni notificaciones intrusivas. Modales solo cuando son imprescindibles.
 - Mobile-first: < 768 px tab bar inferior + botón flotante; ≥ 1024 px sidebar fija y contenido
   con ancho máximo.
 - Áreas táctiles ≥ 44 px, safe-area insets, `inputmode="decimal"` en los montos.
@@ -193,16 +202,24 @@ declarar números de animación sueltos en los componentes: se importan de ese m
 
 ### 7.6 Cambio de tema
 
-- Transición suave de colores con la **View Transitions API** si el navegador la soporta; si no,
-  una transición CSS corta.
+- **Ripple circular** con la View Transitions API: `clip-path: circle()` que crece desde el
+  último punto de clic (`use-theme-sync.ts` captura el `pointerdown`). Sin soporte de VT o con
+  `prefers-reduced-motion`: corte directo.
 - **NUNCA en la carga inicial**, para no romper el script anti-parpadeo: el primer render no
   dispara transición.
 
 ### 7.7 Dashboard
 
-- Los **números de las tarjetas se animan al cambiar de valor** (count suave y breve).
-- Los **gráficos de Recharts animan solo en el primer montaje** (600-800 ms, ease-out) y **no** al
-  cambiar de filtros.
+- **Coreografía de un solo protagonista**: la estructura hace fade con stagger corto
+  (~150 ms); los números cuentan (spring `count`, ~400 ms); los gráficos esperan
+  `chartPhaseDelay` (≈ 70 % del count) antes de crecer. Nada compite.
+- Los **números de las tarjetas se animan al cambiar de valor** (count con spring, sin rebote).
+- Los **gráficos (SVG/CSS a medida) animan solo en la primera ventana de la sesión**
+  (`useChartEntrance` con flag de sesión): cambios de mes/filtros re-renderizan sin
+  re-animar. `prefers-reduced-motion` los desactiva siempre.
+- **Dona interactiva**: hover/tap en un slice escala el arco y el centro muestra el detalle
+  de la categoría (nombre, monto, %); tap navega a Movimientos filtrado (deep link con
+  `location.state`).
 
 ### 7.8 Performance
 

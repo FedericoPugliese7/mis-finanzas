@@ -24,6 +24,7 @@ y se arregla lo que falle antes de seguir.
 | 6 — Ajustes + Backup                          | ✅     | `32ab041`             |
 | 7 — Pulido de diseño y animaciones            | ✅     | `6090edd` + `306959a` |
 | 10 — Pulido de animaciones                    | ✅     | serie de commits      |
+| 11 — Rediseno lima + dark premium             | ✅     | serie de commits      |
 
 Detalle del punto de parada:
 
@@ -546,3 +547,41 @@ Revisión transversal de toda la app contra `SPEC.md` → "Animaciones":
 
 **Commits**: serie desde `feat(ui): unificar controlId en segmented...` hasta
 `feat(ui): animar estados de carga, vacío y errores de formulario`.
+
+---
+
+## Fase 11 — Rediseño "Electric Lime & Dark Premium" ✅
+
+Dirección elegida por el usuario: acento **lima eléctrico `#91FF16`** con **dark premium**
+como escaparate, glass a criterio del agente, todo de una (fix + visual + coreografía +
+micro-interacciones + delight). Inspiración visual: dashboards glassmorphism premium;
+react-spring.dev usado como **referencia de efectos** (NO se instala: AGENTS prohíbe
+segundo runtime de animación; todo se replica con `motion`).
+
+Auditoría base: subagente `@designer` (informe completo en la sesión) — hallazgos A1-A3
+críticos, B1-B6 altos, C/D de polish y delight.
+
+**Commits de la fase**
+
+1. `fix(dashboard): resolver solapamiento de título, leyenda y labels en gráfico de barras`
+   — plot `top-10`, labels dentro de barras altas (> 75 %), tick superior clampleado,
+   apilado cuando los labels de ingreso/gasto chocan, `mt-8` en la card.
+2. `feat(design): paleta lima electrico, glass premium, gradientes y glow en graficos`
+   — tokens lima (light legible `#4a7a00` / dark puro `#91ff16`), `.glass`, gradientes
+   semánticos, dona con halo, badges con gradiente, favicon y `theme-color`.
+3. `refactor(motion): coreografiar dashboard con chartPhaseDelay, spring count y flags de sesion`
+   — `chartPhaseDelay`, `springs.snappy/count`, `easings.emphasized`, count-up con spring,
+   `AnimatePresence` envolviendo al `Suspense` (fix A3), flags de sesión.
+4. `feat(ui): micro-interacciones premium en fab, drawer, filas, toasts y estados vacios`
+   — FAB Plus→X con glow y `aria-expanded`, contenido del drawer "presentado" (fade con
+   delay), hover en filas, rotate del delete, pop del ícono activo en tab bar, toast con
+   barra de progreso pausable, empty states con ícono respirando.
+5. `feat(delight): dona con detalle central y drill-down, ripple de tema y pulso de balance`
+   — dona: hover → centro con detalle de la categoría, tap → Movimientos filtrado
+   (`location.state`); tema: ripple `clip-path` desde el último clic; balance: pulso
+   cuando cambia el signo.
+6. `docs: actualizar spec, motion-qa y plan con el rediseno lima`
+
+**Verificación**: gates en verde tras cada commit (119 tests, build OK, precache 42 entries).
+
+**Pendiente manual**: Lighthouse con ~500 movimientos (Fase 8) y capturas dark/light.
