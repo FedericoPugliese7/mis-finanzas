@@ -1,8 +1,13 @@
+import { useEffect, useRef, useState } from 'react';
 import { Scale, TrendingDown, TrendingUp } from 'lucide-react';
 import { m } from 'motion/react';
 import { AnimatedNumber } from '@/shared/ui/animated-number';
 import { Card } from '@/shared/ui/card';
-import { fadeVariants } from '@/shared/motion';
+import {
+  durationsMs,
+  fadeVariants,
+  pulseScaleVariants
+} from '@/shared/motion';
 import { formatMoney } from '@/shared/lib/money';
 import { cn } from '@/shared/ui/utils';
 import type { Currency, DisplayCurrency } from '@/shared/lib/types';
@@ -16,11 +21,32 @@ interface SummaryCardsProps {
 /**
  * Balance as the hero (glass card with a lime edge, biggest number) plus
  * smaller income/expense glass cards with gradient icon badges. Amounts are
- * signed and tabular so the direction of the money never depends on color alone.
+ * signed and tabular so the direction of the money never depends on color
+ * alone. When the balance flips sign between months, the hero badge pulses.
  */
 export function SummaryCards({ totals, display }: SummaryCardsProps) {
   const currencies: Currency[] = display === 'BOTH' ? ['ARS', 'USD'] : [display];
   const both = currencies.length > 1;
+
+  const [pulse, setPulse] = useState<'idle' | 'pulse'>('idle');
+  const previousBalances = useRef<Partial<Record<Currency, number>>>({});
+
+  useEffect(() => {
+    let signChanged = false;
+    for (const currency of Object.keys(totals) as Currency[]) {
+      const value = totals[currency]?.balance;
+      if (value === undefined) continue;
+      const previous = previousBalances.current[currency];
+      if (previous !== undefined && Math.sign(previous) !== Math.sign(value)) {
+        signChanged = true;
+      }
+      previousBalances.current[currency] = value;
+    }
+    if (!signChanged) return;
+    setPulse('pulse');
+    const timer = window.setTimeout(() => setPulse('idle'), durationsMs.micro * 3);
+    return () => window.clearTimeout(timer);
+  }, [totals]);
 
   const amounts = (
     key: keyof Totals,
@@ -58,13 +84,16 @@ export function SummaryCards({ totals, display }: SummaryCardsProps) {
           className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent"
         />
         <div className="relative flex items-center gap-3">
-          <span
+          <m.span
             aria-hidden
+            variants={pulseScaleVariants}
+            initial="idle"
+            animate={pulse}
             className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-gradient-content shadow-md"
             style={{ background: 'linear-gradient(160deg, #b8ff63 0%, #5fab00 100%)' }}
           >
             <Scale size={20} />
-          </span>
+          </m.span>
           <div>
             <span className="text-sm font-medium text-content-secondary">Balance</span>
             <div className="mt-1 flex flex-col gap-1">

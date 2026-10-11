@@ -1,4 +1,5 @@
 import { Suspense, lazy, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { m } from 'motion/react';
 import { LayoutDashboard } from 'lucide-react';
 import { Wallet } from 'lucide-react';
@@ -35,6 +36,7 @@ const LATEST_LIMIT = 5;
 const TOP_CATEGORIES_LIMIT = 5;
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const transactions = useTransactions();
   const categories = useCategories();
   const settings = useSettings();
@@ -133,7 +135,13 @@ export default function DashboardPage() {
                     </div>
                   }
                 >
-                  <CategoryDonut slices={slices} currency={currency} />
+                  <CategoryDonut
+                    slices={slices}
+                    currency={currency}
+                    onSelectCategory={(categoryId) =>
+                      navigate('/transactions', { state: { categoryId, month } })
+                    }
+                  />
                 </Suspense>
               </div>
               <DonutTable slices={slices} currency={currency} />

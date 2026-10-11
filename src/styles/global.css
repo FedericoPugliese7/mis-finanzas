@@ -303,12 +303,14 @@
 }
 
 /*
- * View Transitions API: transición de tema claro/oscuro.
+ * View Transitions API: cambio de tema con ripple circular.
+ * Los snapshots no animan por CSS; el clip-path lo conduce
+ * `use-theme-sync.ts` desde el último punto de clic (receta Chrome).
  */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: var(--motion-duration-theme, 200ms);
-  animation-timing-function: var(--motion-ease-ios, cubic-bezier(0.32, 0.72, 0, 1));
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,9 +1,11 @@
-import { m } from 'motion/react';
+import { useState } from 'react';
+import { AnimatePresence, m } from 'motion/react';
 import { formatMoney } from '@/shared/lib/money';
 import {
   chartVariants,
   chartPhaseDelay,
   durations,
+  fadeOnlyVariants,
   springs,
   transitions
 } from '@/shared/motion';
@@ -14,6 +16,8 @@ import type { DonutSlice } from './dashboard.helpers';
 interface CategoryDonutProps {
   slices: readonly DonutSlice[];
   currency: Currency;
+  /** Navigates to Movimientos filtered by the tapped category. */
+  onSelectCategory: (categoryId: string) => void;
 }
 
 /* Geometry: matches the previous innerRadius 68 / outerRadius 96 pie. */
@@ -26,10 +30,20 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const GAP_DEGREES = 2;
 const GAP_ARCS = (GAP_DEGREES / 360) * CIRCUMFERENCE;
 
-/** Expense donut by category (SPEC 4.1). Animates only on first mount (SPEC 7.7). */
-export default function CategoryDonut({ slices, currency }: CategoryDonutProps) {
+/**
+ * Expense donut by category (SPEC 4.1). Animates only on first mount (SPEC 7.7).
+ * Hovering a slice swaps the center for that category's detail (Apple Wallet
+ * style); tapping it drills down into Movimientos filtered by the category.
+ */
+export default function CategoryDonut({
+  slices,
+  currency,
+  onSelectCategory
+}: CategoryDonutProps) {
   const animateOnMount = useChartEntrance();
+  const [activeId, setActiveId] = useState<string | null>(null);
   const totalValue = slices.reduce((sum, s) => sum + s.total, 0);
+  const active = slices.find((slice) => slice.categoryId === activeId);
 
   let cursor = 0;
   const arcs = slices.map((slice) => {
@@ -53,55 +67,90 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
           animate="visible"
           variants={chartVariants}
         >
-          {arcs.map(({ slice, offset, visible }, index) => (
-            <g key={slice.categoryId}>
-              {/* Halo sutil detrás de cada slice */}
-              <circle
-                cx={CENTER}
-                cy={CENTER}
-                r={RADIUS}
-                fill="none"
-                stroke={slice.color}
-                strokeWidth={STROKE + 6}
-                strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
-                strokeDashoffset={offset}
-                transform={`rotate(-90 ${CENTER} ${CENTER})`}
-                opacity={0.18}
-              />
-              <m.circle
-                cx={CENTER}
-                cy={CENTER}
-                r={RADIUS}
-                fill="none"
-                stroke={slice.color}
-                strokeWidth={STROKE}
-                strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
-                strokeDashoffset={offset}
-                transform={`rotate(-90 ${CENTER} ${CENTER})`}
-                initial={
-                  animateOnMount
-                    ? { strokeDashoffset: offset - visible }
-                    : false
-                }
-                animate={{
-                  strokeDashoffset: offset,
-                  transition: {
-                    ...transitions.chart,
-                    delay: chartPhaseDelay + index * durations.stagger
+          {arcs.map(({ slice, offset, visible }, index) => {
+            const isActive = slice.categoryId === activeId;
+            return (
+              <g key={slice.categoryId}>
+                {/* Halo sutil detrás de cada slice */}
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={RADIUS}
+                  fill="none"
+                  stroke={slice.color}
+                  strokeWidth={STROKE + 6}
+                  strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
+                  strokeDashoffset={offset}
+                  transform={`rotate(-90 ${CENTER} ${CENTER})`}
+                  opacity={0.18}
+                />
+                <m.circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={RADIUS}
+                  fill="none"
+                  stroke={slice.color}
+                  strokeWidth={STROKE}
+                  strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
+                  strokeDashoffset={offset}
+                  transform={`rotate(-90 ${CENTER} ${CENTER})`}
+                  className="cursor-pointer"
+                  initial={
+                    animateOnMount
+                      ? { strokeDashoffset: offset - visible }
+                      : false
                   }
-                }}
-                whileHover={{ scale: 1.04, transition: springs.ui }}
-                style={{ transformOrigin: 'center' }}
-              >
-                <title>{`${slice.name}: ${formatMoney(slice.total, currency)}`}</title>
-              </m.circle>
-            </g>
-          ))}
+                  animate={{
+                    strokeDashoffset: offset,
+                    scale: isActive ? 1.03 : 1,
+                    transition: {
+                      strokeDashoffset: {
+                        ...transitions.chart,
+                        delay: chartPhaseDelay + index * durations.stagger
+                      },
+                      scale: springs.ui
+                    }
+                  }}
+                  onHoverStart={() => setActiveId(slice.categoryId)}
+                  onHoverEnd={() => setActiveId(null)}
+                  onClick={() => onSelectCategory(slice.categoryId)}
+                  style={{ transformOrigin: 'center' }}
+                >
+                  <title>{`${slice.name}: ${formatMoney(slice.total, currency)}`}</title>
+                </m.circle>
+              </g>
+            );
+          })}
         </m.svg>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="amount whitespace-nowrap text-base font-semibold text-content sm:text-lg">
-            {formatMoney(totalValue, currency, { decimals: false })}
-          </div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <AnimatePresence mode="wait" initial={false}>
+            <m.div
+              key={activeId ?? 'total'}
+              variants={fadeOnlyVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="flex max-w-32 flex-col items-center gap-0.5 text-center"
+            >
+              {active ? (
+                <>
+                  <span className="max-w-32 truncate text-xs font-medium text-content-secondary">
+                    {active.name}
+                  </span>
+                  <span className="amount whitespace-nowrap text-base font-semibold text-content sm:text-lg">
+                    {formatMoney(active.total, currency, { decimals: false })}
+                  </span>
+                  <span className="text-xs amount text-content-muted">
+                    {active.percent} % del total
+                  </span>
+                </>
+              ) : (
+                <span className="amount whitespace-nowrap text-base font-semibold text-content sm:text-lg">
+                  {formatMoney(totalValue, currency, { decimals: false })}
+                </span>
+              )}
+            </m.div>
+          </AnimatePresence>
         </div>
       </div>
 

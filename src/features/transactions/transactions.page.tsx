@@ -1,8 +1,16 @@
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AnimatePresence, m } from 'motion/react';
 import { ArrowLeftRight, Plus, Search, Wallet, Download } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
-import { presses, springs, tightListContainerVariants } from '@/shared/motion';import { formatDayLabel, formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
+import { presses, springs, tightListContainerVariants } from '@/shared/motion';
+import {
+  formatDayLabel,
+  formatMonth,
+  monthOf,
+  todayISO,
+  type MonthKey
+} from '@/shared/lib/dates';
 import { useToast } from '@/shared/hooks/useToast';
 import { useSettings } from '@/shared/hooks/useSettings';
 import type { NewTransaction } from '@/shared/db/repos/transactions.repo';
@@ -45,12 +53,20 @@ const CURRENCY_FILTER_OPTIONS: readonly SegmentedOption<CurrencyFilter>[] = [
 
 const EMPTY_CATEGORY_NAMES = new Map<string, string>();
 
+/** Deep link desde el dashboard (dona): filtra por categoría y mes. */
+interface TransactionsDeepLink {
+  categoryId?: string;
+  month?: MonthKey;
+}
+
 export default function TransactionsPage() {
   const transactions = useTransactions();
   const categories = useCategories();
   const actions = useTransactionActions();
   const { show } = useToast();
   const settings = useSettings();
+  const location = useLocation();
+  const deepLink = (location.state ?? null) as TransactionsDeepLink | null;
 
   const [month, setMonth] = useState(() => monthOf(todayISO()));
   const [type, setType] = useState<TypeFilter>('all');
@@ -60,6 +76,13 @@ export default function TransactionsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const animateListEntrance = useListEntrance();
+
+  // Drill-down de la dona: aplica los filtros una vez al llegar con estado.
+  useEffect(() => {
+    if (!deepLink) return;
+    if (deepLink.categoryId) setCategoryId(deepLink.categoryId);
+    if (deepLink.month) setMonth(deepLink.month);
+  }, [deepLink]);
 
   const deferredQuery = useDeferredValue(query);
 

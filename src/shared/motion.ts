@@ -272,6 +272,15 @@ export const breathingVariants: Variants = {
   }
 };
 
+/** Pulso del badge de balance cuando el signo cambia entre meses. */
+export const pulseScaleVariants: Variants = {
+  idle: { scale: 1 },
+  pulse: {
+    scale: [1, 1.12, 1],
+    transition: { duration: durations.micro * 3, ease: easings.emphasized }
+  }
+};
+
 /** Toasts: entran desde arriba con desplazamiento corto. */
 export const toastVariants: Variants = {
   hidden: { opacity: 0, y: -12 },
