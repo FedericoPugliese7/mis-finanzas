@@ -35,7 +35,12 @@ export const easings = {
    * Desaceleración suave, ideal para gráficos y contadores.
    * Para hacerla más relajada, acercar el segundo punto a (0.2, 1).
    */
-  out: [0.16, 1, 0.3, 1] as BezierCurve
+  out: [0.16, 1, 0.3, 1] as BezierCurve,
+  /**
+   * Énfasis Material You: aceleración suave y llegada larga.
+   * Para popovers/drill-down de gráficos.
+   */
+  emphasized: [0.2, 0, 0, 1] as BezierCurve
 } satisfies Record<string, BezierCurve>;
 
 /** Easings listos para CSS (`transition`, `@keyframes`, View Transitions API). */
@@ -43,7 +48,8 @@ export const easingsCss = {
   ios: 'cubic-bezier(0.32, 0.72, 0, 1)',
   standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
   exit: 'cubic-bezier(0.4, 0, 1, 1)',
-  out: 'cubic-bezier(0.16, 1, 0.3, 1)'
+  out: 'cubic-bezier(0.16, 1, 0.3, 1)',
+  emphasized: 'cubic-bezier(0.2, 0, 0, 1)'
 } satisfies Record<keyof typeof easings, string>;
 
 /* -------------------------------------------------------------------------- */
@@ -66,6 +72,11 @@ export const springs = {
    */
   micro: { type: 'spring', stiffness: 500, damping: 34, mass: 0.6 },
   /**
+   * Micro-delight (morph de íconos, release de indicadores): rápido y seco,
+   * sin rebote visible (zeta ≈ 0.96).
+   */
+  snappy: { type: 'spring', stiffness: 500, damping: 32, mass: 0.55 },
+  /**
    * Transiciones de UI everyday (toasts, inline expands, indicadores).
    * Equilibrio entre rapidez y suavidad.
    */
@@ -76,7 +87,11 @@ export const springs = {
    */
   sheet: { type: 'spring', stiffness: 340, damping: 34, mass: 1 },
   /**
-   * Entradas grandes (página, modal) y valores numéricos (count-up).
+   * Contadores numéricos (count-up): rápido y sobreamortiguado, sin rebote.
+   */
+  count: { type: 'spring', stiffness: 500, damping: 40, mass: 0.5 },
+  /**
+   * Entradas grandes (página, modal).
    * Más pesado y calmado; no compite con el protagonista de la pantalla.
    */
   gentle: { type: 'spring', stiffness: 260, damping: 28, mass: 1 }
@@ -100,6 +115,8 @@ export const durations = {
   route: 0.2,
   /** Cambio de tema (View Transitions API / CSS). */
   theme: 0.2,
+  /** Popovers y tooltips anclados a gráficos. */
+  popover: 0.18,
   /** Contadores numéricos del dashboard. */
   count: 0.6,
   /** Gráficos (solo primer montaje): 600-800 ms. */
@@ -107,6 +124,12 @@ export const durations = {
   /** Stagger entre ítems de lista. */
   stagger: 0.03
 } as const;
+
+/**
+ * Coreografía del dashboard: los gráficos esperan a que el count-up esté
+ * terminando antes de crecer (un solo protagonista por vez, SPEC 7).
+ */
+export const chartPhaseDelay = durations.count * 0.7;
 
 const MS_PER_SECOND = 1000;
 
@@ -118,6 +141,7 @@ export const durationsMs = {
   exit: durations.exit * MS_PER_SECOND,
   route: durations.route * MS_PER_SECOND,
   theme: durations.theme * MS_PER_SECOND,
+  popover: durations.popover * MS_PER_SECOND,
   chart: durations.chart * MS_PER_SECOND,
   stagger: durations.stagger * MS_PER_SECOND
 } satisfies Record<string, number>;
@@ -132,10 +156,12 @@ export const transitions = {
   enter: { duration: durations.enter, ease: easings.out },
   exit: { duration: durations.exit, ease: easings.exit },
   route: { duration: durations.route, ease: easings.standard },
-  /** Contadores: counts cortos y legibles. */
-  count: { duration: durations.count, ease: easings.ios },
-  /** Gráficos: ease-out, una sola vez. */
-  chart: { duration: durations.chart, ease: easings.out },
+  /** Popovers y tooltips: emphasized, cortito. */
+  popover: { duration: durations.popover, ease: easings.emphasized },
+  /** Contadores: spring rápido y sobreamortiguado (más vivo que un tween). */
+  count: springs.count,
+  /** Gráficos: ease-out, una sola vez, en su fase coreografiada. */
+  chart: { duration: durations.chart, ease: easings.out, delay: chartPhaseDelay },
   /** Stagger de listas. */
   stagger: { staggerChildren: durations.stagger, delayChildren: 0.04 }
 } satisfies Record<string, Transition>;
@@ -237,7 +263,7 @@ export const barGrowthVariants: Variants = {
     transition: {
       duration: durations.chart,
       ease: easings.out,
-      delay: index * durations.stagger
+      delay: chartPhaseDelay + index * durations.stagger
     }
   }),
   exit: { opacity: 0, scaleY: 0, transition: transitions.exit }

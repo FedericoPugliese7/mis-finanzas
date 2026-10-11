@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { animate, m, useMotionValue, useTransform } from 'motion/react';
-import { transitions } from '@/shared/motion';
+import { animate, m, useMotionValue, useReducedMotion, useTransform } from 'motion/react';
+import { springs } from '@/shared/motion';
 import { cn } from './utils';
 
 interface AnimatedNumberProps {
@@ -11,22 +11,22 @@ interface AnimatedNumberProps {
 
 /**
  * Smooth count-up for dashboard figures (SPEC 7.7): animates from the previous
- * value to the new one with the shared `count` transition. With
+ * value to the new one with the shared `count` spring. With
  * `prefers-reduced-motion` the value jumps directly to its final state.
  */
 export function AnimatedNumber({ value, format, className }: AnimatedNumberProps) {
+  const reduced = useReducedMotion();
   const motionValue = useMotionValue(value);
   const text = useTransform(motionValue, (latest) => format(Math.round(latest)));
 
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) {
       motionValue.set(value);
       return;
     }
-    const controls = animate(motionValue, value, transitions.count);
+    const controls = animate(motionValue, value, springs.count);
     return () => controls.stop();
-  }, [value, motionValue]);
+  }, [value, motionValue, reduced]);
 
   return (
     <>

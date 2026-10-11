@@ -86,20 +86,21 @@ export function AppShell() {
         tabIndex={-1}
         className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-28 md:pb-10"
       >
-        <Suspense
-          fallback={
-            <m.div
-              variants={fadeOnlyVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="flex justify-center py-16"
-            >
-              <Spinner label="Cargando sección" />
-            </m.div>
-          }
-        >
-          <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
+          <Suspense
+            key={location.pathname}
+            fallback={
+              <m.div
+                variants={fadeOnlyVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="flex justify-center py-16"
+              >
+                <Spinner label="Cargando sección" />
+              </m.div>
+            }
+          >
             <m.div
               variants={routeVariants}
               initial="initial"
@@ -109,8 +110,8 @@ export function AppShell() {
             >
               <Outlet />
             </m.div>
-          </AnimatePresence>
-        </Suspense>
+          </Suspense>
+        </AnimatePresence>
       </main>
 
       <TabBar />

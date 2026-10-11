@@ -1,6 +1,12 @@
 import { m } from 'motion/react';
 import { formatMoney } from '@/shared/lib/money';
-import { chartVariants, durations, springs, transitions } from '@/shared/motion';
+import {
+  chartVariants,
+  chartPhaseDelay,
+  durations,
+  springs,
+  transitions
+} from '@/shared/motion';
 import type { Currency } from '@/shared/lib/types';
 import { useChartEntrance } from './hooks/use-chart-entrance';
 import type { DonutSlice } from './dashboard.helpers';
@@ -81,7 +87,7 @@ export default function CategoryDonut({ slices, currency }: CategoryDonutProps) 
                   strokeDashoffset: offset,
                   transition: {
                     ...transitions.chart,
-                    delay: index * durations.stagger
+                    delay: chartPhaseDelay + index * durations.stagger
                   }
                 }}
                 whileHover={{ scale: 1.04, transition: springs.ui }}
