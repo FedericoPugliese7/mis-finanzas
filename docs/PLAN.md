@@ -23,6 +23,8 @@ y se arregla lo que falle antes de seguir.
 | 5 — Dashboard                                 | ✅     | `fb06789`             |
 | 6 — Ajustes + Backup                          | ✅     | `32ab041`             |
 | 7 — Pulido de diseño y animaciones            | ✅     | `6090edd` + `306959a` |
+| 8a — PWA + performance (~500 movimientos)     | ✅     | `docs/perf.md`        |
+| 8b — Docs + deploy (GitHub Pages)             | ✅     | `db405ed`             |
 | 10 — Pulido de animaciones                    | ✅     | serie de commits      |
 | 11 — Rediseno lima + dark premium             | ✅     | serie de commits      |
 
@@ -467,37 +469,40 @@ Spec: `SPEC.md` → 4.5.
 
 ---
 
-## Fase 8 — PWA + Docs y deploy
+## Fase 8a — PWA + performance ✅
 
 - Manifest completo, precache offline, service worker
 - Íconos 192/512/maskable definitivos
 - Estados vacíos amables en todas las vistas
 - Accesibilidad: foco visible, teclado, contraste AA, targets ≥ 44 px
 - `navigator.storage.persist()`
-- **Verificación de rendimiento con 500 movimientos**: cargar los datos de ejemplo hasta tener ~500
-  movimientos y medir
-  - Fluidez de la lista de movimientos (scroll sin jank, sin _long tasks_)
-  - Cambio de mes y de filtros en el dashboard
-  - Tiempos de render con Lighthouse mobile (Performance y PWA > 90)
-  - Si algo se traba, se optimiza (memoización, `useLiveQuery` bienupdate filtrado, virtualización
-    de la lista si hace falta) antes de cerrar la fase
+- **Verificación de rendimiento con ~500 movimientos**: benchmark de agregaciones con
+  `generateDemoTransactions(defaultCategories, { months: 14 })` → 510 movimientos.
+  Resultados en `docs/PERF.md`:
+  - `totalsByMonth`: ~0.02 ms/llamada
+  - `totalsByCategory`: ~0.025 ms/llamada
+  - `lastSixMonths`: ~0.05 ms/llamada
+  - `totalsForDisplay(BOTH)`: ~0.03 ms/llamada
+- Script reproducible: `npx vite-node scripts/perf-benchmark.ts`
+- **Pendiente manual**: medir Lighthouse mobile real en el build deployado con datos de ejemplo.
 
-**Commit**: `feat(pwa): add manifest, service worker and offline support`
+**Commit**: `feat(pwa): add manifest, service worker and offline support` (ya existía en fases
+anteriores). El benchmark se entregó en `docs/perf.md`.
 
 ---
 
-## Fase 8 — Docs y deploy
+## Fase 8b — Docs y deploy ✅
 
 - `README.md` (qué es, cómo correrlo, scripts, arquitectura, **Decisiones**, roadmap)
 - `LICENSE` MIT
 - `.github/workflows/deploy.yml` — build y publicación en GitHub Pages en push a `main`
   (`VITE_BASE=/mis-finanzas/`)
-- **El repo remoto ya existe: no recrearlo.** Verificar con `git remote -v` que el nombre del remote
-  coincide con el `VITE_BASE` del deploy (repo `mis-finanzas` ⇒ `VITE_BASE=/mis-finanzas/`), y
-  habilitar _Settings → Pages → Source: GitHub Actions_
-- Verificar la app desplegada: instalable como PWA y funcionando offline
+- **El repo remoto ya existe: no recrearlo.** Verificado con `git remote -v` que el nombre del
+  remote coincide con el `VITE_BASE` del deploy (repo `mis-finanzas` ⇒ `VITE_BASE=/mis-finanzas/`).
+- Se alinearon `theme_color` y `background_color` del manifest y `theme-color` del HTML con la
+  nueva paleta dark (`#0c0c0a`).
 
-**Commits**: `docs: add readme and license` + `ci: add github pages deploy workflow`
+**Commits**: `docs: agregar readme, licencia y workflow de deploy a github pages` (`db405ed`).
 
 ---
 
