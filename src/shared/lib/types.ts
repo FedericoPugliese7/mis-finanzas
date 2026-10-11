@@ -64,6 +64,24 @@ export type Theme = z.infer<typeof ThemeSchema>;
 export const RateSourceSchema = z.enum(['manual', 'dolarapi']);
 export type RateSource = z.infer<typeof RateSourceSchema>;
 
+export const RecurringFrequencySchema = z.enum(['monthly']);
+export type RecurringFrequency = z.infer<typeof RecurringFrequencySchema>;
+
+export const RecurringTemplateSchema = z.object({
+  id: z.string().min(1, 'Id inválido'),
+  type: TransactionTypeSchema,
+  amountMinor: z.number().int().positive('El monto debe ser mayor a cero'),
+  currency: CurrencySchema,
+  categoryId: categoryIdSchema,
+  note: noteSchema.optional(),
+  exchangeRate: z.number().positive('La cotización debe ser mayor a cero').optional(),
+  frequency: RecurringFrequencySchema,
+  startDate: isoDateSchema,
+  endDate: isoDateSchema.optional().nullable(),
+  lastGeneratedDate: isoDateSchema
+});
+export type RecurringTemplate = z.infer<typeof RecurringTemplateSchema>;
+
 export const SettingsSchema = z.object({
   theme: ThemeSchema,
   displayCurrency: DisplayCurrencySchema,
@@ -73,10 +91,14 @@ export const SettingsSchema = z.object({
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const BackupSchema = z.object({
-  schemaVersion: z.literal(1, { invalid_type_error: 'Versión de backup no soportada' }),
+  schemaVersion: z.union([
+    z.literal(1, { invalid_type_error: 'Versión de backup no soportada' }),
+    z.literal(2, { invalid_type_error: 'Versión de backup no soportada' })
+  ]),
   exportedAt: z.string().min(1, 'Fecha de exportación inválida'),
   transactions: z.array(TransactionSchema),
   categories: z.array(CategorySchema),
+  recurringTemplates: z.array(RecurringTemplateSchema).optional().default([]),
   settings: SettingsSchema
 });
 export type Backup = z.infer<typeof BackupSchema>;

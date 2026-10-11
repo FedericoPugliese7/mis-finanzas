@@ -7,10 +7,11 @@ import {
   Upload,
   FileSpreadsheet
 } from 'lucide-react';
-import type { Settings } from '@/shared/lib/types';
-import type { ImportMode, ImportPlan } from '@/shared/lib/backup';
+import type { Backup, Settings } from '@/shared/lib/types';
+import type { CurrentData, ImportMode, ImportPlan } from '@/shared/lib/backup';
 import { backupRepo } from '@/shared/db/repos/backup.repo';
 import { categoriesRepo } from '@/shared/db/repos/categories.repo';
+import { recurringRepo } from '@/shared/db/repos/recurring.repo';
 import { transactionsRepo } from '@/shared/db/repos/transactions.repo';
 import { generateDemoTransactions } from '@/shared/lib/demo-data';
 import { parseBackup, backupFileName, buildImportPlan } from '@/shared/lib/backup';
@@ -34,6 +35,8 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [importMode, setImportMode] = useState<ImportMode>('merge');
   const [pendingImportPlan, setPendingImportPlan] = useState<ImportPlan | null>(null);
+  const [parsedBackup, setParsedBackup] = useState<Backup | null>(null);
+  const [currentData, setCurrentData] = useState<CurrentData | null>(null);
   const [demoDialogOpen, setDemoDialogOpen] = useState(false);
   const [dangerDialogOpen, setDangerDialogOpen] = useState(false);
 
@@ -98,17 +101,21 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
 
     try {
       const backup = parseBackup(text);
-      const [currentTransactions, currentCategories] = await Promise.all([
+      const [currentTransactions, currentCategories, currentTemplates] = await Promise.all([
         transactionsRepo.getAll(),
-        categoriesRepo.getAll()
+        categoriesRepo.getAll(),
+        recurringRepo.getAll()
       ]);
 
-      const mergePlan = buildImportPlan(
-        backup,
-        { transactions: currentTransactions, categories: currentCategories },
-        'merge'
-      );
+      const data: CurrentData = {
+        transactions: currentTransactions,
+        categories: currentCategories,
+        recurringTemplates: currentTemplates
+      };
+      const mergePlan = buildImportPlan(backup, data, 'merge');
 
+      setParsedBackup(backup);
+      setCurrentData(data);
       setPendingImportPlan(mergePlan);
       setImportMode('merge');
       setImportDialogOpen(true);
@@ -126,11 +133,13 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
 
     try {
       await backupRepo.apply(pendingImportPlan);
+      const counts = pendingImportPlan.counts;
       show({
-        message: `Backup importado (${pendingImportPlan.counts.transactions} movimientos, ${pendingImportPlan.counts.categories} categorías).`
+        message: `Backup importado (${counts.transactions} movimientos, ${counts.categories} categorías${counts.recurringTemplates > 0 ? `, ${counts.recurringTemplates} recurrentes` : ''}).`
       });
       setImportDialogOpen(false);
       setPendingImportPlan(null);
+      setParsedBackup(null);
     } catch {
       show({ message: 'No se pudo aplicar el backup.' });
     }
@@ -244,11 +253,11 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
         title="Importar backup"
         description={
           pendingImportPlan
-            ? `Se encontraron ${pendingImportPlan.counts.transactions + pendingImportPlan.counts.transactionsSkipped} movimientos y ${pendingImportPlan.counts.categories + pendingImportPlan.counts.categoriesSkipped} categorías en el archivo.`
+            ? `Se encontraron ${pendingImportPlan.counts.transactions + pendingImportPlan.counts.transactionsSkipped} movimientos, ${pendingImportPlan.counts.categories + pendingImportPlan.counts.categoriesSkipped} categorías y ${pendingImportPlan.counts.recurringTemplates + pendingImportPlan.counts.recurringTemplatesSkipped} recurrentes en el archivo.`
             : ''
         }
       >
-        {pendingImportPlan && (
+        {pendingImportPlan && parsedBackup && currentData && (
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
               <label id="import-mode-label" className="text-sm font-medium text-content">
@@ -262,30 +271,7 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
                     checked={importMode === 'merge'}
                     onChange={() => {
                       setImportMode('merge');
-                      const newPlan = buildImportPlan(
-                        {
-                          schemaVersion: 1,
-                          exportedAt: new Date().toISOString(),
-                          transactions: pendingImportPlan.transactions.concat(
-                            pendingImportPlan.counts.transactionsSkipped > 0
-                              ? [] // placeholder - we don't have skipped ones
-                              : []
-                          ),
-                          categories: pendingImportPlan.categories,
-                          settings: pendingImportPlan.settings ?? {
-                            theme: 'system',
-                            displayCurrency: 'ARS',
-                            referenceRate: 1000,
-                            rateSource: 'dolarapi'
-                          }
-                        },
-                        {
-                          transactions: pendingImportPlan.transactions,
-                          categories: pendingImportPlan.categories
-                        },
-                        'merge'
-                      );
-                      setPendingImportPlan(newPlan);
+                      setPendingImportPlan(buildImportPlan(parsedBackup, currentData, 'merge'));
                     }}
                   />
                   Fusionar (añade solo lo nuevo, conserva tus ajustes)
@@ -297,28 +283,7 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
                     checked={importMode === 'replace'}
                     onChange={() => {
                       setImportMode('replace');
-                      const newPlan = buildImportPlan(
-                        {
-                          schemaVersion: 1,
-                          exportedAt: new Date().toISOString(),
-                          transactions: pendingImportPlan.transactions.concat(
-                            pendingImportPlan.counts.transactionsSkipped > 0 ? [] : []
-                          ),
-                          categories: pendingImportPlan.categories,
-                          settings: pendingImportPlan.settings ?? {
-                            theme: 'system',
-                            displayCurrency: 'ARS',
-                            referenceRate: 1000,
-                            rateSource: 'dolarapi'
-                          }
-                        },
-                        {
-                          transactions: pendingImportPlan.transactions,
-                          categories: pendingImportPlan.categories
-                        },
-                        'replace'
-                      );
-                      setPendingImportPlan(newPlan);
+                      setPendingImportPlan(buildImportPlan(parsedBackup, currentData, 'replace'));
                     }}
                   />
                   Reemplazar (borra todo y usa el backup, incluyendo ajustes)
@@ -332,6 +297,9 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
                   <span className="font-semibold text-content">Nuevos:</span>{' '}
                   {pendingImportPlan.counts.transactions} movimientos,
                   {pendingImportPlan.counts.categories} categorías
+                  {pendingImportPlan.counts.recurringTemplates > 0
+                    ? `, ${pendingImportPlan.counts.recurringTemplates} recurrentes`
+                    : ''}
                 </div>
                 <div>
                   <span className="font-semibold text-content">
@@ -339,6 +307,9 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
                   </span>{' '}
                   {pendingImportPlan.counts.transactionsSkipped} movimientos,
                   {pendingImportPlan.counts.categoriesSkipped} categorías
+                  {pendingImportPlan.counts.recurringTemplatesSkipped > 0
+                    ? `, ${pendingImportPlan.counts.recurringTemplatesSkipped} recurrentes`
+                    : ''}
                 </div>
               </div>
               {pendingImportPlan.settings && (

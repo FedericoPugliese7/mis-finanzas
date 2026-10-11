@@ -106,7 +106,8 @@ export function newTransactionDefaults(
     categoryId: firstCategory?.id ?? '',
     date: todayISO(),
     note: '',
-    exchangeRate: null
+    exchangeRate: null,
+    isRecurring: false
   };
 }
 
@@ -119,6 +120,7 @@ export function editTransactionDefaults(transaction: Transaction): TransactionFo
     categoryId: transaction.categoryId,
     date: transaction.date,
     note: transaction.note ?? '',
-    exchangeRate: transaction.exchangeRate ?? null
+    exchangeRate: transaction.exchangeRate ?? null,
+    isRecurring: false
   };
 }

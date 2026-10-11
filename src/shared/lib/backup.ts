@@ -2,11 +2,12 @@ import {
   BackupSchema,
   type Backup,
   type Category,
+  type RecurringTemplate,
   type Settings,
   type Transaction
 } from './types';
 
-export const BACKUP_SCHEMA_VERSION = 1;
+export const BACKUP_SCHEMA_VERSION = 2;
 
 /** A file that could not be understood as a valid backup (message is user-facing). */
 export class BackupParseError extends Error {
@@ -20,6 +21,7 @@ export class BackupParseError extends Error {
 export function createBackup(
   transactions: readonly Transaction[],
   categories: readonly Category[],
+  recurringTemplates: readonly RecurringTemplate[],
   settings: Settings,
   exportedAt: Date = new Date()
 ): Backup {
@@ -28,6 +30,7 @@ export function createBackup(
     exportedAt: exportedAt.toISOString(),
     transactions: [...transactions],
     categories: [...categories],
+    recurringTemplates: [...recurringTemplates],
     settings
   };
 }
@@ -65,6 +68,8 @@ export interface ImportCounts {
   transactionsSkipped: number;
   categories: number;
   categoriesSkipped: number;
+  recurringTemplates: number;
+  recurringTemplatesSkipped: number;
 }
 
 export interface ImportPlan {
@@ -72,6 +77,7 @@ export interface ImportPlan {
   /** Records to write (put). In `merge` mode only the new ones. */
   transactions: Transaction[];
   categories: Category[];
+  recurringTemplates: RecurringTemplate[];
   /** Settings to apply; `null` keeps the current ones (merge mode). */
   settings: Settings | null;
   counts: ImportCounts;
@@ -80,6 +86,7 @@ export interface ImportPlan {
 export interface CurrentData {
   transactions: readonly Transaction[];
   categories: readonly Category[];
+  recurringTemplates: readonly RecurringTemplate[];
 }
 
 /**
@@ -97,18 +104,22 @@ export function buildImportPlan(
       mode,
       transactions: [...backup.transactions],
       categories: [...backup.categories],
+      recurringTemplates: [...backup.recurringTemplates],
       settings: backup.settings,
       counts: {
         transactions: backup.transactions.length,
         transactionsSkipped: 0,
         categories: backup.categories.length,
-        categoriesSkipped: 0
+        categoriesSkipped: 0,
+        recurringTemplates: backup.recurringTemplates.length,
+        recurringTemplatesSkipped: 0
       }
     };
   }
 
   const knownTransactions = new Set(current.transactions.map((tx) => tx.id));
   const knownCategories = new Set(current.categories.map((category) => category.id));
+  const knownTemplates = new Set(current.recurringTemplates.map((template) => template.id));
 
   const transactions: Transaction[] = [];
   let transactionsSkipped = 0;
@@ -130,16 +141,29 @@ export function buildImportPlan(
     }
   }
 
+  const recurringTemplates: RecurringTemplate[] = [];
+  let recurringTemplatesSkipped = 0;
+  for (const template of backup.recurringTemplates) {
+    if (knownTemplates.has(template.id)) {
+      recurringTemplatesSkipped += 1;
+    } else {
+      recurringTemplates.push(template);
+    }
+  }
+
   return {
     mode,
     transactions,
     categories,
+    recurringTemplates,
     settings: null,
     counts: {
       transactions: transactions.length,
       transactionsSkipped,
       categories: categories.length,
-      categoriesSkipped
+      categoriesSkipped,
+      recurringTemplates: recurringTemplates.length,
+      recurringTemplatesSkipped
     }
   };
 }

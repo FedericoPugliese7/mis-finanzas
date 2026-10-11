@@ -25,7 +25,8 @@ export const transactionFormSchema = z.object({
     .number({ invalid_type_error: 'Cotización inválida' })
     .positive('La cotización debe ser mayor a cero')
     .nullable()
-    .optional()
+    .optional(),
+  isRecurring: z.boolean()
 });
 
 export type TransactionFormValues = z.infer<typeof transactionFormSchema>;

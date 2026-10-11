@@ -45,6 +45,19 @@ export function addMonths(month: MonthKey, delta: number): MonthKey {
   return `${String(nextYear).padStart(4, '0')}-${String(nextMonth).padStart(2, '0')}`;
 }
 
+/** Moves a `YYYY-MM-DD` date by a number of months, clamping the day to the target month. */
+export function addMonthsToDate(date: DateISO, delta: number): DateISO {
+  const year = Number(date.slice(0, 4));
+  const monthIndex = Number(date.slice(5, 7)) - 1;
+  const day = Number(date.slice(8, 10));
+  const target = new Date(year, monthIndex + delta, 1);
+  const maxDay = new Date(year, monthIndex + delta + 1, 0).getDate();
+  const clampedDay = Math.min(day, maxDay);
+  return `${String(target.getFullYear()).padStart(4, '0')}-${String(
+    target.getMonth() + 1
+  ).padStart(2, '0')}-${String(clampedDay).padStart(2, '0')}`;
+}
+
 /** Local today as `YYYY-MM-DD` (used only for relative labels). */
 export function todayISO(now: Date = new Date()): DateISO {
   const year = now.getFullYear();

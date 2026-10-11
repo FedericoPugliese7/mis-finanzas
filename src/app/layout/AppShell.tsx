@@ -4,6 +4,7 @@ import { AnimatePresence, m } from 'motion/react';
 import { fadeOnlyVariants, routeVariants } from '@/shared/motion';
 import { formatLongDate, todayISO } from '@/shared/lib/dates';
 import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
+import { useRecurringGeneration } from '@/shared/hooks/use-recurring-generation';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { Spinner } from '@/shared/ui/spinner';
 import { ToastViewport } from '@/shared/ui/toast';
@@ -34,6 +35,7 @@ const DISPLAY_OPTIONS: readonly SegmentedOption<'ARS' | 'USD' | 'BOTH'>[] = [
 export function AppShell() {
   useTheme();
   useExchangeRate();
+  useRecurringGeneration();
   const location = useLocation();
   const sectionTitle = SECTION_TITLES[location.pathname] ?? 'Mis Finanzas';
   const longDate = formatLongDate(todayISO());

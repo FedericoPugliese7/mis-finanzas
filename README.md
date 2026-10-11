@@ -84,10 +84,10 @@ actualizaciones automáticas cuando hay un nuevo build.
 
 - [x] MVP: dashboard, movimientos, categorías, ajustes, backup/export, PWA.
 - [x] Pulido de animaciones y rediseño visual (lima eléctrico + dark premium).
-- [ ] Verificación de performance con ~500 movimientos (Fase 8).
-- [ ] Presupuestos por categoría (opcional).
-- [ ] Movimientos recurrentes (opcional).
-- [ ] Cotizaciones blue / MEP (opcional).
+- [x] Presupuestos por categoría.
+- [x] Movimientos recurrentes.
+- [ ] Verificación de performance con ~500 movimientos (Fase 8, pendiente manual).
+- [ ] Cotizaciones blue / MEP (opcional, no prioridad).
 
 ## Licencia
 

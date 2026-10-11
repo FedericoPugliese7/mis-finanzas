@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Category, Settings, Transaction } from '@/shared/lib/types';
+import type { Category, RecurringTemplate, Settings, Transaction } from '@/shared/lib/types';
 
 export const DB_NAME = 'mis-finanzas';
 export const SETTINGS_ID = 'general';
@@ -177,6 +177,7 @@ export const defaultCategories: readonly Category[] = [
 export class AppDatabase extends Dexie {
   transactions!: Table<Transaction, string>;
   categories!: Table<Category, string>;
+  recurringTemplates!: Table<RecurringTemplate, string>;
   settings!: Table<SettingsRecord, string>;
 
   constructor() {
@@ -203,6 +204,13 @@ export class AppDatabase extends Dexie {
           await categoriesTable.update(category.id, { budgetMinor: defaults.budgetMinor });
         }
       }
+    });
+
+    this.version(3).stores({
+      transactions: 'id, date, categoryId, [type+date], createdAt',
+      categories: 'id, type, name',
+      recurringTemplates: 'id, categoryId',
+      settings: 'id'
     });
 
     // Runs only the first time the database is created.

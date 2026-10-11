@@ -4,6 +4,7 @@ import { useSettings } from '@/shared/hooks/useSettings';
 import { useSettingsActions } from './hooks/use-settings-actions';
 import { AppearanceSection } from './appearance-section';
 import { RateSection } from './rate-section';
+import { RecurringSection } from './recurring-section';
 import { BackupSection } from '@/features/backup/backup-section';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { Spinner } from '@/shared/ui/spinner';
@@ -43,6 +44,7 @@ export default function SettingsPage() {
       <div className="flex flex-col gap-4">
         <AppearanceSection onUpdate={handleUpdate} />
         <RateSection settings={settings} onUpdate={handleUpdate} />
+        <RecurringSection />
         <BackupSection settings={settings} onUpdate={handleUpdate} />
       </div>
     </div>

@@ -14,6 +14,7 @@ import {
 import { useToast } from '@/shared/hooks/useToast';
 import { useSettings } from '@/shared/hooks/useSettings';
 import type { NewTransaction } from '@/shared/db/repos/transactions.repo';
+import { recurringRepo } from '@/shared/db/repos/recurring.repo';
 import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Input } from '@/shared/ui/input';
@@ -159,6 +160,10 @@ export default function TransactionsPage() {
         await actions.update(editing.id, payload);
       } else {
         await actions.create(payload);
+        if (values.isRecurring) {
+          await recurringRepo.createFromTransaction(payload);
+          show({ message: 'Movimiento recurrente creado' });
+        }
       }
       setFormOpen(false);
       setEditing(null);

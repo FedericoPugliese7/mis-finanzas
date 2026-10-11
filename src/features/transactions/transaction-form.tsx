@@ -16,6 +16,7 @@ import { Input } from '@/shared/ui/input';
 import { MoneyInput } from '@/shared/ui/money-input';
 import { Segmented, type SegmentedOption } from '@/shared/ui/segmented';
 import { Select } from '@/shared/ui/select';
+import { Switch } from '@/shared/ui/switch';
 import {
   categoryOptionsFor,
   editTransactionDefaults,
@@ -249,6 +250,23 @@ export function TransactionForm({
           <FormError id={`${fieldId}-note-error`}>{errors.note.message}</FormError>
         ) : null}
       </div>
+
+      {!transaction ? (
+        <div className="flex items-center gap-3 pt-1">
+          <Controller
+            control={control}
+            name="isRecurring"
+            render={({ field }) => (
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                aria-label="Repetir mensualmente"
+              />
+            )}
+          />
+          <span className="text-sm text-content">Repetir mensualmente</span>
+        </div>
+      ) : null}
 
       <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>

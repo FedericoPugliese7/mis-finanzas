@@ -6,7 +6,7 @@ import {
   createBackup,
   parseBackup
 } from './backup';
-import type { Backup, Category, Settings, Transaction } from './types';
+import type { Backup, Category, RecurringTemplate, Settings, Transaction } from './types';
 
 const sampleSettings: Settings = {
   theme: 'dark',
@@ -43,7 +43,7 @@ const sampleTransactions: Transaction[] = [
 
 describe('backup lib', () => {
   it('creates and parses a valid backup round-trip', () => {
-    const backup = createBackup(sampleTransactions, sampleCategories, sampleSettings);
+    const backup = createBackup(sampleTransactions, sampleCategories, [], sampleSettings);
     expect(backup.schemaVersion).toBe(BACKUP_SCHEMA_VERSION);
     expect(backup.transactions).toHaveLength(1);
 
@@ -52,6 +52,7 @@ describe('backup lib', () => {
 
     expect(parsed.settings.theme).toBe('dark');
     expect(parsed.transactions[0]?.id).toBe('tx-001');
+    expect(parsed.recurringTemplates).toEqual([]);
   });
 
   it('throws BackupParseError on invalid JSON', () => {
@@ -78,6 +79,7 @@ describe('backup lib', () => {
         }
       ],
       categories: [],
+      recurringTemplates: [],
       settings: sampleSettings
     };
 
@@ -88,14 +90,18 @@ describe('backup lib', () => {
   });
 
   it('throws BackupParseError when schemaVersion is unsupported', () => {
-    const backup = createBackup(sampleTransactions, sampleCategories, sampleSettings);
+    const backup = createBackup(sampleTransactions, sampleCategories, [], sampleSettings);
     (backup as unknown as { schemaVersion: number }).schemaVersion = 999;
 
     expect(() => parseBackup(JSON.stringify(backup))).toThrowError(BackupParseError);
   });
 
   describe('buildImportPlan', () => {
-    const current: { transactions: Transaction[]; categories: Category[] } = {
+    const current: {
+      transactions: Transaction[];
+      categories: Category[];
+      recurringTemplates: RecurringTemplate[];
+    } = {
       transactions: [
         {
           id: 'tx-001',
@@ -108,7 +114,8 @@ describe('backup lib', () => {
           updatedAt: 100
         }
       ],
-      categories: sampleCategories
+      categories: sampleCategories,
+      recurringTemplates: []
     };
 
     const incomingBackup: Backup = {
@@ -135,10 +142,12 @@ describe('backup lib', () => {
           type: 'income',
           color: '#10b981',
           icon: 'briefcase',
+          budgetMinor: null,
           isDefault: false,
           archived: false
         }
       ],
+      recurringTemplates: [],
       settings: sampleSettings
     };
 
@@ -155,7 +164,9 @@ describe('backup lib', () => {
         transactions: 1,
         transactionsSkipped: 1,
         categories: 1,
-        categoriesSkipped: 1
+        categoriesSkipped: 1,
+        recurringTemplates: 0,
+        recurringTemplatesSkipped: 0
       });
     });
 
@@ -166,11 +177,14 @@ describe('backup lib', () => {
       expect(plan.settings).toEqual(sampleSettings);
       expect(plan.transactions).toHaveLength(2);
       expect(plan.categories).toHaveLength(2);
+      expect(plan.recurringTemplates).toHaveLength(0);
       expect(plan.counts).toEqual({
         transactions: 2,
         transactionsSkipped: 0,
         categories: 2,
-        categoriesSkipped: 0
+        categoriesSkipped: 0,
+        recurringTemplates: 0,
+        recurringTemplatesSkipped: 0
       });
     });
   });

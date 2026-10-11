@@ -25,7 +25,8 @@ y se arregla lo que falle antes de seguir.
 | 7 — Pulido de diseño y animaciones            | ✅     | `6090edd` + `306959a` |
 | 8a — PWA + performance (~500 movimientos)     | ✅     | `docs/perf.md`        |
 | 8b — Docs + deploy (GitHub Pages)             | ✅     | `db405ed`             |
-| 9a — Presupuestos por categoría               | 🚧     | en curso              |
+| 9a — Presupuestos por categoría               | ✅     | `da2b6e9`             |
+| 9b — Movimientos recurrentes                  | 🚧     | en curso              |
 | 10 — Pulido de animaciones                    | ✅     | serie de commits      |
 | 11 — Rediseno lima + dark premium             | ✅     | serie de commits      |
 
@@ -507,7 +508,7 @@ anteriores). El benchmark se entregó en `docs/perf.md`.
 
 ---
 
-## Fase 9a — Presupuestos por categoría 🚧
+## Fase 9a — Presupuestos por categoría ✅
 
 - Campo `budgetMinor` en `Category` (ARS mensual, opcional, enteros).
 - Dexie v2 con upgrade que aplica presupuestos default a categorías existentes.
@@ -516,14 +517,21 @@ anteriores). El benchmark se entregó en `docs/perf.md`.
   alerta visual al superar el presupuesto.
 - Helpers puros `computeBudgetStatuses` + tests.
 
-**Pendiente**: decidir si se agrega presupuesto para ingresos (meta de ahorro) o se
-mantiene solo gastos.
+---
+
+## Fase 9b — Movimientos recurrentes 🚧
+
+- Tabla `recurringTemplates` en Dexie v3.
+- Helper `generateOccurrences` anclado al día de `startDate` con clamping.
+- Checkbox "Repetir mensualmente" en el formulario de movimientos.
+- Sección en Ajustes para listar/eliminar plantillas y generar ocurrencias manualmente.
+- Auto-generación al iniciar la app hasta `todayISO()`.
+- Backup JSON v2 incluye plantillas recurrentes.
 
 ---
 
-## Fase 9b/c — Opcional (solo con todo lo anterior verde)
+## Fase 9c — Opcional (solo con todo lo anterior verde)
 
-- Movimientos recurrentes
 - Otras casas de cambio (blue, MEP…) además del oficial — la del oficial ya está en la
   Fase 5b, tolerante a fallos y nunca bloqueante
 
