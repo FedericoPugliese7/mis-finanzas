@@ -1,5 +1,10 @@
 import Dexie, { type Table } from 'dexie';
-import type { Category, RecurringTemplate, Settings, Transaction } from '@/shared/lib/types';
+import type {
+  Category,
+  RecurringTemplate,
+  Settings,
+  Transaction
+} from '@/shared/lib/types';
 
 export const DB_NAME = 'mis-finanzas';
 export const SETTINGS_ID = 'general';
@@ -189,22 +194,28 @@ export class AppDatabase extends Dexie {
       settings: 'id'
     });
 
-    this.version(2).stores({
-      transactions: 'id, date, categoryId, [type+date], createdAt',
-      categories: 'id, type, name',
-      settings: 'id'
-    }).upgrade(async (trans) => {
-      // Patch existing default categories with the new monthly budgets.
-      const categoriesTable = trans.table<Category, string>('categories');
-      const existing = await categoriesTable.toArray();
-      const defaultsById = new Map(defaultCategories.map((category) => [category.id, category]));
-      for (const category of existing) {
-        const defaults = defaultsById.get(category.id);
-        if (defaults !== undefined && category.budgetMinor == null) {
-          await categoriesTable.update(category.id, { budgetMinor: defaults.budgetMinor });
+    this.version(2)
+      .stores({
+        transactions: 'id, date, categoryId, [type+date], createdAt',
+        categories: 'id, type, name',
+        settings: 'id'
+      })
+      .upgrade(async (trans) => {
+        // Patch existing default categories with the new monthly budgets.
+        const categoriesTable = trans.table<Category, string>('categories');
+        const existing = await categoriesTable.toArray();
+        const defaultsById = new Map(
+          defaultCategories.map((category) => [category.id, category])
+        );
+        for (const category of existing) {
+          const defaults = defaultsById.get(category.id);
+          if (defaults !== undefined && category.budgetMinor == null) {
+            await categoriesTable.update(category.id, {
+              budgetMinor: defaults.budgetMinor
+            });
+          }
         }
-      }
-    });
+      });
 
     this.version(3).stores({
       transactions: 'id, date, categoryId, [type+date], createdAt',

@@ -11,6 +11,10 @@ export interface BudgetStatus {
   /** Percentage of the budget already spent (can exceed 100). */
   percent: number;
   overBudget: boolean;
+  /** Amount still available (zero when over budget). */
+  remainingMinor: number;
+  /** Amount spent beyond the budget (zero when under budget). */
+  overspentMinor: number;
 }
 
 /**
@@ -40,6 +44,7 @@ export function computeBudgetStatuses(
       const spentMinor = spentById.get(category.id) ?? 0;
       const budgetMinor = category.budgetMinor ?? 0;
       const percent = budgetMinor > 0 ? Math.round((spentMinor / budgetMinor) * 100) : 0;
+      const overBudget = spentMinor > budgetMinor;
       return {
         categoryId: category.id,
         name: category.name,
@@ -48,7 +53,9 @@ export function computeBudgetStatuses(
         budgetMinor,
         spentMinor,
         percent,
-        overBudget: spentMinor > budgetMinor
+        overBudget,
+        remainingMinor: overBudget ? 0 : budgetMinor - spentMinor,
+        overspentMinor: overBudget ? spentMinor - budgetMinor : 0
       };
     })
     .sort((a, b) => b.percent - a.percent || a.name.localeCompare(b.name, 'es'));

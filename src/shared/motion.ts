@@ -251,7 +251,11 @@ export const drawerContentVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: durations.enter, ease: easings.out, delay: durations.microFast }
+    transition: {
+      duration: durations.enter,
+      ease: easings.out,
+      delay: durations.microFast
+    }
   },
   exit: { opacity: 0, transition: transitions.exit }
 };

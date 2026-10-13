@@ -119,7 +119,9 @@ export function buildImportPlan(
 
   const knownTransactions = new Set(current.transactions.map((tx) => tx.id));
   const knownCategories = new Set(current.categories.map((category) => category.id));
-  const knownTemplates = new Set(current.recurringTemplates.map((template) => template.id));
+  const knownTemplates = new Set(
+    current.recurringTemplates.map((template) => template.id)
+  );
 
   const transactions: Transaction[] = [];
   let transactionsSkipped = 0;

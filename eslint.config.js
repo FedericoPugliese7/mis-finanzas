@@ -34,15 +34,17 @@ export default tseslint.config(
       'no-restricted-syntax': [
         'error',
         {
-          selector: "Property[key.name=/^(stiffness|damping|mass)$/] > Literal",
+          selector: 'Property[key.name=/^(stiffness|damping|mass)$/] > Literal',
           message: 'Los parámetros de spring deben salir de src/shared/motion.ts'
         },
         {
-          selector: "Property[key.name=/^(duration|delay|staggerChildren|delayChildren)$/] > Literal",
-          message: 'Las duraciones y delays de animación deben salir de src/shared/motion.ts'
+          selector:
+            'Property[key.name=/^(duration|delay|staggerChildren|delayChildren)$/] > Literal',
+          message:
+            'Las duraciones y delays de animación deben salir de src/shared/motion.ts'
         },
         {
-          selector: "Literal[value=/cubic-bezier\\(/]",
+          selector: 'Literal[value=/cubic-bezier\\(/]',
           message: 'Las curvas de easing deben salir de src/shared/motion.ts'
         }
       ]

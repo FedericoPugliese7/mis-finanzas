@@ -4,6 +4,7 @@ import { AnimatePresence, m } from 'motion/react';
 import { fadeOnlyVariants, routeVariants } from '@/shared/motion';
 import { formatLongDate, todayISO } from '@/shared/lib/dates';
 import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
+import { useHeaderHeight } from '@/shared/hooks/use-header-height';
 import { useRecurringGeneration } from '@/shared/hooks/use-recurring-generation';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { Spinner } from '@/shared/ui/spinner';
@@ -36,6 +37,7 @@ export function AppShell() {
   useTheme();
   useExchangeRate();
   useRecurringGeneration();
+  const headerRef = useHeaderHeight();
   const location = useLocation();
   const sectionTitle = SECTION_TITLES[location.pathname] ?? 'Mis Finanzas';
   const longDate = formatLongDate(todayISO());
@@ -55,7 +57,10 @@ export function AppShell() {
         Saltar al contenido
       </a>
 
-      <header className="glass sticky top-0 z-40 border-b border-border-subtle safe-top">
+      <header
+        ref={headerRef}
+        className="glass sticky top-0 z-40 border-b border-border-subtle safe-top"
+      >
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <div className="flex min-w-0 items-center gap-6">
             <Brand />

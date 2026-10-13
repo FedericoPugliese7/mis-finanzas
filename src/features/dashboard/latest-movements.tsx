@@ -41,7 +41,11 @@ export function LatestMovements({ transactions, categoriesById }: LatestMovement
         );
 
         return (
-          <m.li key={transaction.id} variants={listItemVariants} className="flex items-center gap-3">
+          <m.li
+            key={transaction.id}
+            variants={listItemVariants}
+            className="flex items-center gap-3"
+          >
             <span
               aria-hidden
               className="grid h-8 w-8 shrink-0 place-items-center rounded-control"

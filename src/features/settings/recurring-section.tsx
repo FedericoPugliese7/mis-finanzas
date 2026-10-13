@@ -66,7 +66,9 @@ export function RecurringSection() {
     <Card className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-content">Movimientos recurrentes</h2>
+          <h2 className="text-base font-semibold text-content">
+            Movimientos recurrentes
+          </h2>
           <p className="mt-1 text-sm text-content-secondary">
             Marcá un movimiento como "repetir mensualmente" al cargarlo y la app generará
             automáticamente las próximas ocurrencias.
@@ -150,7 +152,10 @@ export function RecurringSection() {
           <Button variant="secondary" onClick={() => setPendingDelete(null)}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={() => pendingDelete && void handleRemove(pendingDelete)}>
+          <Button
+            variant="danger"
+            onClick={() => pendingDelete && void handleRemove(pendingDelete)}
+          >
             Eliminar
           </Button>
         </div>

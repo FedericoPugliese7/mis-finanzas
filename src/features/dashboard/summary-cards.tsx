@@ -3,11 +3,7 @@ import { Scale, TrendingDown, TrendingUp } from 'lucide-react';
 import { m } from 'motion/react';
 import { AnimatedNumber } from '@/shared/ui/animated-number';
 import { Card } from '@/shared/ui/card';
-import {
-  durationsMs,
-  fadeVariants,
-  pulseScaleVariants
-} from '@/shared/motion';
+import { durationsMs, fadeVariants, pulseScaleVariants } from '@/shared/motion';
 import { formatMoney } from '@/shared/lib/money';
 import { cn } from '@/shared/ui/utils';
 import type { Currency, DisplayCurrency } from '@/shared/lib/types';

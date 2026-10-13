@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import type { CategoryTotal } from '@/shared/lib/aggregations';
+import type { CategoryTotal, MonthlyBars } from '@/shared/lib/aggregations';
 import type { Transaction } from '@/shared/lib/types';
-import { chartCurrency, donutSlices, latestTransactions } from './dashboard.helpers';
+import {
+  barLabelLayout,
+  chartCurrency,
+  donutSlices,
+  latestTransactions
+} from './dashboard.helpers';
 
 function tx(overrides: Partial<Transaction>): Transaction {
   return {
@@ -89,5 +94,53 @@ describe('latestTransactions', () => {
 
   it('returns an empty list for a month without movements', () => {
     expect(latestTransactions(transactions, '2026-08', 5)).toEqual([]);
+  });
+});
+
+describe('barLabelLayout', () => {
+  function bar(income: number, expense: number, month = '2026-10'): MonthlyBars {
+    return { month, income, expense };
+  }
+
+  it('puts both labels above the bars when both are short', () => {
+    const heightOf = (value: number) => value; // 1% = 1 unit for tests
+    const layout = barLabelLayout([bar(40, 20)], heightOf);
+    expect(layout[0]!).toEqual([
+      expect.objectContaining({ kind: 'Ingresos', lane: 'high' }),
+      expect.objectContaining({ kind: 'Gastos', lane: 'low' })
+    ]);
+  });
+
+  it('puts the tall bar label inside when it crosses the threshold', () => {
+    const heightOf = (value: number) => value;
+    const layout = barLabelLayout([bar(80, 40)], heightOf);
+    expect(layout[0]!).toEqual([
+      expect.objectContaining({ kind: 'Ingresos', lane: 'inside' }),
+      expect.objectContaining({ kind: 'Gastos', lane: 'low' })
+    ]);
+  });
+
+  it('puts both labels inside when both bars are very tall', () => {
+    const heightOf = (value: number) => value;
+    const layout = barLabelLayout([bar(90, 85)], heightOf);
+    expect(layout[0]!).toEqual([
+      expect.objectContaining({ kind: 'Ingresos', lane: 'inside' }),
+      expect.objectContaining({ kind: 'Gastos', lane: 'inside' })
+    ]);
+  });
+
+  it('gives income the high lane when heights are equal', () => {
+    const heightOf = (value: number) => value;
+    const layout = barLabelLayout([bar(50, 50)], heightOf);
+    expect(layout[0]!).toEqual([
+      expect.objectContaining({ kind: 'Ingresos', lane: 'high' }),
+      expect.objectContaining({ kind: 'Gastos', lane: 'low' })
+    ]);
+  });
+
+  it('skips labels for zero-value bars by leaving the lane in low (render layer hides them)', () => {
+    const heightOf = (value: number) => value;
+    const layout = barLabelLayout([bar(30, 0)], heightOf);
+    expect(layout[0]![1]).toMatchObject({ kind: 'Gastos', lane: 'low', value: 0 });
   });
 });

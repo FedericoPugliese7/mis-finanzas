@@ -11,6 +11,7 @@ interface MonthSelectorProps {
   minMonth?: MonthKey;
   maxMonth?: MonthKey;
   className?: string;
+  size?: 'md' | 'sm';
 }
 
 /**
@@ -22,7 +23,8 @@ export function MonthSelector({
   onChange,
   minMonth,
   maxMonth,
-  className
+  className,
+  size = 'md'
 }: MonthSelectorProps) {
   const atMin = minMonth !== undefined && month <= minMonth;
   const atMax = maxMonth !== undefined && month >= maxMonth;
@@ -38,6 +40,8 @@ export function MonthSelector({
     onChange(addMonths(month, 1));
   }
 
+  const isSmall = size === 'sm';
+
   return (
     <div className={cn('flex items-center justify-center gap-1', className)}>
       <button
@@ -45,9 +49,12 @@ export function MonthSelector({
         aria-label="Mes anterior"
         disabled={atMin}
         onClick={goPrevious}
-        className="grid h-11 w-11 place-items-center rounded-full text-content-secondary transition-colors hover:bg-surface-hover hover:text-content disabled:pointer-events-none disabled:opacity-40"
+        className={cn(
+          'grid place-items-center rounded-full text-content-secondary transition-colors hover:bg-surface-hover hover:text-content disabled:pointer-events-none disabled:opacity-40',
+          isSmall ? 'h-9 w-9' : 'h-11 w-11'
+        )}
       >
-        <ChevronLeft size={20} aria-hidden />
+        <ChevronLeft size={isSmall ? 18 : 20} aria-hidden />
       </button>
       <AnimatePresence mode="wait" initial={false}>
         <m.span
@@ -57,7 +64,10 @@ export function MonthSelector({
           initial={direction === 'right' ? 'enterFromRight' : 'enterFromLeft'}
           animate="settle"
           exit={direction === 'right' ? 'exitLeft' : 'exitRight'}
-          className="min-w-40 text-center text-sm font-semibold text-content"
+          className={cn(
+            'text-center font-semibold text-content',
+            isSmall ? 'min-w-36 text-[13px]' : 'min-w-40 text-sm'
+          )}
         >
           {formatMonth(month)}
         </m.span>
@@ -67,9 +77,12 @@ export function MonthSelector({
         aria-label="Mes siguiente"
         disabled={atMax}
         onClick={goNext}
-        className="grid h-11 w-11 place-items-center rounded-full text-content-secondary transition-colors hover:bg-surface-hover hover:text-content disabled:pointer-events-none disabled:opacity-40"
+        className={cn(
+          'grid place-items-center rounded-full text-content-secondary transition-colors hover:bg-surface-hover hover:text-content disabled:pointer-events-none disabled:opacity-40',
+          isSmall ? 'h-9 w-9' : 'h-11 w-11'
+        )}
       >
-        <ChevronRight size={20} aria-hidden />
+        <ChevronRight size={isSmall ? 18 : 20} aria-hidden />
       </button>
     </div>
   );

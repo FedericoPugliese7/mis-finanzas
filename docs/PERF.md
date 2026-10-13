@@ -7,13 +7,13 @@ Cada función se ejecutó **1000** veces. El entorno es Node.js v24.19.0.
 
 ## Resultados
 
-| Función | Total 1000 llamadas | Por llamada |
-| --- | --- | --- |
-| generateDemoTransactions (14 months) | 404.85 ms | 0.4048 ms |
-| totalsByMonth (current, ARS) | 20.29 ms | 0.0203 ms |
-| totalsByCategory (expenses, current, ARS) | 25.51 ms | 0.0255 ms |
-| lastSixMonths (ARS) | 49.49 ms | 0.0495 ms |
-| totalsForDisplay (BOTH) | 33.46 ms | 0.0335 ms |
+| Función                                   | Total 1000 llamadas | Por llamada |
+| ----------------------------------------- | ------------------- | ----------- |
+| generateDemoTransactions (14 months)      | 404.85 ms           | 0.4048 ms   |
+| totalsByMonth (current, ARS)              | 20.29 ms            | 0.0203 ms   |
+| totalsByCategory (expenses, current, ARS) | 25.51 ms            | 0.0255 ms   |
+| lastSixMonths (ARS)                       | 49.49 ms            | 0.0495 ms   |
+| totalsForDisplay (BOTH)                   | 33.46 ms            | 0.0335 ms   |
 
 ## Notas
 

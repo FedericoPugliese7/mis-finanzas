@@ -22,10 +22,13 @@ export function useChartEntrance(): boolean {
   );
   useEffect(() => {
     if (!enabled) return;
-    const timer = window.setTimeout(() => {
-      sessionEntranceDone = true;
-      setEnabled(false);
-    }, durationsMs.chart + chartPhaseDelay * 1000);
+    const timer = window.setTimeout(
+      () => {
+        sessionEntranceDone = true;
+        setEnabled(false);
+      },
+      durationsMs.chart + chartPhaseDelay * 1000
+    );
     return () => window.clearTimeout(timer);
   }, [enabled]);
   return enabled;

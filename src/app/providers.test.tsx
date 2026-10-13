@@ -64,7 +64,9 @@ describe('shared motion tokens', () => {
     const keys = Object.keys(easings) as (keyof typeof easings)[];
     for (const key of keys) {
       const [a, b, c, d] = easings[key];
-      expect(easingsCss[key]).toMatch(new RegExp(`cubic-bezier\\(${a},\\s*${b},\\s*${c},\\s*${d}\\)`));
+      expect(easingsCss[key]).toMatch(
+        new RegExp(`cubic-bezier\\(${a},\\s*${b},\\s*${c},\\s*${d}\\)`)
+      );
     }
   });
 
@@ -102,7 +104,9 @@ describe('shared motion tokens', () => {
 
   it('exports bar growth variants with origin-friendly defaults', () => {
     const hidden = barGrowthVariants.hidden as { scaleY?: number };
-    const visibleTarget = (barGrowthVariants.visible as (index?: number) => { scaleY?: number })(0);
+    const visibleTarget = (
+      barGrowthVariants.visible as (index?: number) => { scaleY?: number }
+    )(0);
     expect(hidden.scaleY).toBe(0);
     expect(visibleTarget.scaleY).toBe(1);
   });
@@ -115,21 +119,11 @@ describe('shared motion tokens', () => {
   });
 
   it('exports month change variants with directional exits and entrances', () => {
-    expect(
-      (monthChangeVariants.exitLeft as { x?: number }).x
-    ).toBeLessThan(0);
-    expect(
-      (monthChangeVariants.exitRight as { x?: number }).x
-    ).toBeGreaterThan(0);
-    expect(
-      (monthChangeVariants.enterFromLeft as { x?: number }).x
-    ).toBeLessThan(0);
-    expect(
-      (monthChangeVariants.enterFromRight as { x?: number }).x
-    ).toBeGreaterThan(0);
-    expect(
-      (monthChangeVariants.settle as { opacity?: number }).opacity
-    ).toBe(1);
+    expect((monthChangeVariants.exitLeft as { x?: number }).x).toBeLessThan(0);
+    expect((monthChangeVariants.exitRight as { x?: number }).x).toBeGreaterThan(0);
+    expect((monthChangeVariants.enterFromLeft as { x?: number }).x).toBeLessThan(0);
+    expect((monthChangeVariants.enterFromRight as { x?: number }).x).toBeGreaterThan(0);
+    expect((monthChangeVariants.settle as { opacity?: number }).opacity).toBe(1);
   });
 
   it('exports indicator variants for sliding nav indicators', () => {
@@ -140,18 +134,26 @@ describe('shared motion tokens', () => {
   });
 
   it('exports stagger containers with bounded delays', () => {
-    const list = listContainerVariants.visible as { transition?: { staggerChildren: number; delayChildren: number } };
+    const list = listContainerVariants.visible as {
+      transition?: { staggerChildren: number; delayChildren: number };
+    };
     expect(list.transition?.staggerChildren).toBe(durations.stagger);
 
-    const tight = tightListContainerVariants.visible as { transition?: { staggerChildren: number; delayChildren: number } };
+    const tight = tightListContainerVariants.visible as {
+      transition?: { staggerChildren: number; delayChildren: number };
+    };
     expect(tight.transition?.staggerChildren).toBe(durations.stagger);
-    expect((tight.transition?.delayChildren ?? 0)).toBeLessThanOrEqual(0.05);
+    expect(tight.transition?.delayChildren ?? 0).toBeLessThanOrEqual(0.05);
 
-    const dashboard = dashboardStaggerVariants.visible as { transition?: { staggerChildren: number; delayChildren: number } };
+    const dashboard = dashboardStaggerVariants.visible as {
+      transition?: { staggerChildren: number; delayChildren: number };
+    };
     expect(dashboard.transition?.staggerChildren).toBe(durations.stagger);
-    expect((dashboard.transition?.delayChildren ?? 0)).toBeLessThanOrEqual(0.05);
+    expect(dashboard.transition?.delayChildren ?? 0).toBeLessThanOrEqual(0.05);
 
-    const stagger = staggerContainerVariants.visible as { transition?: { staggerChildren: number; delayChildren: number } };
+    const stagger = staggerContainerVariants.visible as {
+      transition?: { staggerChildren: number; delayChildren: number };
+    };
     expect(stagger.transition?.staggerChildren).toBe(durations.stagger);
   });
 

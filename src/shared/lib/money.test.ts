@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatMoney, parseMoney } from './money';
+import { formatMoney, formatMoneyCompact, parseMoney } from './money';
 
 describe('parseMoney (es-AR)', () => {
   it('parses "1.234,56" into 123456 minor units', () => {
@@ -97,5 +97,23 @@ describe('formatMoney', () => {
   it('round-trips with parseMoney', () => {
     expect(parseMoney(formatMoney(123456, 'ARS', { symbol: false }))).toBe(123456);
     expect(parseMoney(formatMoney(5, 'USD', { symbol: false }))).toBe(5);
+  });
+});
+
+describe('formatMoneyCompact', () => {
+  it('abbreviates thousands with the ARS symbol', () => {
+    expect(formatMoneyCompact(12_345_600, 'ARS')).toBe('$ 123 mil');
+  });
+
+  it('abbreviates millions with the USD symbol', () => {
+    expect(formatMoneyCompact(123_456_789, 'USD')).toBe('US$ 1 millón');
+  });
+
+  it('keeps the sign for negative amounts', () => {
+    expect(formatMoneyCompact(-12_345_600, 'ARS')).toBe('-$ 123 mil');
+  });
+
+  it('formats small amounts without abbreviation', () => {
+    expect(formatMoneyCompact(4_560, 'ARS')).toBe('$ 46');
   });
 });

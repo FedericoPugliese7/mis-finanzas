@@ -1,4 +1,21 @@
 import '@testing-library/dom';
+import 'fake-indexeddb/auto';
+import { randomUUID } from 'node:crypto';
+
+/**
+ * jsdom does not expose `crypto.randomUUID`, but repositories rely on it
+ * for primary keys. Polyfill it for tests.
+ */
+if (
+  typeof globalThis.crypto === 'undefined' ||
+  typeof globalThis.crypto.randomUUID !== 'function'
+) {
+  Object.defineProperty(globalThis, 'crypto', {
+    value: { randomUUID },
+    writable: true,
+    configurable: true
+  });
+}
 
 /**
  * Minimal `matchMedia` polyfill for jsdom:

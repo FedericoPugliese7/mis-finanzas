@@ -1,6 +1,9 @@
 import { db } from '@/shared/db/database';
 import type { DateISO } from '@/shared/lib/dates';
-import { buildTransactionFromTemplate, generateOccurrences } from '@/shared/lib/recurring';
+import {
+  buildTransactionFromTemplate,
+  generateOccurrences
+} from '@/shared/lib/recurring';
 import type { RecurringTemplate, Transaction } from '@/shared/lib/types';
 
 export type NewRecurringTemplate = Omit<RecurringTemplate, 'id'>;

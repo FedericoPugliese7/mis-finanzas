@@ -101,11 +101,12 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
 
     try {
       const backup = parseBackup(text);
-      const [currentTransactions, currentCategories, currentTemplates] = await Promise.all([
-        transactionsRepo.getAll(),
-        categoriesRepo.getAll(),
-        recurringRepo.getAll()
-      ]);
+      const [currentTransactions, currentCategories, currentTemplates] =
+        await Promise.all([
+          transactionsRepo.getAll(),
+          categoriesRepo.getAll(),
+          recurringRepo.getAll()
+        ]);
 
       const data: CurrentData = {
         transactions: currentTransactions,
@@ -271,7 +272,9 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
                     checked={importMode === 'merge'}
                     onChange={() => {
                       setImportMode('merge');
-                      setPendingImportPlan(buildImportPlan(parsedBackup, currentData, 'merge'));
+                      setPendingImportPlan(
+                        buildImportPlan(parsedBackup, currentData, 'merge')
+                      );
                     }}
                   />
                   Fusionar (añade solo lo nuevo, conserva tus ajustes)
@@ -283,7 +286,9 @@ export function BackupSection({ settings: _settings, onUpdate }: BackupSectionPr
                     checked={importMode === 'replace'}
                     onChange={() => {
                       setImportMode('replace');
-                      setPendingImportPlan(buildImportPlan(parsedBackup, currentData, 'replace'));
+                      setPendingImportPlan(
+                        buildImportPlan(parsedBackup, currentData, 'replace')
+                      );
                     }}
                   />
                   Reemplazar (borra todo y usa el backup, incluyendo ajustes)

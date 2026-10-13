@@ -158,7 +158,9 @@ export function TransactionForm({
           )}
         />
         {errors.amountMinor ? (
-          <FormError id={`${fieldId}-amountMinor-error`}>{errors.amountMinor.message}</FormError>
+          <FormError id={`${fieldId}-amountMinor-error`}>
+            {errors.amountMinor.message}
+          </FormError>
         ) : null}
       </div>
 
@@ -189,7 +191,9 @@ export function TransactionForm({
           invalid={Boolean(errors.categoryId)}
         />
         {errors.categoryId ? (
-          <FormError id={`${fieldId}-categoryId-error`}>{errors.categoryId.message}</FormError>
+          <FormError id={`${fieldId}-categoryId-error`}>
+            {errors.categoryId.message}
+          </FormError>
         ) : null}
       </div>
 
@@ -226,7 +230,9 @@ export function TransactionForm({
             })}
           />
           {errors.exchangeRate ? (
-            <FormError id={`${fieldId}-exchangeRate-error`}>{errors.exchangeRate.message}</FormError>
+            <FormError id={`${fieldId}-exchangeRate-error`}>
+              {errors.exchangeRate.message}
+            </FormError>
           ) : null}
           <p className="text-xs text-content-muted">
             Si lo dejás vacío se usa la cotización de referencia.

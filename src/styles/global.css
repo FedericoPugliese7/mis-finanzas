@@ -54,7 +54,8 @@
   /* Sombras */
   --shadow-1: 0 1px 2px 0 rgb(28 27 25 / 0.06);
   --shadow-2: 0 4px 14px -4px rgb(28 27 25 / 0.1), 0 1px 2px 0 rgb(28 27 25 / 0.05);
-  --shadow-3: 0 16px 48px -12px rgb(28 27 25 / 0.18), 0 4px 10px -4px rgb(28 27 25 / 0.08);
+  --shadow-3:
+    0 16px 48px -12px rgb(28 27 25 / 0.18), 0 4px 10px -4px rgb(28 27 25 / 0.08);
   --shadow-subtle: var(--shadow-1);
   --shadow-card: var(--shadow-2);
   --shadow-elevated: var(--shadow-3);
@@ -63,7 +64,8 @@
   --glass-bg: rgb(255 255 255 / 0.76);
   --glass-border: rgb(255 255 255 / 0.45);
   --glass-highlight: rgb(255 255 255 / 0.6);
-  --shadow-glass: 0 8px 32px -8px rgb(28 27 25 / 0.1), 0 2px 8px -2px rgb(28 27 25 / 0.04);
+  --shadow-glass:
+    0 8px 32px -8px rgb(28 27 25 / 0.1), 0 2px 8px -2px rgb(28 27 25 / 0.04);
 }
 
 [data-theme='dark'] {

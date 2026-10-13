@@ -1,8 +1,8 @@
 # Mis Finanzas
 
 PWA local-first para registrar ingresos y gastos personales en pesos argentinos (ARS) y
- dólares estadounidenses (USD). Sin cuentas, sin backend y sin telemetría: los datos viven
-  en IndexedDB del dispositivo.
+dólares estadounidenses (USD). Sin cuentas, sin backend y sin telemetría: los datos viven
+en IndexedDB del dispositivo.
 
 **URL pública**: `https://federicopugliese7.github.io/mis-finanzas/`
 
@@ -69,6 +69,8 @@ UI (React) → Hooks / Casos de uso → Repositorios (Dexie)
   se usa `#4a7a00` para mantener contraste AA sobre fondo claro.
 - **Glass**: superficies translúcidas con `backdrop-filter` en header, tab bar, cards del
   dashboard, drawer y toasts; degradan a opaco con `prefers-reduced-transparency`.
+- **`fake-indexeddb` para tests**: única dependencia de desarrollo añadida para poder testear
+  los repositorios Dexie en jsdom sin un navegador real.
 
 ## Instalación como PWA
 

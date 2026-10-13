@@ -7,6 +7,19 @@ const CURRENCY_SYMBOLS: Record<Currency, string> = {
 
 const GROUP_FORMATTER = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 
+const COMPACT_FORMATTERS: Record<Currency, Intl.NumberFormat> = {
+  ARS: new Intl.NumberFormat('es-AR', {
+    notation: 'compact',
+    compactDisplay: 'long',
+    maximumFractionDigits: 0
+  }),
+  USD: new Intl.NumberFormat('es-AR', {
+    notation: 'compact',
+    compactDisplay: 'long',
+    maximumFractionDigits: 0
+  })
+};
+
 const SYMBOL_PATTERN = /(US\$|USD|ARS|\$)/gi;
 const THOUSANDS_DOT_PATTERN = /^\d{1,3}(\.\d{3})+$/;
 const NUMBER_PATTERN = /^(\d*)(?:\.(\d*))?$/;
@@ -95,4 +108,16 @@ export function formatMoney(
   const sign = negative ? '-' : '';
   const prefix = symbol ? `${CURRENCY_SYMBOLS[currency]} ` : '';
   return `${sign}${prefix}${body}`;
+}
+
+/**
+ * Compact money formatting for small spaces (e.g. mobile chart labels).
+ * Returns something like "$ 848 mil" or "US$ 1,2 M" using es-AR conventions.
+ */
+export function formatMoneyCompact(amountMinor: number, currency: Currency): string {
+  const negative = amountMinor < 0;
+  const units = Math.round(Math.abs(amountMinor) / 100);
+  const compact = COMPACT_FORMATTERS[currency].format(units);
+  const sign = negative ? '-' : '';
+  return `${sign}${CURRENCY_SYMBOLS[currency]} ${compact}`;
 }

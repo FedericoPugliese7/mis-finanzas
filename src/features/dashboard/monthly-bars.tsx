@@ -1,13 +1,15 @@
 import { m } from 'motion/react';
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { useThemeStore } from '@/shared/stores/theme.store';
 import { barGrowthVariants, chartVariants, springs } from '@/shared/motion';
 import { formatMonthShort } from '@/shared/lib/dates';
-import { formatMoney } from '@/shared/lib/money';
+import { formatMoney, formatMoneyCompact } from '@/shared/lib/money';
 import type { MonthlyBars } from '@/shared/lib/aggregations';
 import type { Currency } from '@/shared/lib/types';
 import { cn } from '@/shared/ui/utils';
 import { useChartEntrance } from './hooks/use-chart-entrance';
 import { chartTheme } from './chart-theme';
+import { barLabelLayout } from './dashboard.helpers';
 
 interface MonthlyBarsChartProps {
   bars: readonly MonthlyBars[];
@@ -15,14 +17,15 @@ interface MonthlyBarsChartProps {
 }
 
 const TICK_COUNT = 4;
-/** Headroom factor for the value labels above the tallest bar (was Recharts' `domain`). */
-const HEADROOM = 1.15;
+/** Headroom factor for the value labels above the tallest bar. */
+const HEADROOM = 1.25;
 /** Bars taller than this get their value label rendered inside the bar. */
 const LABEL_INSIDE_THRESHOLD = 0.75;
 
 /** Income vs expense bars for the last 6 months (SPEC 4.1). First mount only (SPEC 7.7). */
 export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartProps) {
   const animateOnMount = useChartEntrance();
+  const isDesktop = useIsDesktop();
   useThemeStore((state) => state.theme);
   const colors = chartTheme();
 
@@ -34,6 +37,14 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
       : [0];
   const heightOf = (value: number): number =>
     scaleMax > 0 ? Math.min((value / scaleMax) * 100, 100) : 0;
+
+  const labelLayout = barLabelLayout(bars, heightOf, LABEL_INSIDE_THRESHOLD);
+
+  function labelClasses(lane: 'inside' | 'high' | 'low'): string {
+    if (lane === 'inside') return 'top-2 text-content-inverse drop-shadow-sm';
+    if (lane === 'high') return '-top-11 text-content';
+    return '-top-5 text-content';
+  }
 
   return (
     <m.div
@@ -89,56 +100,52 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
             {/* Barras */}
             <div className="absolute inset-0 flex items-end justify-around">
               {bars.map((bar, barIndex) => {
-                const incomeHeight = heightOf(bar.income);
-                const expenseHeight = heightOf(bar.expense);
-                const bothHigh =
-                  incomeHeight > LABEL_INSIDE_THRESHOLD * 100 &&
-                  expenseHeight > LABEL_INSIDE_THRESHOLD * 100;
+                const lanes = labelLayout[barIndex]!;
                 return (
                   <div
                     key={bar.month}
                     className="flex h-full flex-1 items-end justify-center gap-1.5"
                   >
-                    {(
-                      [
-                        { kind: 'Ingresos', value: bar.income },
-                        { kind: 'Gastos', value: bar.expense }
-                      ] as const
-                    ).map(({ kind, value }) => {
+                    {lanes.map(({ kind, value, lane }, kindIndex) => {
                       const height = heightOf(value);
-                      const labelInside = height > LABEL_INSIDE_THRESHOLD * 100;
                       return (
-                    <m.div
-                      key={kind}
-                      title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
-                      className="relative w-6 rounded-t-md sm:w-8"
-                      style={{
-                        height: `${height}%`,
-                        background: kind === 'Ingresos' ? colors.incomeGradient : colors.expenseGradient,
-                        transformOrigin: 'bottom',
-                        boxShadow: `0 6px 16px -4px ${kind === 'Ingresos' ? colors.accentGlow.replace(')', ' / 0.45)') : 'rgb(255 122 107 / 0.35)'}`
-                      }}
-                      variants={barGrowthVariants}
-                      initial={animateOnMount ? 'hidden' : false}
-                      animate="visible"
-                      whileHover={{ y: -2, transition: springs.micro }}
-                      custom={barIndex * 2 + (kind === 'Ingresos' ? 0 : 1)}
-                    >
+                        <div
+                          key={kind}
+                          className="relative w-6 sm:w-8"
+                          style={{ height: `${height}%` }}
+                        >
+                          <m.div
+                            title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
+                            className="absolute inset-x-0 bottom-0 rounded-t-md"
+                            style={{
+                              height: '100%',
+                              background:
+                                kind === 'Ingresos'
+                                  ? colors.incomeGradient
+                                  : colors.expenseGradient,
+                              transformOrigin: 'bottom',
+                              boxShadow: `0 6px 16px -4px ${kind === 'Ingresos' ? colors.accentGlow.replace(')', ' / 0.45)') : 'rgb(255 122 107 / 0.35)'}`
+                            }}
+                            variants={barGrowthVariants}
+                            initial={animateOnMount ? 'hidden' : false}
+                            animate="visible"
+                            whileHover={{ y: -2, transition: springs.micro }}
+                            custom={barIndex * 2 + kindIndex}
+                          />
                           {value > 0 && (
                             <span
                               aria-hidden
                               className={cn(
                                 'amount absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold leading-none',
-                                labelInside
-                                  ? 'top-2 text-content-inverse drop-shadow-sm'
-                                  : '-top-5 text-content',
-                                !labelInside && bothHigh && kind === 'Gastos' && 'translate-y-4'
+                                labelClasses(lane)
                               )}
                             >
-                              {formatMoney(value, currency, { decimals: false })}
+                              {isDesktop
+                                ? formatMoney(value, currency, { decimals: false })
+                                : formatMoneyCompact(value, currency)}
                             </span>
                           )}
-                        </m.div>
+                        </div>
                       );
                     })}
                   </div>

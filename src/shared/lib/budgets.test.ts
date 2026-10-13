@@ -48,7 +48,9 @@ describe('computeBudgetStatuses', () => {
       budgetMinor: 100000,
       spentMinor: 75000,
       percent: 75,
-      overBudget: false
+      overBudget: false,
+      remainingMinor: 25000,
+      overspentMinor: 0
     });
   });
 
@@ -58,7 +60,9 @@ describe('computeBudgetStatuses', () => {
     const result = computeBudgetStatuses(categories, totals);
     expect(result[0]).toMatchObject({
       percent: 123,
-      overBudget: true
+      overBudget: true,
+      remainingMinor: 0,
+      overspentMinor: 23456
     });
   });
 

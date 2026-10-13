@@ -221,7 +221,10 @@ export function CategoryForm({
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor={`${fieldId}-budget`} className="text-sm font-medium text-content">
+          <label
+            htmlFor={`${fieldId}-budget`}
+            className="text-sm font-medium text-content"
+          >
             Presupuesto mensual en ARS (opcional)
           </label>
           <Controller
@@ -242,7 +245,9 @@ export function CategoryForm({
             )}
           />
           {errors.budgetMinor ? (
-            <FormError id={`${fieldId}-budget-error`}>{errors.budgetMinor.message}</FormError>
+            <FormError id={`${fieldId}-budget-error`}>
+              {errors.budgetMinor.message}
+            </FormError>
           ) : null}
         </div>
 

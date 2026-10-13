@@ -5,9 +5,7 @@ import type { Theme } from '@/shared/lib/types';
 
 function resolveTheme(theme: Theme): 'light' | 'dark' {
   if (theme === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   return theme;
 }
@@ -18,10 +16,7 @@ function applyTheme(resolved: 'light' | 'dark'): void {
   root.style.colorScheme = resolved;
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute(
-      'content',
-      resolved === 'dark' ? '#0c0c0a' : '#f4f4f0'
-    );
+    meta.setAttribute('content', resolved === 'dark' ? '#0c0c0a' : '#f4f4f0');
   }
 }
 

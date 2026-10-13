@@ -38,13 +38,24 @@ function run(): string {
 
   const results = [
     bench('generateDemoTransactions (14 months)', () =>
-      generateDemoTransactions(defaultCategories, { months: 14, seed: 42, today: new Date() })
+      generateDemoTransactions(defaultCategories, {
+        months: 14,
+        seed: 42,
+        today: new Date()
+      })
     ),
     bench('totalsByMonth (current, ARS)', () =>
       totalsByMonth(transactions, currentMonth, 'ARS', REFERENCE_RATE)
     ),
     bench('totalsByCategory (expenses, current, ARS)', () =>
-      totalsByCategory(transactions, currentMonth, defaultCategories, 'ARS', REFERENCE_RATE, 'expense')
+      totalsByCategory(
+        transactions,
+        currentMonth,
+        defaultCategories,
+        'ARS',
+        REFERENCE_RATE,
+        'expense'
+      )
     ),
     bench('lastSixMonths (ARS)', () =>
       lastSixMonths(transactions, currentMonth, 'ARS', REFERENCE_RATE)

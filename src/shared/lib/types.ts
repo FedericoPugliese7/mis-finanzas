@@ -21,7 +21,11 @@ export const categoryNameSchema = z
   .max(40, 'Usá hasta 40 caracteres');
 export const hexColorSchema = z.string().regex(/^#[0-9a-f]{6}$/i, 'Elegí un color');
 export const categoryIconSchema = z.string().min(1, 'Elegí un ícono');
-export const categoryBudgetSchema = z.number().int().positive('El presupuesto debe ser mayor a cero').nullish();
+export const categoryBudgetSchema = z
+  .number()
+  .int()
+  .positive('El presupuesto debe ser mayor a cero')
+  .nullish();
 export const noteSchema = z.string().max(140, 'Usá hasta 140 caracteres');
 export const isoDateSchema = z
   .string()

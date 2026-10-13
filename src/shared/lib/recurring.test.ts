@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateOccurrences } from './recurring';
+import { buildTransactionFromTemplate, generateOccurrences } from './recurring';
 import type { RecurringTemplate } from './types';
 
 const baseTemplate = (overrides: Partial<RecurringTemplate> = {}): RecurringTemplate => ({
@@ -42,7 +42,10 @@ describe('generateOccurrences', () => {
   });
 
   it('clamps day when target month has fewer days', () => {
-    const template = baseTemplate({ startDate: '2026-01-31', lastGeneratedDate: '2026-01-31' });
+    const template = baseTemplate({
+      startDate: '2026-01-31',
+      lastGeneratedDate: '2026-01-31'
+    });
     expect(generateOccurrences(template, '2026-04-30')).toEqual([
       '2026-02-28',
       '2026-03-31',
@@ -56,5 +59,25 @@ describe('generateOccurrences', () => {
       lastGeneratedDate: '2026-05-01'
     });
     expect(generateOccurrences(template, '2026-04-01')).toEqual([]);
+  });
+});
+
+describe('buildTransactionFromTemplate', () => {
+  it('copies template fields and assigns the target date', () => {
+    const template = baseTemplate({
+      note: 'Suscripción mensual',
+      exchangeRate: 1_200
+    });
+    const transaction = buildTransactionFromTemplate(template, '2026-04-15');
+
+    expect(transaction).toEqual({
+      type: 'expense',
+      amountMinor: 100000,
+      currency: 'ARS',
+      categoryId: 'expense-supermercado',
+      date: '2026-04-15',
+      note: 'Suscripción mensual',
+      exchangeRate: 1_200
+    });
   });
 });

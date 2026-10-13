@@ -10,6 +10,7 @@ import {
   transitions
 } from '@/shared/motion';
 import type { Currency } from '@/shared/lib/types';
+import { cn } from '@/shared/ui/utils';
 import { useChartEntrance } from './hooks/use-chart-entrance';
 import type { DonutSlice } from './dashboard.helpers';
 
@@ -32,8 +33,8 @@ const GAP_ARCS = (GAP_DEGREES / 360) * CIRCUMFERENCE;
 
 /**
  * Expense donut by category (SPEC 4.1). Animates only on first mount (SPEC 7.7).
- * Hovering a slice swaps the center for that category's detail (Apple Wallet
- * style); tapping it drills down into Movimientos filtered by the category.
+ * Hovering or focusing a slice highlights it; tapping it drills down into
+ * Movimientos filtered by the category.
  */
 export default function CategoryDonut({
   slices,
@@ -44,6 +45,7 @@ export default function CategoryDonut({
   const [activeId, setActiveId] = useState<string | null>(null);
   const totalValue = slices.reduce((sum, s) => sum + s.total, 0);
   const active = slices.find((slice) => slice.categoryId === activeId);
+  const hasActive = activeId !== null;
 
   let cursor = 0;
   const arcs = slices.map((slice) => {
@@ -54,7 +56,7 @@ export default function CategoryDonut({
   });
 
   return (
-    <div>
+    <div className="select-none">
       <div
         role="img"
         aria-label={`Gastos por categoría en dona. Total: ${formatMoney(totalValue, currency, { decimals: false })}. Los montos exactos están en la tabla siguiente.`}
@@ -71,18 +73,33 @@ export default function CategoryDonut({
             const isActive = slice.categoryId === activeId;
             return (
               <g key={slice.categoryId}>
-                {/* Halo sutil detrás de cada slice */}
-                <circle
+                {/* Halo: wider hit area + highlight behind the slice */}
+                <m.circle
                   cx={CENTER}
                   cy={CENTER}
                   r={RADIUS}
                   fill="none"
                   stroke={slice.color}
-                  strokeWidth={STROKE + 6}
+                  strokeWidth={hasActive && isActive ? STROKE + 10 : STROKE + 6}
                   strokeDasharray={`${visible} ${CIRCUMFERENCE - visible}`}
                   strokeDashoffset={offset}
                   transform={`rotate(-90 ${CENTER} ${CENTER})`}
-                  opacity={0.18}
+                  initial={{ opacity: 0.18 }}
+                  animate={{
+                    opacity:
+                      hasActive && !isActive ? 0.08 : hasActive && isActive ? 0.3 : 0.18
+                  }}
+                  transition={springs.ui}
+                  className="cursor-pointer"
+                  onHoverStart={() => setActiveId(slice.categoryId)}
+                  onHoverEnd={() => setActiveId(null)}
+                  onClick={() =>
+                    isActive
+                      ? onSelectCategory(slice.categoryId)
+                      : setActiveId(slice.categoryId)
+                  }
+                  whileTap={{ scale: 0.98, transition: springs.micro }}
+                  style={{ transformOrigin: 'center' }}
                 />
                 <m.circle
                   cx={CENTER}
@@ -96,24 +113,31 @@ export default function CategoryDonut({
                   transform={`rotate(-90 ${CENTER} ${CENTER})`}
                   className="cursor-pointer"
                   initial={
-                    animateOnMount
-                      ? { strokeDashoffset: offset - visible }
-                      : false
+                    animateOnMount ? { strokeDashoffset: offset - visible } : false
                   }
                   animate={{
                     strokeDashoffset: offset,
                     scale: isActive ? 1.03 : 1,
-                    transition: {
-                      strokeDashoffset: {
-                        ...transitions.chart,
-                        delay: chartPhaseDelay + index * durations.stagger
-                      },
-                      scale: springs.ui
-                    }
+                    strokeWidth: isActive ? STROKE + 6 : STROKE,
+                    opacity: hasActive && !isActive ? 0.45 : 1
+                  }}
+                  transition={{
+                    strokeDashoffset: {
+                      ...transitions.chart,
+                      delay: chartPhaseDelay + index * durations.stagger
+                    },
+                    scale: springs.ui,
+                    strokeWidth: springs.ui,
+                    opacity: springs.ui
                   }}
                   onHoverStart={() => setActiveId(slice.categoryId)}
                   onHoverEnd={() => setActiveId(null)}
-                  onClick={() => onSelectCategory(slice.categoryId)}
+                  onClick={() =>
+                    isActive
+                      ? onSelectCategory(slice.categoryId)
+                      : setActiveId(slice.categoryId)
+                  }
+                  whileTap={{ scale: 0.98, transition: springs.micro }}
                   style={{ transformOrigin: 'center' }}
                 >
                   <title>{`${slice.name}: ${formatMoney(slice.total, currency)}`}</title>
@@ -140,7 +164,7 @@ export default function CategoryDonut({
                   <span className="amount whitespace-nowrap text-base font-semibold text-content sm:text-lg">
                     {formatMoney(active.total, currency, { decimals: false })}
                   </span>
-                  <span className="text-xs amount text-content-muted">
+                  <span className="amount text-xs text-content-muted">
                     {active.percent} % del total
                   </span>
                 </>
@@ -154,19 +178,52 @@ export default function CategoryDonut({
         </div>
       </div>
 
-      {/* Leyenda visible (la tabla exacta queda detrás del <details>) */}
-      <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-        {slices.map((slice) => (
-          <li key={slice.categoryId} className="flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className="h-2 w-2 shrink-0 rounded-full"
-              style={{ backgroundColor: slice.color }}
-            />
-            <span className="text-xs text-content-secondary">{slice.name}</span>
-            <span className="text-xs amount text-content-muted">{slice.percent} %</span>
-          </li>
-        ))}
+      {/* Legend: interactive buttons that mirror the chart highlight. */}
+      <ul className="mt-3 flex flex-wrap gap-x-2 gap-y-1">
+        {slices.map((slice) => {
+          const isActive = slice.categoryId === activeId;
+          return (
+            <li key={slice.categoryId}>
+              <button
+                type="button"
+                aria-pressed={isActive}
+                aria-label={`${slice.name}: ${formatMoney(slice.total, currency)} (${slice.percent} % del total)`}
+                className="flex items-center gap-1.5 rounded-control px-1.5 py-1 transition-colors hover:bg-surface-hover focus-visible:outline-offset-1"
+                onMouseEnter={() => setActiveId(slice.categoryId)}
+                onFocus={() => setActiveId(slice.categoryId)}
+                onClick={() =>
+                  setActiveId((current) =>
+                    current === slice.categoryId ? null : slice.categoryId
+                  )
+                }
+              >
+                <m.span
+                  aria-hidden
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: slice.color }}
+                  animate={{ scale: isActive ? 1.5 : 1 }}
+                  transition={springs.micro}
+                />
+                <span
+                  className={cn(
+                    'text-xs',
+                    isActive ? 'font-semibold text-content' : 'text-content-secondary'
+                  )}
+                >
+                  {slice.name}
+                </span>
+                <span
+                  className={cn(
+                    'amount text-xs',
+                    isActive ? 'font-semibold text-content' : 'text-content-muted'
+                  )}
+                >
+                  {slice.percent} %
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

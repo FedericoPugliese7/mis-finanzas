@@ -542,13 +542,13 @@ anteriores). El benchmark se entregó en `docs/perf.md`.
 Revisión transversal de toda la app contra `SPEC.md` → "Animaciones":
 
 - [x] Barrido de componentes animados: ninguno declara números sueltos; todo sale de
-  `src/shared/motion.ts`.
+      `src/shared/motion.ts`.
 - [x] Solo se animan `transform` y `opacity` (excepción controlada: `strokeDashoffset` para
-  la dona SVG).
+      la dona SVG).
 - [x] Springs/duraciones ajustados para 60 fps en gama media.
 - [x] Entrances/exits unificados con `AnimatePresence` y `layout` en listas.
 - [x] Fallback de `prefers-reduced-motion` en CSS (`global.css`) y en componentes
-  (`MotionConfig reducedMotion="user"`, `useReducedMotion`, `useChartEntrance`).
+      (`MotionConfig reducedMotion="user"`, `useReducedMotion`, `useChartEntrance`).
 - [ ] Medición con Lighthouse y Core Web Vitals (pendiente manual).
 
 **Cambios entregados**

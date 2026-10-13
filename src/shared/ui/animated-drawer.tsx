@@ -45,7 +45,10 @@ interface AnimatedDrawerContentProps {
 }
 
 /** Content surface: Vaul handles the drag/spring; we style it as glass. */
-export function AnimatedDrawerContent({ children, className }: AnimatedDrawerContentProps) {
+export function AnimatedDrawerContent({
+  children,
+  className
+}: AnimatedDrawerContentProps) {
   return (
     <Content
       className={cn(
