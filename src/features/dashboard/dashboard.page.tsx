@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from 'react';
+import { Suspense, lazy, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { m } from 'motion/react';
 import { LayoutDashboard, Plus } from 'lucide-react';
@@ -15,7 +15,7 @@ import {
   totalsByCategory,
   totalsForDisplay
 } from '@/shared/lib/aggregations';
-import { formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
+import { formatMonth, monthOf, todayISO, type MonthKey } from '@/shared/lib/dates';
 import { useToast } from '@/shared/hooks/useToast';
 import {
   dashboardStaggerVariants,
@@ -52,6 +52,8 @@ export default function DashboardPage() {
   const actions = useTransactionActions();
   const [month, setMonth] = useState(() => monthOf(todayISO()));
   const [formOpen, setFormOpen] = useState(false);
+  const savedScrollY = useRef<number | null>(null);
+  const isChangingMonth = useRef(false);
 
   const categoriesById = useMemo(
     () => new Map((categories ?? []).map((category) => [category.id, category])),
@@ -67,6 +69,21 @@ export default function DashboardPage() {
       setFormOpen(false);
     }
   }
+
+  function handleMonthChange(next: MonthKey): void {
+    if (next === month) return;
+    savedScrollY.current = window.scrollY;
+    isChangingMonth.current = true;
+    setMonth(next);
+  }
+
+  useLayoutEffect(() => {
+    if (!isChangingMonth.current) return;
+    isChangingMonth.current = false;
+    if (savedScrollY.current !== null) {
+      window.scrollTo({ top: savedScrollY.current, behavior: 'auto' });
+    }
+  }, [month]);
 
   async function handleSave(values: TransactionFormValues): Promise<void> {
     if (values.amountMinor === null) return;
@@ -131,12 +148,12 @@ export default function DashboardPage() {
     <>
       <div
         className="sticky z-30 -mx-4 px-4 pb-2 pt-1"
-        style={{ top: 'var(--app-header-height)' }}
+        style={{ top: 'var(--app-header-height)', overflowAnchor: 'none' }}
       >
         <div className="glass rounded-control px-2 py-1">
           <MonthSelector
             month={month}
-            onChange={setMonth}
+            onChange={handleMonthChange}
             size="sm"
             className="sm:justify-start"
           />
@@ -148,6 +165,7 @@ export default function DashboardPage() {
         initial="hidden"
         animate="visible"
         className="flex flex-col gap-6"
+        style={{ overflowAnchor: 'none' }}
       >
         <m.div variants={fadeVariants}>
           <SectionHeader
