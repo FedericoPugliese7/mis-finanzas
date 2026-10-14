@@ -39,3 +39,13 @@ coverage/
 # Temporary files
 .temp/
 .cache/
+
+# Agent / environment artifacts
+.agents/
+.codex/
+.impeccable/
+.github/agents/
+.github/hooks/
+.github/skills/
+PRODUCT.md
+dist-prof/
