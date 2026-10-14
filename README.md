@@ -69,8 +69,11 @@ UI (React) → Hooks / Casos de uso → Repositorios (Dexie)
   se usa `#4a7a00` para mantener contraste AA sobre fondo claro.
 - **Glass**: superficies translúcidas con `backdrop-filter` en header, tab bar, cards del
   dashboard, drawer y toasts; degradan a opaco con `prefers-reduced-transparency`.
-- **`fake-indexeddb` para tests**: única dependencia de desarrollo añadida para poder testear
+- **`fake-indexeddb` para tests**: dependencia de desarrollo añadida para poder testear
   los repositorios Dexie en jsdom sin un navegador real.
+- **`sharp` para íconos PWA**: dependencia de desarrollo añadida para rasterizar el favicon SVG
+  a los tamaños de íconos requeridos (192/512/maskable/apple-touch) sin depender de herramientas
+  de sistema.
 
 ## Instalación como PWA
 

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Wallet } from 'lucide-react';
+
 import { m } from 'motion/react';
 import { springs } from '@/shared/motion';
 
@@ -53,12 +53,20 @@ export function DesktopNav() {
 export function Brand() {
   return (
     <span className="flex items-center gap-2 text-base font-semibold tracking-tight text-content">
-      <span
+      <svg
         aria-hidden
-        className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-accent-content"
+        className="h-8 w-8 shrink-0"
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <Wallet size={18} />
-      </span>
+        <rect width="64" height="64" rx="14" fill="#0c0c0a" />
+        <circle cx="32" cy="32" r="26" stroke="#91ff16" strokeWidth="4" />
+        <g stroke="#91ff16" strokeWidth="6" strokeLinecap="round">
+          <path d="M32 14v36" />
+          <path d="M32 22c-12 0-12 12 0 12s12 12 0 12" />
+        </g>
+      </svg>
       Mis Finanzas
     </span>
   );

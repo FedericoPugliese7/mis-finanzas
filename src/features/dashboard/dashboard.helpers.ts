@@ -32,57 +32,39 @@ export function donutSlices(categoryTotals: readonly CategoryTotal[]): DonutSlic
   }));
 }
 
-export type BarLabelLane = 'inside' | 'high' | 'low';
+export type BarLabelPlacement = 'inside' | 'after';
 
 export interface BarLabelInfo {
   kind: 'Ingresos' | 'Gastos';
   value: number;
-  height: number;
-  lane: BarLabelLane;
+  width: number;
+  placement: BarLabelPlacement;
 }
 
 /**
- * Decides the vertical lane for each bar's value label to avoid overlap.
- * - `inside`: label sits at the top of the bar (very tall bars).
- * - `high`: label sits higher above the bar (`-top-11`).
- * - `low`: label sits just above the bar (`-top-5`).
- *
- * The taller bar of the pair is biased toward `high`/`inside`, the shorter
- * toward `low`. When heights are equal, income is `high` and expense `low`.
+ * Decides where to place the value label for each horizontal bar.
+ * - `inside`: label sits at the end of the bar (very long bars).
+ * - `after`: label sits just after the end of the bar.
  */
-export function barLabelLayout(
+export function barLabelPlacement(
   bars: readonly MonthlyBars[],
-  heightOf: (value: number) => number,
-  insideThreshold = 0.75
+  widthOf: (value: number) => number,
+  insideThreshold = 0.85
 ): Array<[BarLabelInfo, BarLabelInfo]> {
   const INSIDE = insideThreshold * 100;
 
   return bars.map((bar) => {
-    const incomeHeight = heightOf(bar.income);
-    const expenseHeight = heightOf(bar.expense);
-    // Income wins ties so the lane assignment is deterministic.
-    const incomeTaller = incomeHeight >= expenseHeight;
-
-    function lane(height: number, isTaller: boolean): BarLabelLane {
-      if (height > INSIDE) return 'inside';
-      if (isTaller) return 'high';
-      return 'low';
+    function info(value: number, kind: 'Ingresos' | 'Gastos'): BarLabelInfo {
+      const width = widthOf(value);
+      return {
+        kind,
+        value,
+        width,
+        placement: width > INSIDE ? 'inside' : 'after'
+      };
     }
 
-    return [
-      {
-        kind: 'Ingresos',
-        value: bar.income,
-        height: incomeHeight,
-        lane: lane(incomeHeight, incomeTaller)
-      },
-      {
-        kind: 'Gastos',
-        value: bar.expense,
-        height: expenseHeight,
-        lane: lane(expenseHeight, !incomeTaller)
-      }
-    ];
+    return [info(bar.income, 'Ingresos'), info(bar.expense, 'Gastos')];
   });
 }
 

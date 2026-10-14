@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CategoryTotal, MonthlyBars } from '@/shared/lib/aggregations';
 import type { Transaction } from '@/shared/lib/types';
 import {
-  barLabelLayout,
+  barLabelPlacement,
   chartCurrency,
   donutSlices,
   latestTransactions
@@ -97,50 +97,46 @@ describe('latestTransactions', () => {
   });
 });
 
-describe('barLabelLayout', () => {
+describe('barLabelPlacement', () => {
   function bar(income: number, expense: number, month = '2026-10'): MonthlyBars {
     return { month, income, expense };
   }
 
-  it('puts both labels above the bars when both are short', () => {
-    const heightOf = (value: number) => value; // 1% = 1 unit for tests
-    const layout = barLabelLayout([bar(40, 20)], heightOf);
+  it('places short bar labels after the bar end', () => {
+    const widthOf = (value: number) => value; // 1% = 1 unit for tests
+    const layout = barLabelPlacement([bar(40, 20)], widthOf);
     expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', lane: 'high' }),
-      expect.objectContaining({ kind: 'Gastos', lane: 'low' })
+      expect.objectContaining({ kind: 'Ingresos', placement: 'after' }),
+      expect.objectContaining({ kind: 'Gastos', placement: 'after' })
     ]);
   });
 
-  it('puts the tall bar label inside when it crosses the threshold', () => {
-    const heightOf = (value: number) => value;
-    const layout = barLabelLayout([bar(80, 40)], heightOf);
+  it('places long bar labels inside the bar end', () => {
+    const widthOf = (value: number) => value;
+    const layout = barLabelPlacement([bar(90, 50)], widthOf);
     expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', lane: 'inside' }),
-      expect.objectContaining({ kind: 'Gastos', lane: 'low' })
+      expect.objectContaining({ kind: 'Ingresos', placement: 'inside' }),
+      expect.objectContaining({ kind: 'Gastos', placement: 'after' })
     ]);
   });
 
-  it('puts both labels inside when both bars are very tall', () => {
-    const heightOf = (value: number) => value;
-    const layout = barLabelLayout([bar(90, 85)], heightOf);
+  it('places both labels inside when both bars are very long', () => {
+    const widthOf = (value: number) => value;
+    const layout = barLabelPlacement([bar(95, 92)], widthOf);
     expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', lane: 'inside' }),
-      expect.objectContaining({ kind: 'Gastos', lane: 'inside' })
+      expect.objectContaining({ kind: 'Ingresos', placement: 'inside' }),
+      expect.objectContaining({ kind: 'Gastos', placement: 'inside' })
     ]);
   });
 
-  it('gives income the high lane when heights are equal', () => {
-    const heightOf = (value: number) => value;
-    const layout = barLabelLayout([bar(50, 50)], heightOf);
-    expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', lane: 'high' }),
-      expect.objectContaining({ kind: 'Gastos', lane: 'low' })
-    ]);
-  });
-
-  it('skips labels for zero-value bars by leaving the lane in low (render layer hides them)', () => {
-    const heightOf = (value: number) => value;
-    const layout = barLabelLayout([bar(30, 0)], heightOf);
-    expect(layout[0]![1]).toMatchObject({ kind: 'Gastos', lane: 'low', value: 0 });
+  it('returns width 0 for zero-value bars (render layer hides them)', () => {
+    const widthOf = (value: number) => value;
+    const layout = barLabelPlacement([bar(30, 0)], widthOf);
+    expect(layout[0]![1]).toMatchObject({
+      kind: 'Gastos',
+      placement: 'after',
+      value: 0,
+      width: 0
+    });
   });
 });

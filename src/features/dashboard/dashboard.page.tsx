@@ -1,10 +1,14 @@
 import { Suspense, lazy, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { m } from 'motion/react';
-import { LayoutDashboard } from 'lucide-react';
-import { Wallet } from 'lucide-react';
+import { LayoutDashboard, Plus, Wallet } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useTransactions } from '@/features/transactions/hooks/use-transactions';
+import { useTransactionActions } from '@/features/transactions/hooks/use-transaction-actions';
+import { TransactionForm } from '@/features/transactions/transaction-form';
+import type { TransactionFormValues } from '@/features/transactions/transaction.schema';
+import { recurringRepo } from '@/shared/db/repos/recurring.repo';
+import type { NewTransaction } from '@/shared/db/repos/transactions.repo';
 import {
   lastSixMonths,
   topCategories,
@@ -12,7 +16,13 @@ import {
   totalsForDisplay
 } from '@/shared/lib/aggregations';
 import { formatMonth, monthOf, todayISO } from '@/shared/lib/dates';
-import { dashboardStaggerVariants, fadeVariants } from '@/shared/motion';
+import { useToast } from '@/shared/hooks/useToast';
+import {
+  dashboardStaggerVariants,
+  fadeVariants,
+  presses,
+  springs
+} from '@/shared/motion';
 import { useSettings } from '@/shared/hooks/useSettings';
 import { usePreferencesStore } from '@/shared/stores/preferences.store';
 import { Card } from '@/shared/ui/card';
@@ -39,12 +49,51 @@ export default function DashboardPage() {
   const categories = useCategories();
   const settings = useSettings();
   const display = usePreferencesStore((state) => state.displayCurrency);
+  const { show } = useToast();
+  const actions = useTransactionActions();
   const [month, setMonth] = useState(() => monthOf(todayISO()));
+  const [formOpen, setFormOpen] = useState(false);
 
   const categoriesById = useMemo(
     () => new Map((categories ?? []).map((category) => [category.id, category])),
     [categories]
   );
+
+  function openCreate(): void {
+    setFormOpen(true);
+  }
+
+  function closeForm(open: boolean): void {
+    if (!open) {
+      setFormOpen(false);
+    }
+  }
+
+  async function handleSave(values: TransactionFormValues): Promise<void> {
+    if (values.amountMinor === null) return;
+    try {
+      const payload: NewTransaction = {
+        type: values.type,
+        amountMinor: values.amountMinor,
+        currency: values.currency,
+        categoryId: values.categoryId,
+        date: values.date,
+        note: values.note?.trim() || undefined,
+        exchangeRate:
+          values.currency === 'USD' && values.exchangeRate
+            ? values.exchangeRate
+            : undefined
+      };
+      await actions.create(payload);
+      if (values.isRecurring) {
+        await recurringRepo.createFromTransaction(payload);
+        show({ message: 'Movimiento recurrente creado' });
+      }
+      setFormOpen(false);
+    } catch {
+      show({ message: 'No se pudo guardar el movimiento' });
+    }
+  }
 
   if (!transactions || !categories || !settings) {
     return (
@@ -218,6 +267,33 @@ export default function DashboardPage() {
           </Card>
         </m.div>
       </m.div>
+
+      <m.button
+        type="button"
+        aria-label={formOpen ? 'Cerrar formulario' : 'Nuevo movimiento'}
+        aria-expanded={formOpen}
+        onClick={formOpen ? () => closeForm(false) : openCreate}
+        whileTap={presses.tap}
+        transition={springs.micro}
+        className="glow-accent fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full border border-border bg-accent text-accent-content shadow-elevated ring-1 ring-accent/20 lg:bottom-6 lg:right-6"
+      >
+        <m.span
+          aria-hidden
+          animate={{ rotate: formOpen ? 45 : 0 }}
+          transition={springs.snappy}
+          className="grid place-items-center"
+        >
+          <Plus size={24} />
+        </m.span>
+      </m.button>
+
+      <TransactionForm
+        open={formOpen}
+        onOpenChange={closeForm}
+        categories={categories}
+        transaction={null}
+        onSubmit={handleSave}
+      />
     </>
   );
 }

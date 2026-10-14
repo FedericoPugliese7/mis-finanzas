@@ -312,6 +312,24 @@ export const barGrowthVariants: Variants = {
 };
 
 /**
+ * Barras de gráficos horizontales: crecen desde la izquierda.
+ * Aplicar a un `m.div` con `style={{ transformOrigin: 'left' }}`.
+ */
+export const barGrowthXVariants: Variants = {
+  hidden: { opacity: 0, scaleX: 0 },
+  visible: (index = 0) => ({
+    opacity: 1,
+    scaleX: 1,
+    transition: {
+      duration: durations.chart,
+      ease: easings.out,
+      delay: chartPhaseDelay + index * durations.stagger
+    }
+  }),
+  exit: { opacity: 0, scaleX: 0, transition: transitions.exit }
+};
+
+/**
  * Dona / path SVG: se dibuja con barrido.
  * Aplicar a un `m.path` o `m.circle` (vía `pathLength` o `strokeDashoffset`).
  */
