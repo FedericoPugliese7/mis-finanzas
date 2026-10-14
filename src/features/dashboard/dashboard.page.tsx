@@ -1,7 +1,7 @@
 import { Suspense, lazy, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { m } from 'motion/react';
-import { LayoutDashboard, Plus, Wallet } from 'lucide-react';
+import { LayoutDashboard, Plus } from 'lucide-react';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useTransactions } from '@/features/transactions/hooks/use-transactions';
 import { useTransactionActions } from '@/features/transactions/hooks/use-transaction-actions';
@@ -26,7 +26,6 @@ import {
 import { useSettings } from '@/shared/hooks/useSettings';
 import { usePreferencesStore } from '@/shared/stores/preferences.store';
 import { Card } from '@/shared/ui/card';
-import { EmptyState } from '@/shared/ui/empty-state';
 import { MonthSelector } from '@/shared/ui/month-selector';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { Spinner } from '@/shared/ui/spinner';
@@ -103,23 +102,6 @@ export default function DashboardPage() {
     );
   }
 
-  if (transactions.length === 0) {
-    return (
-      <div className="flex flex-col gap-6">
-        <SectionHeader
-          icon={LayoutDashboard}
-          title="Dashboard"
-          subtitle="Resumen del mes actual"
-        />
-        <EmptyState
-          icon={Wallet}
-          title="Todavía no hay movimientos"
-          description="Registrá tu primer ingreso o gasto para ver el resumen del mes."
-        />
-      </div>
-    );
-  }
-
   const referenceRate = settings.referenceRate;
   const currency = chartCurrency(display);
   const totals = totalsForDisplay(transactions, month, display, referenceRate);
@@ -182,7 +164,7 @@ export default function DashboardPage() {
         </m.div>
 
         <m.div variants={fadeVariants} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <Card variant="glass" className="p-5">
+          <Card variant="glass" className="flex flex-col p-5">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-content">Gastos por categoría</h2>
               <span className="text-xs text-content-muted">
@@ -190,48 +172,50 @@ export default function DashboardPage() {
               </span>
             </div>
             {slices.length === 0 ? (
-              <p className="py-10 text-center text-sm text-content-muted">
-                Sin gastos en {formatMonth(month)}.
-              </p>
+              <div className="mt-3 flex min-h-[260px] flex-1 items-center justify-center">
+                <p className="text-center text-sm text-content-muted">
+                  Sin gastos en {formatMonth(month)}.
+                </p>
+              </div>
             ) : (
-              <>
-                <div className="mt-3">
-                  <Suspense
-                    fallback={
-                      <div className="flex justify-center py-8">
-                        <Spinner label="Cargando gráfico" />
-                      </div>
+              <div className="mt-3 min-h-[260px] flex-1">
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center py-8">
+                      <Spinner label="Cargando gráfico" />
+                    </div>
+                  }
+                >
+                  <CategoryDonut
+                    slices={slices}
+                    currency={currency}
+                    onSelectCategory={(categoryId) =>
+                      navigate('/transactions', { state: { categoryId, month } })
                     }
-                  >
-                    <CategoryDonut
-                      slices={slices}
-                      currency={currency}
-                      onSelectCategory={(categoryId) =>
-                        navigate('/transactions', { state: { categoryId, month } })
-                      }
-                    />
-                  </Suspense>
-                </div>
-                <DonutTable slices={slices} currency={currency} />
-              </>
+                  />
+                </Suspense>
+              </div>
             )}
+            <div className="mt-auto pt-3">
+              <DonutTable slices={slices} currency={currency} />
+            </div>
           </Card>
 
-          <Card variant="glass" className="p-5">
+          <Card variant="glass" className="flex flex-col p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-content">Ingresos vs gastos</h2>
               <div className="flex items-center gap-3 text-xs text-content-muted">
                 <span className="flex items-center gap-1.5">
-                  <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-income" />
+                  <span aria-hidden className="h-2 w-2 rounded-full bg-income" />
                   Ingresos
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-expense" />
+                  <span aria-hidden className="h-2 w-2 rounded-full bg-expense" />
                   Gastos
                 </span>
               </div>
             </div>
-            <div className="mt-8">
+            <div className="mt-3 min-h-[260px] flex-1">
               <Suspense
                 fallback={
                   <div className="flex justify-center py-8">
@@ -242,16 +226,18 @@ export default function DashboardPage() {
                 <MonthlyBarsChart bars={bars} currency={currency} />
               </Suspense>
             </div>
-            <BarsTable bars={bars} currency={currency} />
+            <div className="mt-auto pt-3">
+              <BarsTable bars={bars} currency={currency} />
+            </div>
           </Card>
         </m.div>
 
         <m.div variants={fadeVariants} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <Card variant="glass" className="p-5">
+          <Card variant="glass" className="flex flex-col p-5">
             <h2 className="text-sm font-semibold text-content">
               Top categorías de gastos
             </h2>
-            <div className="mt-3">
+            <div className="mt-3 min-h-[220px] flex-1">
               <TopCategories
                 categories={top}
                 currency={currency}
@@ -259,9 +245,9 @@ export default function DashboardPage() {
               />
             </div>
           </Card>
-          <Card variant="glass" className="p-5">
+          <Card variant="glass" className="flex flex-col p-5">
             <h2 className="text-sm font-semibold text-content">Últimos movimientos</h2>
-            <div className="mt-3">
+            <div className="mt-3 min-h-[220px] flex-1">
               <LatestMovements transactions={latest} categoriesById={categoriesById} />
             </div>
           </Card>

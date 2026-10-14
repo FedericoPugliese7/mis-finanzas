@@ -1,7 +1,7 @@
 import { m } from 'motion/react';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { useThemeStore } from '@/shared/stores/theme.store';
-import { barGrowthXVariants, chartVariants, springs } from '@/shared/motion';
+import { barGrowthXVariants, barLabelXVariants, chartVariants } from '@/shared/motion';
 import { formatMonthShort } from '@/shared/lib/dates';
 import { formatMoney, formatMoneyCompact } from '@/shared/lib/money';
 import type { MonthlyBars } from '@/shared/lib/aggregations';
@@ -9,7 +9,6 @@ import type { Currency } from '@/shared/lib/types';
 import { cn } from '@/shared/ui/utils';
 import { useChartEntrance } from './hooks/use-chart-entrance';
 import { chartTheme } from './chart-theme';
-import { barLabelPlacement } from './dashboard.helpers';
 
 interface MonthlyBarsChartProps {
   bars: readonly MonthlyBars[];
@@ -17,10 +16,6 @@ interface MonthlyBarsChartProps {
 }
 
 const TICK_COUNT = 4;
-/** Headroom factor so the longest bar leaves room for its value label. */
-const HEADROOM = 1.15;
-/** Bars longer than this place the value label inside the bar end. */
-const LABEL_INSIDE_THRESHOLD = 0.75;
 
 /** Horizontal income vs expense bars for the last 6 months. First mount only (SPEC 7.7). */
 export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartProps) {
@@ -30,15 +25,12 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
   const colors = chartTheme();
 
   const maxValue = Math.max(...bars.map((b) => Math.max(b.income, b.expense)), 0);
-  const scaleMax = maxValue * HEADROOM;
   const ticks =
-    scaleMax > 0
-      ? Array.from({ length: TICK_COUNT }, (_, i) => (scaleMax * i) / (TICK_COUNT - 1))
+    maxValue > 0
+      ? Array.from({ length: TICK_COUNT }, (_, i) => (maxValue * i) / (TICK_COUNT - 1))
       : [0];
   const widthOf = (value: number): number =>
-    scaleMax > 0 ? Math.min((value / scaleMax) * 100, 100) : 0;
-
-  const labelLayout = barLabelPlacement(bars, widthOf, LABEL_INSIDE_THRESHOLD);
+    maxValue > 0 ? Math.min((value / maxValue) * 100, 100) : 0;
 
   return (
     <m.div
@@ -50,10 +42,32 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
       variants={chartVariants}
     >
       {bars.map((bar, barIndex) => {
-        const placements = labelLayout[barIndex]!;
+        const rows: Array<{
+          kind: 'Ingresos' | 'Gastos';
+          value: number;
+          colorClass: string;
+          glow: string;
+          gradient: string;
+        }> = [
+          {
+            kind: 'Ingresos',
+            value: bar.income,
+            colorClass: 'text-income-content',
+            glow: colors.incomeGlow,
+            gradient: colors.incomeGradient
+          },
+          {
+            kind: 'Gastos',
+            value: bar.expense,
+            colorClass: 'text-expense-content',
+            glow: colors.expenseGlow,
+            gradient: colors.expenseGradient
+          }
+        ];
+
         return (
-          <div key={bar.month} className="flex items-center gap-3">
-            <span className="w-12 shrink-0 text-right text-xs font-medium text-content-secondary sm:w-16">
+          <div key={bar.month} className="flex items-stretch gap-2 sm:gap-3">
+            <span className="w-10 shrink-0 self-center text-right text-xs font-medium text-content-secondary sm:w-12">
               {formatMonthShort(bar.month)}
             </span>
 
@@ -63,63 +77,70 @@ export default function MonthlyBarsChart({ bars, currency }: MonthlyBarsChartPro
                 <div
                   key={tick}
                   aria-hidden
-                  className="pointer-events-none absolute inset-y-0 border-l border-dashed"
+                  className={cn(
+                    'pointer-events-none absolute inset-y-0 border-l',
+                    tick === 0 ? 'border-solid' : 'border-dashed'
+                  )}
                   style={{
                     left: `${widthOf(tick)}%`,
-                    borderColor: colors.border
+                    borderColor: tick === 0 ? colors.border : colors.borderSubtle
                   }}
                 />
               ))}
 
               {/* Barras */}
               <div className="flex flex-col justify-center gap-1 py-0.5">
-                {placements.map(({ kind, value, width, placement }, kindIndex) => {
-                  const isIncome = kind === 'Ingresos';
+                {rows.map(({ kind, value, glow, gradient }, kindIndex) => {
+                  const width = widthOf(value);
+                  const custom = barIndex * 2 + kindIndex;
                   return (
                     <div key={kind} className="relative h-3 w-full">
-                      {value > 0 && (
-                        <>
-                          <m.div
-                            title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
-                            className="absolute inset-y-0 left-0 rounded-r-md"
-                            style={{
-                              width: `${width}%`,
-                              background: isIncome
-                                ? colors.incomeGradient
-                                : colors.expenseGradient,
-                              transformOrigin: 'left',
-                              boxShadow: `4px 0 16px -4px ${isIncome ? colors.accentGlow.replace(')', ' / 0.45)') : 'rgb(255 122 107 / 0.35)'}`
-                            }}
-                            variants={barGrowthXVariants}
-                            initial={animateOnMount ? 'hidden' : false}
-                            animate="visible"
-                            whileHover={{ x: 2, transition: springs.micro }}
-                            custom={barIndex * 2 + kindIndex}
-                          />
-                          <span
-                            aria-hidden
-                            className={cn(
-                              'amount pointer-events-none absolute inset-y-0 flex items-center whitespace-nowrap text-[10px] font-semibold leading-none',
-                              placement === 'inside'
-                                ? 'justify-end pr-1.5 text-content-inverse drop-shadow-sm'
-                                : 'pl-1.5 text-content'
-                            )}
-                            style={{
-                              left: `${width}%`,
-                              transform:
-                                placement === 'inside' ? 'translateX(-100%)' : undefined
-                            }}
-                          >
-                            {isDesktop
-                              ? formatMoney(value, currency, { decimals: false })
-                              : formatMoneyCompact(value, currency)}
-                          </span>
-                        </>
-                      )}
+                      <m.div
+                        title={`${formatMonthShort(bar.month)} · ${kind}: ${formatMoney(value, currency)}`}
+                        className="absolute inset-y-0 left-0 rounded-r-md"
+                        style={{
+                          width: `${width}%`,
+                          background: gradient,
+                          transformOrigin: 'left',
+                          boxShadow: `4px 0 16px -4px ${glow}`
+                        }}
+                        variants={barGrowthXVariants}
+                        initial={animateOnMount ? 'hidden' : false}
+                        animate="visible"
+                        custom={custom}
+                      />
                     </div>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Columna de montos */}
+            <div className="flex w-20 shrink-0 flex-col justify-center gap-1 py-0.5 text-right sm:w-28">
+              {rows.map(({ kind, value, colorClass }, kindIndex) => {
+                const custom = barIndex * 2 + kindIndex;
+                return (
+                  <m.span
+                    key={kind}
+                    aria-hidden
+                    variants={barLabelXVariants}
+                    initial={animateOnMount ? 'hidden' : false}
+                    animate="visible"
+                    custom={custom}
+                    className={cn(
+                      'amount block text-xs font-medium leading-none',
+                      colorClass,
+                      value === 0 && 'text-content-muted'
+                    )}
+                  >
+                    {value === 0
+                      ? '—'
+                      : isDesktop
+                        ? formatMoney(value, currency, { decimals: false })
+                        : formatMoneyCompact(value, currency)}
+                  </m.span>
+                );
+              })}
             </div>
           </div>
         );

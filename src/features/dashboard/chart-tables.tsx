@@ -14,7 +14,7 @@ export function DonutTable({ slices, currency }: DonutTableProps) {
   const total = slices.reduce((sum, slice) => sum + slice.total, 0);
   return (
     <details className="mt-1">
-      <summary className="cursor-pointer text-xs text-content-muted transition-colors hover:text-content">
+      <summary className="flex min-h-11 cursor-pointer items-center text-xs text-content-muted transition-colors hover:text-content">
         Ver tabla de gastos
       </summary>
       <div className="mt-2 overflow-x-auto">
@@ -77,7 +77,7 @@ interface BarsTableProps {
 export function BarsTable({ bars, currency }: BarsTableProps) {
   return (
     <details className="mt-1">
-      <summary className="cursor-pointer text-xs text-content-muted transition-colors hover:text-content">
+      <summary className="flex min-h-11 cursor-pointer items-center text-xs text-content-muted transition-colors hover:text-content">
         Ver tabla de los últimos 6 meses
       </summary>
       <div className="mt-2 overflow-x-auto">

@@ -37,11 +37,13 @@
   --income-soft: #eefad6;
   --income-content: #2f6b00;
   --income-gradient: linear-gradient(160deg, #91ff16 0%, #4d9e00 100%);
+  --income-glow: rgb(67 148 0 / 0.25);
 
   --expense: #e0483a;
   --expense-soft: #fdeeea;
   --expense-content: #b0301f;
   --expense-gradient: linear-gradient(160deg, #ff7a6b 0%, #d63a2c 100%);
+  --expense-glow: rgb(224 72 58 / 0.25);
 
   --warning: #9a7b18;
   --warning-soft: #fbf3dc;
@@ -94,11 +96,13 @@
   --income-soft: rgb(145 255 22 / 0.12);
   --income-content: #b8ff63;
   --income-gradient: linear-gradient(160deg, #b8ff63 0%, #5fab00 100%);
+  --income-glow: rgb(145 255 22 / 0.45);
 
   --expense: #ff7a6b;
   --expense-soft: rgb(255 122 107 / 0.12);
   --expense-content: #ffb3a8;
   --expense-gradient: linear-gradient(160deg, #ff9b8d 0%, #e03e30 100%);
+  --expense-glow: rgb(255 122 107 / 0.35);
 
   --warning: #e7c25a;
   --warning-soft: #3a2f12;
@@ -149,10 +153,12 @@
   --color-income: var(--income);
   --color-income-soft: var(--income-soft);
   --color-income-content: var(--income-content);
+  --color-income-glow: var(--income-glow);
 
   --color-expense: var(--expense);
   --color-expense-soft: var(--expense-soft);
   --color-expense-content: var(--expense-content);
+  --color-expense-glow: var(--expense-glow);
 
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);

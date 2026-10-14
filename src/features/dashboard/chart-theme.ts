@@ -12,7 +12,10 @@ export interface ChartTheme {
   expense: string;
   incomeGradient: string;
   expenseGradient: string;
+  incomeGlow: string;
+  expenseGlow: string;
   border: string;
+  borderSubtle: string;
   surface: string;
   content: string;
   contentMuted: string;
@@ -28,7 +31,10 @@ export function chartTheme(): ChartTheme {
     expense: read('--expense'),
     incomeGradient: read('--income-gradient'),
     expenseGradient: read('--expense-gradient'),
+    incomeGlow: read('--income-glow'),
+    expenseGlow: read('--expense-glow'),
     border: read('--border'),
+    borderSubtle: read('--border-subtle'),
     surface: read('--surface'),
     content: read('--content'),
     contentMuted: read('--content-muted'),

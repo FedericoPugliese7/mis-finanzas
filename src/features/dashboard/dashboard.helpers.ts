@@ -1,4 +1,4 @@
-import type { CategoryTotal, MonthlyBars } from '@/shared/lib/aggregations';
+import type { CategoryTotal } from '@/shared/lib/aggregations';
 import { monthOf, type MonthKey } from '@/shared/lib/dates';
 import type { Currency, DisplayCurrency, Transaction } from '@/shared/lib/types';
 
@@ -30,42 +30,6 @@ export function donutSlices(categoryTotals: readonly CategoryTotal[]): DonutSlic
     total: item.total,
     percent: Math.round((item.total / sum) * 100)
   }));
-}
-
-export type BarLabelPlacement = 'inside' | 'after';
-
-export interface BarLabelInfo {
-  kind: 'Ingresos' | 'Gastos';
-  value: number;
-  width: number;
-  placement: BarLabelPlacement;
-}
-
-/**
- * Decides where to place the value label for each horizontal bar.
- * - `inside`: label sits at the end of the bar (very long bars).
- * - `after`: label sits just after the end of the bar.
- */
-export function barLabelPlacement(
-  bars: readonly MonthlyBars[],
-  widthOf: (value: number) => number,
-  insideThreshold = 0.85
-): Array<[BarLabelInfo, BarLabelInfo]> {
-  const INSIDE = insideThreshold * 100;
-
-  return bars.map((bar) => {
-    function info(value: number, kind: 'Ingresos' | 'Gastos'): BarLabelInfo {
-      const width = widthOf(value);
-      return {
-        kind,
-        value,
-        width,
-        placement: width > INSIDE ? 'inside' : 'after'
-      };
-    }
-
-    return [info(bar.income, 'Ingresos'), info(bar.expense, 'Gastos')];
-  });
 }
 
 /** Latest movements of a month: date descending, then creation time descending. */

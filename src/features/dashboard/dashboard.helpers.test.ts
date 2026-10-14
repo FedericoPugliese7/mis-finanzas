@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { CategoryTotal, MonthlyBars } from '@/shared/lib/aggregations';
+import type { CategoryTotal } from '@/shared/lib/aggregations';
 import type { Transaction } from '@/shared/lib/types';
-import {
-  barLabelPlacement,
-  chartCurrency,
-  donutSlices,
-  latestTransactions
-} from './dashboard.helpers';
+import { chartCurrency, donutSlices, latestTransactions } from './dashboard.helpers';
 
 function tx(overrides: Partial<Transaction>): Transaction {
   return {
@@ -94,49 +89,5 @@ describe('latestTransactions', () => {
 
   it('returns an empty list for a month without movements', () => {
     expect(latestTransactions(transactions, '2026-08', 5)).toEqual([]);
-  });
-});
-
-describe('barLabelPlacement', () => {
-  function bar(income: number, expense: number, month = '2026-10'): MonthlyBars {
-    return { month, income, expense };
-  }
-
-  it('places short bar labels after the bar end', () => {
-    const widthOf = (value: number) => value; // 1% = 1 unit for tests
-    const layout = barLabelPlacement([bar(40, 20)], widthOf);
-    expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', placement: 'after' }),
-      expect.objectContaining({ kind: 'Gastos', placement: 'after' })
-    ]);
-  });
-
-  it('places long bar labels inside the bar end', () => {
-    const widthOf = (value: number) => value;
-    const layout = barLabelPlacement([bar(90, 50)], widthOf);
-    expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', placement: 'inside' }),
-      expect.objectContaining({ kind: 'Gastos', placement: 'after' })
-    ]);
-  });
-
-  it('places both labels inside when both bars are very long', () => {
-    const widthOf = (value: number) => value;
-    const layout = barLabelPlacement([bar(95, 92)], widthOf);
-    expect(layout[0]!).toEqual([
-      expect.objectContaining({ kind: 'Ingresos', placement: 'inside' }),
-      expect.objectContaining({ kind: 'Gastos', placement: 'inside' })
-    ]);
-  });
-
-  it('returns width 0 for zero-value bars (render layer hides them)', () => {
-    const widthOf = (value: number) => value;
-    const layout = barLabelPlacement([bar(30, 0)], widthOf);
-    expect(layout[0]![1]).toMatchObject({
-      kind: 'Gastos',
-      placement: 'after',
-      value: 0,
-      width: 0
-    });
   });
 });

@@ -330,6 +330,24 @@ export const barGrowthXVariants: Variants = {
 };
 
 /**
+ * Labels de barras horizontales: aparecen cuando su barra está por terminar
+ * de crecer. Usar con `m.span` y el mismo `custom` que la barra asociada.
+ */
+export const barLabelXVariants: Variants = {
+  hidden: { opacity: 0, x: -4 },
+  visible: (index = 0) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: durations.enter,
+      ease: easings.out,
+      delay: chartPhaseDelay + index * durations.stagger + durations.chart * 0.65
+    }
+  }),
+  exit: { opacity: 0, transition: transitions.exit }
+};
+
+/**
  * Dona / path SVG: se dibuja con barrido.
  * Aplicar a un `m.path` o `m.circle` (vía `pathLength` o `strokeDashoffset`).
  */
